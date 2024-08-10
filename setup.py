@@ -8,9 +8,9 @@ with open("requirements_rcd.lock") as f:
     rcd_requirements = f.read().splitlines()
 
 setup(
-    name="cfm",
+    name="RCAEval",
     version="0.0.1",
-    packages=["cfm"],
+    packages=["RCAEval"],
     include_package_data=True,
     install_requires=[],
     extras_require={"rcd": rcd_requirements, "dev": requirements},
