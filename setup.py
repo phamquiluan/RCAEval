@@ -7,11 +7,16 @@ with open("requirements.txt") as f:
 with open("requirements_rcd.lock") as f:
     rcd_requirements = f.read().splitlines()
 
+with open("README.md", encoding="utf-8") as f:
+    long_description = f.read()
+    
 setup(
     name="RCAEval",
     version="0.0.4",
     packages=["RCAEval"],
     include_package_data=True,
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     install_requires=[],
     extras_require={"rcd": rcd_requirements, "dev": requirements},
 )
