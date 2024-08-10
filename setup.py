@@ -1,7 +1,7 @@
 from setuptools import setup
 
 # parse requirements.txt to requirement list
-with open("requirements.lock") as f:
+with open("requirements.txt") as f:
     requirements = f.read().splitlines()
 
 with open("requirements_rcd.lock") as f:
@@ -9,7 +9,7 @@ with open("requirements_rcd.lock") as f:
 
 setup(
     name="RCAEval",
-    version="0.0.1",
+    version="0.0.3",
     packages=["RCAEval"],
     include_package_data=True,
     install_requires=[],
