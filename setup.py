@@ -9,7 +9,7 @@ with open("requirements_rcd.lock") as f:
 
 setup(
     name="RCAEval",
-    version="0.0.3",
+    version="0.0.4",
     packages=["RCAEval"],
     include_package_data=True,
     install_requires=[],
