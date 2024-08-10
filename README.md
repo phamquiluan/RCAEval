@@ -1,4 +1,4 @@
-# Root Cause Analysis for Microservices based on Causal Inference: How Far Are We?
+# 🕵️ Root Cause Analysis for Microservices based on Causal Inference: How Far Are We?
 
 [![Build and test](https://github.com/phamquiluan/RCAEval/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/phamquiluan/RCAEval/actions/workflows/build-and-test.yml)
 
