@@ -1,5 +1,8 @@
 # Root Cause Analysis for Microservices based on Causal Inference: How Far Are We?
 
+[![Build and test](https://github.com/phamquiluan/RCAEval/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/phamquiluan/RCAEval/actions/workflows/build-and-test.yml)
+
+
 ## Download Experimental Data \& Supplementary Material
 
 You can download our supplementary material and all the data we used for this research from this [Google Drive](https://drive.google.com/drive/folders/1BG2P1ETEyKW62dU0I1ZpE64Ng9fy5_ju?usp=sharing).
