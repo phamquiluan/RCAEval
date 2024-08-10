@@ -122,6 +122,9 @@ celerybeat.pid
 .env
 .venv
 env/
+env-dev/
+env-rcd/
+env-fges/
 venv/
 ENV/
 env.bak/
@@ -196,4 +199,4 @@ main.sh
 data/fse-*
 data/sock-shop-2
 .ar
-data/_fse-ob
+data/_fse-obenv-dev
