@@ -34,8 +34,8 @@ By installing this environment, you can run the following:
 - CIRCA, Nsigma, Dummy
 
 ```bash
-python3.10 -m venv env
-. env/bin/activate
+python3.10 -m venv env-dev
+. env-dev/bin/activate
 pip install pip==20.0.2
 pip install -e .[dev]
 ```
