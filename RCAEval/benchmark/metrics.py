@@ -58,9 +58,9 @@ def SHD(G1: MemoryGraph, G2: MemoryGraph):
 def F1(true_graph: MemoryGraph, est_graph: MemoryGraph):
     tp = len(set(true_graph.str_edges) & set(est_graph.str_edges))
 
-    print(f"True edges: {len(true_graph.str_edges)}")
-    print(f"Estimated edges: {len(est_graph.str_edges)}")
-    print(f"Corrected edges: {tp}")
+    # print(f"True edges: {len(true_graph.str_edges)}")
+    # print(f"Estimated edges: {len(est_graph.str_edges)}")
+    # print(f"Corrected edges: {tp}")
 
     if tp == 0:
         return {"precision": 0, "recall": 0, "f1": 0}
@@ -87,9 +87,9 @@ def F1_Skeleton(true_graph: MemoryGraph, est_graph: MemoryGraph):
 
     tp = len(true_edges & est_edges)
 
-    print(f"True edges: {len(true_edges) / 2}")
-    print(f"Estimated edges: {len(est_edges) / 2}")
-    print(f"Corrected edges: {tp / 2}")
+    # print(f"True edges: {len(true_edges) / 2}")
+    # print(f"Estimated edges: {len(est_edges) / 2}")
+    # print(f"Corrected edges: {tp / 2}")
 
     if tp == 0:
         return {"precision": 0, "recall": 0, "f1": 0}

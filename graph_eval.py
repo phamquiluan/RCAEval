@@ -211,7 +211,7 @@ def evaluate():
         "SHD": [],
     }
 
-    print("Evaluate...")
+    # print("Evaluate...")
     for data_path in data_paths:
         # for circa and rcd
         if "_circa" in data_path or "_rcd" in data_path:
@@ -300,9 +300,7 @@ def evaluate():
     eval_data["SHD"].insert(0, avg_shd)
 
     # print Average
-    print("================================")
-    # print(f"Average:{avg_precision_skel:.2f}|{avg_recall_skel:.2f}|{avg_f1_skel:.2f}|{avg_precision:.2f}|{avg_recall:.2f}|{avg_f1:.2f}|{avg_bic:.2f}|{avg_shd:.2f}")
-    # print(f"Average:{avg_f1_skel:.2f}|{avg_f1:.2f}|{avg_shd:.2f}")
+    # print("================================")
     print(f"F1:   {avg_f1:.2f}")
     print(f"F1-S: {avg_f1_skel:.2f}")
     print(f"SHD:  {math.floor(avg_shd)}")
@@ -313,8 +311,8 @@ def evaluate():
     report_df = pd.DataFrame(eval_data)
     report_df.to_excel(report_path, index=False)
 
-    print(f"Results are saved to {result_path}")
-    print(f"Report is saved to {abspath(report_path)}")
+    # print(f"Results are saved to {result_path}")
+    # print(f"Report is saved to {abspath(report_path)}")
 
 
 def process(data_path):
