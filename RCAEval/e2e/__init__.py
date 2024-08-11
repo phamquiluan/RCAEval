@@ -16,7 +16,10 @@ from RCAEval.io.time_series import (
 from RCAEval.utility import is_py310
 
 if is_py310():
-    from .causalai import causalai
+    try:
+        from .causalai import causalai
+    except Exception as e:
+        print(e)
     from .circa import circa
     from .cloudranger import cloudranger
     from .fci_pagerank import fci_pagerank
