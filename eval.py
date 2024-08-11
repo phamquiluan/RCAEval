@@ -23,7 +23,8 @@ from RCAEval.utility import dump_json, is_py310, load_json
 from RCAEval.utility.visualization import draw_adj
 
 if is_py310():
-    from RCAEval.e2e import (  # cmlp_randomwalk,
+    from RCAEval.e2e import ( 
+        # here
         causalai,
         circa,
         cloudranger,
