@@ -7,15 +7,31 @@
 
 This repository includes artifacts for reuse and reproduction of experimental results presented in our ASE'24 paper titled "Root Cause Analysis for Microservices based on Causal Inference: How Far Are We?".
 
-## Download Experimental Data \& Supplementary Material
+**Table of Contents** 
+  * [Installation](#installation)
+    + [Prerequisites](#prerequisites)
+    + [Pre-installation](#pre-installation)
+    + [Install the Dev environment](#install-the-dev-environment)
+    + [Install the RCD environment](#install-the-rcd-environment)
+    + [Install the fGES environment](#install-the-fges-environment)
+  * [How-to-use](#how-to-use)
+    + [Data format](#data-format)
+    + [Basic usage example](#basic-usage-example)
+  * [Reproducibility](#reproducibility)
+    + [Reproduce RQ1 - Causal Discovery Performance](#reproduce-rq1---causal-discovery-performance)
+    + [Reproduce RQ2 - Root Cause Analysis Performance](#reproduce-rq2---root-cause-analysis-performance)
+    + [Reproduce RQ3 - Efficiency](#reproduce-rq3---efficiency)
+    + [Reproduce RQ4 - Data lengths](#reproduce-rq4---data-lengths)
+  * [Download Experimental Data - Supplementary Material](#download-experimental-data---supplementary-material)
+  * [Licensing](#licensing)
+  * [Acknowledgments](#acknowledgments)
 
-You can download our supplementary material and all the data we used for this research from this [Google Drive](https://drive.google.com/drive/folders/1BG2P1ETEyKW62dU0I1ZpE64Ng9fy5_ju?usp=sharing).
 
 ## Installation
 
 We maintain 3 environments for different methods that could be installed easily as follows.
 
-### OS & Hardware requirements
+### Prerequisites
 - Ubuntu 22.04
 - 8 CPU, 16GB RAM, 30GB free disk.
 
@@ -81,6 +97,17 @@ pip install category_encoders sortedcontainers fcit
 pip install pgmpy
 pip install feature_engine
 ```
+
+## How-to-use
+
+### Data format
+
+TBD
+
+### Basic usage example
+
+TBD
+
 
 ## Reproducibility
 
@@ -166,6 +193,9 @@ The efficiency is captured in our evaluation script and saved in the correspondi
 
 Our RQ4 relies on the scripts of RQ1 and RQ2, which we presented above.
 
+## Download Experimental Data - Supplementary Material
+
+You can download our supplementary material and all the data we used for this research from this [Google Drive](https://drive.google.com/drive/folders/1BG2P1ETEyKW62dU0I1ZpE64Ng9fy5_ju?usp=sharing).
 
 ## Licensing
 
