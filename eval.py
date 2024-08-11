@@ -25,7 +25,7 @@ from RCAEval.utility.visualization import draw_adj
 if is_py310():
     from RCAEval.e2e import ( 
         # here
-        causalai,
+        # causalai,
         circa,
         cloudranger,
         cmlp_pagerank,
@@ -47,7 +47,6 @@ if is_py310():
         pc_pagerank,
         pc_randomwalk,
         robust_scaler,
-        robust_scaler_avg,
         run,
     )
 
@@ -222,7 +221,6 @@ data_paths = new_data_paths
 
 
 def process(data_path):
-    print(datetime.now(), data_path)
 
     # FOR RUN only
     run_args = argparse.Namespace()
@@ -398,7 +396,6 @@ def process(data_path):
     ranks_dict = {}
     out = None
 
-    print(f"num col {len(data.columns)}")
     
     try:
         for i in range(args.iter_num):
