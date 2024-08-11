@@ -15,15 +15,15 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from cfm.benchmark.evaluation import Evaluator
-from cfm.classes.graph import Node
+from RCAEval.benchmark.evaluation import Evaluator
+from RCAEval.classes.graph import Node
 
-from cfm.io.time_series import drop_constant, drop_time, preprocess
-from cfm.utility import dump_json, is_py310, load_json
-from cfm.utility.visualization import draw_adj
+from RCAEval.io.time_series import drop_constant, drop_time, preprocess
+from RCAEval.utility import dump_json, is_py310, load_json
+from RCAEval.utility.visualization import draw_adj
 
 if is_py310():
-    from cfm.e2e import (  # cmlp_randomwalk,
+    from RCAEval.e2e import (  # cmlp_randomwalk,
         causalai,
         circa,
         cloudranger,
@@ -52,10 +52,10 @@ if is_py310():
 
     baro = robust_scaler
 else:
-    from cfm.e2e import dummy, e_diagnosis, ht, rcd
+    from RCAEval.e2e import dummy, e_diagnosis, ht, rcd
 
 try:
-    from cfm.e2e.ges_pagerank import fges_pagerank, fges_randomwalk
+    from RCAEval.e2e.ges_pagerank import fges_pagerank, fges_randomwalk
 except ImportError:
     print("fges_pagerank not available")
 
@@ -63,7 +63,7 @@ try:
     import torch
     # prevent the program see gpu
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-    from cfm.e2e.causalrca import causalrca
+    from RCAEval.e2e.causalrca import causalrca
 except ImportError:
     print("causalrca not available")
 
@@ -115,7 +115,7 @@ AVAILABLE_METHODS = sorted(
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="CFM evaluation")
+    parser = argparse.ArgumentParser(description="RCAEval evaluation")
     # for data
     parser.add_argument("-i", "--input-path", type=str, default="data", help="path to data")
     parser.add_argument(
@@ -387,7 +387,6 @@ def process(data_path):
         anomalies = load_json(join(data_dir, "spot.json"))
 
     if anomalies is not None:
-        # anomalies = [int(a - cut_length) for a in anomalies]
         print("-" * 20)
         print(anomalies)
         print("-" * 20)
@@ -415,8 +414,6 @@ def process(data_path):
                 gamma=args.gamma,
                 args=run_args,
             )
-            # print(out)
-            # adj = out.get("adj")
             root_causes = out.get("ranks")
 
             s_ranks = [i.split("_")[0] for i in root_causes]
@@ -426,7 +423,6 @@ def process(data_path):
                 if s_ranks
                 else []
             )
-            # print(f'{service}_{metric} -- top3: {service_ranks[:3]} - fault: {gt_fault}')
 
             ranks_dict[i] = root_causes
 
