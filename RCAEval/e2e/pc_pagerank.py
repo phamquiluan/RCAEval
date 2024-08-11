@@ -4,9 +4,9 @@ from causallearn.search.ConstraintBased.PC import pc
 from causallearn.utils.cit import chisq, fisherz, gsq, kci, mv_fisherz
 from sknetwork.ranking import PageRank
 
-from cfm.graph_construction.pc import pc_default
-from cfm.graph_heads.page_rank import page_rank
-from cfm.io.time_series import preprocess
+from RCAEval.graph_construction.pc import pc_default
+from RCAEval.graph_heads.page_rank import page_rank
+from RCAEval.io.time_series import preprocess
 
 
 def pc_pagerank(
@@ -51,7 +51,7 @@ def pc_pagerank(
 def cmlp_pagerank(
     data, inject_time=None, dataset=None, dk_select_useful=False, with_bg=False, n_iter=10, **kwargs
 ):
-    from cfm.graph_construction.cmlp import cmlp
+    from RCAEval.graph_construction.cmlp import cmlp
 
     data = preprocess(data=data, dataset=dataset, dk_select_useful=dk_select_useful)
     node_names = data.columns.to_list()
@@ -79,7 +79,7 @@ def cmlp_pagerank(
 def ntlr_pagerank(
     data, inject_time=None, dataset=None, dk_select_useful=False, with_bg=False, n_iter=10, **kwargs
 ):
-    from cfm.graph_construction.dag_gnn import notears_low_rank
+    from RCAEval.graph_construction.dag_gnn import notears_low_rank
 
     data = preprocess(data=data, dataset=dataset, dk_select_useful=dk_select_useful)
     node_names = data.columns.to_list()

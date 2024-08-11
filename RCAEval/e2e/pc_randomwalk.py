@@ -1,9 +1,9 @@
-from cfm.graph_construction.fci import fci_default
-from cfm.graph_construction.granger import granger
-from cfm.graph_construction.lingam import DirectLiNGAM, ICALiNGAM
-from cfm.graph_construction.pc import pc_default
-from cfm.graph_heads.random_walk import random_walk
-from cfm.io.time_series import drop_constant, drop_extra, drop_near_constant, drop_time, preprocess
+from RCAEval.graph_construction.fci import fci_default
+from RCAEval.graph_construction.granger import granger
+from RCAEval.graph_construction.lingam import DirectLiNGAM, ICALiNGAM
+from RCAEval.graph_construction.pc import pc_default
+from RCAEval.graph_heads.random_walk import random_walk
+from RCAEval.io.time_series import drop_constant, drop_extra, drop_near_constant, drop_time, preprocess
 
 
 def pc_randomwalk(data, inject_time=None, dataset=None, n_iter=None, **kwargs):
@@ -36,7 +36,7 @@ def ntlr_randomwalk(data, inject_time=None, dataset=None, n_iter=None, **kwargs)
     data = preprocess(
         data=data, dataset=dataset, dk_select_useful=kwargs.get("dk_select_useful", False)
     )
-    from cfm.graph_construction.dag_gnn import notears_low_rank
+    from RCAEval.graph_construction.dag_gnn import notears_low_rank
 
     node_names = data.columns.to_list()
 

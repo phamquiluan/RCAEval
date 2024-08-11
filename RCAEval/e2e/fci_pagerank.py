@@ -1,6 +1,6 @@
-from cfm.graph_construction.fci import fci_default
-from cfm.graph_heads.page_rank import page_rank
-from cfm.io.time_series import preprocess
+from RCAEval.graph_construction.fci import fci_default
+from RCAEval.graph_heads.page_rank import page_rank
+from RCAEval.io.time_series import preprocess
 
 
 def fci_pagerank(data, inject_time=None, dataset=None, dk_select_useful=False, n_iter=10, **kwargs):

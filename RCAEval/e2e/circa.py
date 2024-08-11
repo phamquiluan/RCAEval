@@ -1,6 +1,6 @@
-from cfm.graph_construction.pc import pc_default
-from cfm.graph_heads.rht import rht
-from cfm.io.time_series import (
+from RCAEval.graph_construction.pc import pc_default
+from RCAEval.graph_heads.rht import rht
+from RCAEval.io.time_series import (
     preprocess,
     convert_mem_mb,
     drop_constant,

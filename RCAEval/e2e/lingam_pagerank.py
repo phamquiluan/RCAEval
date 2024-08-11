@@ -2,9 +2,9 @@ import warnings
 
 import numpy as np
 
-from cfm.graph_construction.lingam import DirectLiNGAM, ICALiNGAM
-from cfm.graph_heads.page_rank import page_rank
-from cfm.io.time_series import (
+from RCAEval.graph_construction.lingam import DirectLiNGAM, ICALiNGAM
+from RCAEval.graph_heads.page_rank import page_rank
+from RCAEval.io.time_series import (
     convert_mem_mb,
     drop_constant,
     drop_extra,

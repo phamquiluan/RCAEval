@@ -1,6 +1,6 @@
-from cfm.graph_construction.granger import granger
-from cfm.graph_heads.page_rank import page_rank
-from cfm.io.time_series import (
+from RCAEval.graph_construction.granger import granger
+from RCAEval.graph_heads.page_rank import page_rank
+from RCAEval.io.time_series import (
     convert_mem_mb,
     drop_constant,
     drop_extra,

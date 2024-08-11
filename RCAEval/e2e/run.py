@@ -44,7 +44,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 torch.autograd.set_detect_anomaly(True)
-from cfm.io.time_series import drop_constant
+from RCAEval.io.time_series import drop_constant
 
 class moving_avg(nn.Module):
     """

@@ -9,7 +9,7 @@ from causallearn.utils.cit import chisq
 from causallearn.utils.PCUtils import SkeletonDiscovery
 from sklearn.preprocessing import KBinsDiscretizer
 
-from cfm.io.time_series import drop_extra
+from RCAEval.io.time_series import drop_extra
 
 warnings.filterwarnings("ignore")
 plt.style.use("fivethirtyeight")
@@ -469,7 +469,7 @@ def rcd(
     if dataset == "sock-shop":
         normal_df, anomal_df = preprocess_sock_shop(normal_df, anomal_df, 90, dk_select_useful)
     elif dataset is not None:
-        from cfm.io.time_series import convert_mem_mb, drop_constant, drop_time, preprocess
+        from RCAEval.io.time_series import convert_mem_mb, drop_constant, drop_time, preprocess
 
         normal_df = drop_constant(convert_mem_mb(drop_time(normal_df)))
         anomal_df = drop_constant(convert_mem_mb(drop_time(anomal_df)))

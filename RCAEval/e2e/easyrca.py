@@ -15,11 +15,11 @@ from scipy.optimize import minimize
 from tigramite.independence_tests.parcorr import ParCorr
 from tigramite.pcmci import PCMCI
 
-from cfm.classes.graph import Graph, MemoryGraph, Node
-from cfm.graph_construction.pc import pc_default
-from cfm.graph_construction.pcmci import pcmci
-from cfm.graph_heads import finalize_directed_adj
-from cfm.io.time_series import drop_constant, drop_extra, drop_near_constant, drop_time, preprocess
+from RCAEval.classes.graph import Graph, MemoryGraph, Node
+from RCAEval.graph_construction.pc import pc_default
+from RCAEval.graph_construction.pcmci import pcmci
+from RCAEval.graph_heads import finalize_directed_adj
+from RCAEval.io.time_series import drop_constant, drop_extra, drop_near_constant, drop_time, preprocess
 
 # colors for plot
 deep_saffron = "#FF9933"

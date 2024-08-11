@@ -1,10 +1,10 @@
-from cfm.graph_construction.ges import ges
-from cfm.graph_heads.page_rank import page_rank
-from cfm.graph_heads.random_walk import random_walk
-from cfm.io.time_series import preprocess
+from RCAEval.graph_construction.ges import ges
+from RCAEval.graph_heads.page_rank import page_rank
+from RCAEval.graph_heads.random_walk import random_walk
+from RCAEval.io.time_series import preprocess
 
 try:
-    from cfm.graph_construction.fges import fges
+    from RCAEval.graph_construction.fges import fges
 except:
     print("fges not available")
 
