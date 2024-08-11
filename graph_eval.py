@@ -32,14 +32,17 @@ if is_py310():
     from causallearn.search.FCMBased.lingam import DirectLiNGAM, ICALiNGAM, VARLiNGAM
     from causallearn.search.ScoreBased.GES import ges
     from causallearn.utils.cit import chisq, fisherz, gsq, kci, mv_fisherz
-    from RCAEval.graph_construction.cmlp import cmlp
-    from RCAEval.graph_construction.dag_gnn import dag_gnn
-    from RCAEval.graph_construction.dag_gnn import notears_low_rank as ntlr
     from RCAEval.graph_construction.granger import granger
-    from RCAEval.graph_construction.notears import notears
     from RCAEval.graph_construction.pcmci import pcmci
+    from RCAEval.graph_construction.cmlp import cmlp
+    try:
+        from RCAEval.graph_construction.dag_gnn import dag_gnn
+        from RCAEval.graph_construction.dag_gnn import notears_low_rank as ntlr
+        from RCAEval.graph_construction.notears import notears
+    except Exception as e:
+        print(e)
+    
 else:
-    # HERE
     from RCAEval.graph_construction.fges import fges
 
 AVAILABLE_METHODS = sorted(
@@ -92,8 +95,6 @@ def score_g(Data, G, parameters=None):
             # remove X from list ['X6', 'X10']
             PA = [int(p[1:]) - 1 for p in PA]
 
-        # print(f"{i=}_{node.name=}")
-        # print(PA)
 
         delta_score = local_score_BIC(Data, i, PA, parameters)
 
@@ -101,7 +102,6 @@ def score_g(Data, G, parameters=None):
         if np.isnan(delta_score):
             continue
 
-        # print(f"{delta_score=}")
         score = score + delta_score
     return score.sum()
 
@@ -260,8 +260,6 @@ def evaluate():
                 join(dirname(dirname(dirname(data_path))), "true_graph.json")
             )
 
-        print("================================")
-        print(est_graph_name)
         e = F1(true_graph, est_graph)
         e_skel = F1_Skeleton(true_graph, est_graph)
         shd = SHD(true_graph, est_graph)
@@ -344,12 +342,6 @@ def process(data_path):
         num_node = int(basename(dirname(dirname(dirname(dirname(data_path))))))
         graph_idx = int(basename(dirname(dirname(dirname(data_path)))))
         case_idx = int(basename(dirname(data_path)))
-
-    # if graph_idx in [1, 2, 3, 6, 7]:
-    #     return
-
-    print("================================")
-    print(f"graph_{graph_idx}_case_{case_idx}")
 
     if "syn_circa" in data_path:  # rca_circa has headers, no worries
         data = pd.read_csv(
