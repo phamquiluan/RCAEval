@@ -176,6 +176,8 @@ This repository includes code from various sources with different licenses:
 - **CausalAI**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE_CausalAI). Original source: [CausalAI GitHub Repository](https://github.com/salesforce/causalai).
 - **MicroCause**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE_MicroCause). Original source: [MicroCause GitHub Repository](https://github.com/PanYicheng/dycause_rca).
 
+We have included their corresponding LICENSE into the [LICENSES](LICENSES) directory. For the code implemented by us, we distribute them under the [MIT LICENSE](LICENSE).
+
 ## Acknowledgments
 
 We would like to express our sincere gratitude to the researchers and developers who created the baselines used in our study. Their work has been instrumental in making this project possible. We deeply appreciate the time, effort, and expertise that have gone into developing and maintaining these resources. Your commitment to advancing the field of root cause analysis and making your work accessible to the research community has been invaluable. This project would not have been feasible without your contributions.
