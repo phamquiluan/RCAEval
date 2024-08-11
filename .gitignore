@@ -203,3 +203,4 @@ env-dev
 data/syn_circa
 data/online-boutique
 output
+*.zip
