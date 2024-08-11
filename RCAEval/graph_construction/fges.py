@@ -20,11 +20,11 @@ from python.discretize import *
 from python.scores import *
 from python.structure_learning.score_based.fges import fges
 
-from cfm.classes.data import CaseData, DataLoader, MemoryDataLoader
-from cfm.classes.graph import Graph, MemoryGraph, Node
-from cfm.graph_heads.random_walk import Score, Scorer
-from cfm.graph_heads.rht import RHTScorer
-from cfm.io.time_series import (
+from RCAEval.classes.data import CaseData, DataLoader, MemoryDataLoader
+from RCAEval.classes.graph import Graph, MemoryGraph, Node
+from RCAEval.graph_heads.random_walk import Score, Scorer
+from RCAEval.graph_heads.rht import RHTScorer
+from RCAEval.io.time_series import (
     convert_mem_mb,
     drop_constant,
     drop_extra,
@@ -32,7 +32,7 @@ from cfm.io.time_series import (
     drop_time,
     select_useful_cols,
 )
-from cfm.utility.visualization import visualize_metrics
+from RCAEval.utility.visualization import visualize_metrics
 
 # from utils import compute_stats, read_data
 warnings.filterwarnings("ignore")
