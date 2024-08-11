@@ -23,8 +23,6 @@ from RCAEval.benchmark.metrics import F1, SHD, F1_Skeleton
 from RCAEval.classes.graph import MemoryGraph, Node
 from RCAEval.graph_heads import finalize_directed_adj
 from RCAEval.io.time_series import drop_constant, drop_extra, drop_time
-
-# HERE
 from RCAEval.utility import dump_json, is_py310, load_json
 from RCAEval.utility.visualization import draw_adj, draw_digraph, draw_mem_graph
 
@@ -34,15 +32,14 @@ if is_py310():
     from causallearn.search.FCMBased.lingam import DirectLiNGAM, ICALiNGAM, VARLiNGAM
     from causallearn.search.ScoreBased.GES import ges
     from causallearn.utils.cit import chisq, fisherz, gsq, kci, mv_fisherz
-
     from RCAEval.graph_construction.cmlp import cmlp
     from RCAEval.graph_construction.dag_gnn import dag_gnn
     from RCAEval.graph_construction.dag_gnn import notears_low_rank as ntlr
     from RCAEval.graph_construction.granger import granger
     from RCAEval.graph_construction.notears import notears
     from RCAEval.graph_construction.pcmci import pcmci
-
 else:
+    # HERE
     from RCAEval.graph_construction.fges import fges
 
 AVAILABLE_METHODS = sorted(
