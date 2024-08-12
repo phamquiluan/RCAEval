@@ -9,7 +9,6 @@ This repository includes artifacts for reuse and reproduction of experimental re
 
 **Table of Contents** 
   * [Installation](#installation)
-    + [Prerequisites](#prerequisites)
     + [Pre-installation](#pre-installation)
     + [Install the Dev environment](#install-the-dev-environment)
     + [Install the RCD environment](#install-the-rcd-environment)
@@ -31,10 +30,6 @@ This repository includes artifacts for reuse and reproduction of experimental re
 
 We maintain 3 environments for different methods that could be installed easily as follows.
 
-### Prerequisites
-- Ubuntu 22.04
-- 8 CPU, 16GB RAM, 30GB free disk.
-
 ### Pre-installation
 
 Open your terminal and run commands
@@ -43,11 +38,6 @@ sudo apt update -y
 sudo apt install -y build-essential \
   libxml2 libxml2-dev zlib1g-dev \
   python3-tk graphviz
-
-sudo add-apt-repository ppa:deadsnakes/ppa
-sudo apt update -y
-sudo apt-get install -y python3.8 python3.8-dev python3.8-venv
-sudo apt-get install -y python3.10 python3.10-dev python3.10-venv
 ```
 
 ### Install the Dev environment
