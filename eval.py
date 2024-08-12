@@ -578,7 +578,7 @@ for service in services:
 
 print("Evaluation results")
 if "rca_" in args.input_path:
-    print(f_evaluator_all.average(5))
+    print(round(f_evaluator_all.average(5), 2))
 
 else:
 #### THIS ONE IS FOR REAL DATASET ####
