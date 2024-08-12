@@ -108,6 +108,21 @@ We have provided a file named `graph_eval.py` to assist in reproducing the causa
 ```
 python graph_eval.py [-h] [-i INPUT_PATH] [-o OUTPUT_PATH] [--length LENGTH] [-m MODEL]
 ```
+The description for the arguments/options of the file `graph_eval.py` are as follows:
+
+```
+options:
+  -h, --help            show this help message and exit
+  --input-path          Choose a dataset to analyse. Options:
+                        ['syn']
+                        path to data
+  -o OUTPUT_PATH, --output-path OUTPUT_PATH
+                        for results and reports
+  --length LENGTH       length of time series
+  -m MODEL, --model MODEL
+                        func name
+```
+
 
 
 To reproduce the causal discovery performance, as presented in Table 3. You can download the corresponding dataset and extracted to folder `./data`. Then, you can run the file `graph_eval.py` to obtain the results for one iteration. For example:
