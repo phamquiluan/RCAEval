@@ -119,8 +119,8 @@ F1-S: 0.65
 SHD:  16
 ```
 
-We can replace the method `pc` by methods `fci`, `granger`, `ICALiNGAM`, `DirectLiNGAM`, etc. to replicate their results on the CIRCA 10 dataset present in Table 3.
-We can also replace the dataset `syn_circa/10` by ..
+We can replace the method `pc` by methods `fci`, `granger`, `ICALiNGAM`, `DirectLiNGAM`, `ges`, `pcmci`,  etc. to replicate their results on the CIRCA 10 dataset present in Table 3.
+We can also replace the dataset `syn_circa/10` by `syn_rcd/10`, 
 
 
 
