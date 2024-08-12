@@ -10,6 +10,6 @@ def fci_default(data: pd.DataFrame):
 
     data = data.to_numpy().astype(float)
 
-    output = fci(data, node_names=node_names)
+    output = fci(data, node_names=node_names, verbose=False)
     adj = output[0].graph
     return adj
