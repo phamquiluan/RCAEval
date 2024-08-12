@@ -447,7 +447,6 @@ if args.worker_num > 1:
     with Pool(min(args.worker_num, os.cpu_count() - 2)) as p:
         list(tqdm(p.imap(process, data_paths), total=len(data_paths)))
 else:  # single worker
-    # for data_path in tqdm(sorted(data_paths)[60:80]):
     for data_path in tqdm(sorted(data_paths)):
         process(data_path)
 
@@ -562,6 +561,10 @@ for service in services:
                     s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
                     f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, "latency"))
 
+                if "rca_" in args.input_path:
+                    s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
+                    # print(fault)
+                    f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, fault))
         eval_data["service-fault"].append(f"{service}_{fault}")
         eval_data["top_1_service"].append(s_evaluator.accuracy(1))
         eval_data["top_3_service"].append(s_evaluator.accuracy(3))
@@ -574,41 +577,45 @@ for service in services:
 
 
 print("Evaluation results")
+if "rca_" in args.input_path:
+    print(f_evaluator_all.average(5))
 
-for name, s_evaluator, f_evaluator in [
-    ("cpu", s_evaluator_cpu, f_evaluator_cpu),
-    ("mem", s_evaluator_mem, f_evaluator_mem),
-    ("io", s_evaluator_io, f_evaluator_io),
-    ("delay", s_evaluator_lat, f_evaluator_lat),
-    ("loss", s_evaluator_loss, f_evaluator_loss),
-    # ("all", s_evaluator_all, f_evaluator_all),
-]:
-    eval_data["service-fault"].append(f"overall_{name}")
-    eval_data["top_1_service"].append(s_evaluator.accuracy(1))
-    eval_data["top_3_service"].append(s_evaluator.accuracy(3))
-    eval_data["top_5_service"].append(s_evaluator.accuracy(5))
-    eval_data["avg@5_service"].append(s_evaluator.average(5))
-    eval_data["top_1_metric"].append(f_evaluator.accuracy(1))
-    eval_data["top_3_metric"].append(f_evaluator.accuracy(3))
-    eval_data["top_5_metric"].append(f_evaluator.accuracy(5))
-    eval_data["avg@5_metric"].append(f_evaluator.average(5))
+else:
+#### THIS ONE IS FOR REAL DATASET ####
+    for name, s_evaluator, f_evaluator in [
+        ("cpu", s_evaluator_cpu, f_evaluator_cpu),
+        ("mem", s_evaluator_mem, f_evaluator_mem),
+        ("io", s_evaluator_io, f_evaluator_io),
+        ("delay", s_evaluator_lat, f_evaluator_lat),
+        ("loss", s_evaluator_loss, f_evaluator_loss),
+        # ("all", s_evaluator_all, f_evaluator_all),
+    ]:
+        eval_data["service-fault"].append(f"overall_{name}")
+        eval_data["top_1_service"].append(s_evaluator.accuracy(1))
+        eval_data["top_3_service"].append(s_evaluator.accuracy(3))
+        eval_data["top_5_service"].append(s_evaluator.accuracy(5))
+        eval_data["avg@5_service"].append(s_evaluator.average(5))
+        eval_data["top_1_metric"].append(f_evaluator.accuracy(1))
+        eval_data["top_3_metric"].append(f_evaluator.accuracy(3))
+        eval_data["top_5_metric"].append(f_evaluator.accuracy(5))
+        eval_data["avg@5_metric"].append(f_evaluator.average(5))
 
-    if name == "io":
-        name = "disk"
+        if name == "io":
+            name = "disk"
 
-    if s_evaluator.average(5) is not None:
-        print( f"s_{name}:", round(s_evaluator.average(5), 2))
+        if s_evaluator.average(5) is not None:
+            print( f"s_{name}:", round(s_evaluator.average(5), 2))
 
 
 
-report_df = pd.DataFrame(eval_data)
-report_df.to_excel(report_path, index=False)
+    report_df = pd.DataFrame(eval_data)
+    report_df.to_excel(report_path, index=False)
 
-# print(f"Results are saved to {result_path}")
-# print(f"Report is saved to {abspath(report_path)}")
-top1 = round(s_evaluator.accuracy(1), 2)
-top3 = round(s_evaluator.accuracy(3), 2)
-avg5 = round(s_evaluator.average(5), 2)
-# print(f"service: {top1=} {top3=} {avg5=}")
+    # print(f"Results are saved to {result_path}")
+    # print(f"Report is saved to {abspath(report_path)}")
+    top1 = round(s_evaluator.accuracy(1), 2)
+    top3 = round(s_evaluator.accuracy(3), 2)
+    avg5 = round(s_evaluator.average(5), 2)
+    # print(f"service: {top1=} {top3=} {avg5=}")
 
 
