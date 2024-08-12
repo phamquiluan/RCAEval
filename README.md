@@ -108,7 +108,7 @@ To reproduce the causal discovery performance, as presented in Table 3. You can 
 As presented in Table 3, PC achieves F1, F1-S, and SHD of 0.49, 0.65, and 16 on the CIRCA 10 dataset. To reproduce this results as presented in the Table 3. You can run the following commands:
 
 ```bash
-python graph_eval.py -i data/syn_circa/10 -m pc -w 5
+python graph_eval.py -i data/syn_circa/10 -m pc
 ```
 
 The expected output should be exactly as presented in the paper (it takes around 1 minute to run the code)
