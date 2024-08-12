@@ -210,7 +210,11 @@ Our RQ4 relies on the scripts of RQ1 and RQ2, which we presented above.
 
 ## Download Experimental Data - Supplementary Material
 
-You can download our supplementary material and all the data we used for this research from this [Google Drive](https://drive.google.com/drive/folders/1BG2P1ETEyKW62dU0I1ZpE64Ng9fy5_ju?usp=sharing).
+Our datasets and their description are publicly available in Zenodo repository with the following information:
+- Dataset DOI: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13305663.svg)](https://doi.org/10.5281/zenodo.13305663)
+- Dataset URL: https://zenodo.org/records/13305663
+
+In addition, you can download our supplementary material and all the data we used for this research from this [Google Drive](https://drive.google.com/drive/folders/1BG2P1ETEyKW62dU0I1ZpE64Ng9fy5_ju?usp=sharing).
 
 ## Licensing
 
