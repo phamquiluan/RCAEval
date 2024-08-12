@@ -103,6 +103,13 @@ TBD
 
 ### Reproduce RQ1 - Causal Discovery Performance
 
+We have provided a file named `graph_eval.py` to assist in reproducing the causal discovery results of our paper, which can be run using Python with the following syntax: 
+
+```
+python graph_eval.py [-h] [-i INPUT_PATH] [-o OUTPUT_PATH] [--length LENGTH] [-m MODEL]
+```
+
+
 To reproduce the causal discovery performance, as presented in Table 3. You can download the corresponding dataset and extracted to folder `./data`. Then, you can run the file `graph_eval.py` to obtain the results for one iteration. For example:
 
 As presented in Table 3, PC achieves F1, F1-S, and SHD of 0.49, 0.65, and 16 on the CIRCA 10 dataset. To reproduce this results as presented in the Table 3. You can run the following commands:
