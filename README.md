@@ -119,7 +119,9 @@ F1-S: 0.65
 SHD:  16
 ```
 
-We can replace the method `pc` and dataset `syn_circa/10` to replicate corresponding results.
+We can replace the method `pc` by `fci` and dataset `syn_circa/10` to replicate corresponding results.
+
+
 
 
 
