@@ -201,6 +201,13 @@ data/sock-shop-2
 data/_fse-ob
 env-dev
 data/syn_circa
+data/syn_rcd
+data/syn_causil
+data/rca_circa
+data/rca_rcd
 data/online-boutique
+data/sock-shop-1
+data/sock-shop-2
+data/train-ticket
 output
 *.zip
