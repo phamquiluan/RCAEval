@@ -15,6 +15,11 @@ from RCAEval.utility import (
     download_sock_shop_1_dataset,
     download_sock_shop_2_dataset,
     download_train_ticket_dataset,
+    download_syn_rcd_dataset,
+    download_syn_circa_dataset,
+    download_syn_causil_dataset,
+    download_rca_rcd_dataset,
+    download_rca_circa_dataset,
 )
 
 @pytest.mark.parametrize("func", [
