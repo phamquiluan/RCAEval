@@ -63,9 +63,6 @@ AVAILABLE_METHODS = sorted(
 
 
 def adj2generalgraph(adj):
-    # convert adj to GeneralGraph
-    # add 1, since causallearn CausaGraph also do so,
-    # take it out later in score_g function
     G = GeneralGraph(nodes=[f"X{i + 1}" for i in range(len(adj))])
     for row_idx in range(len(adj)):
         for col_idx in range(len(adj)):
@@ -107,95 +104,41 @@ def score_g(Data, G, parameters=None):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="RCAEval evaluation")
-    # for data
-    parser.add_argument("-i", "--input-path", type=str, default="data", help="path to data")
-    parser.add_argument(
-        "-o", "--output-path", type=str, default="output", help="for results and reports"
-    )
-    # length
-    parser.add_argument("--length", type=int, default=None, help="length of time series")
-
-    # for method
-    parser.add_argument("-m", "--model", type=str, default="pc_pagerank", help="func name")
-    parser.add_argument("-t", "--test", type=str, default=None, help="granger test or pc test")
-    parser.add_argument("-a", "--alpha", type=float, default=0.05)
-    parser.add_argument("--tau", type=float, default=3)
-    parser.add_argument("--stable", action="store_true")
-
-    # for evaluation
-    parser.add_argument("-w", "--worker-num", type=int, default=1, help="number of workers")
-    parser.add_argument("--iter-num", type=int, default=1)
-    parser.add_argument("--eval-step", type=int, default=None)
-    parser.add_argument("--bic", action="store_true")
-
-    parser.add_argument("-v", "--verbose", action="store_true")
-    parser.add_argument("--useful", action="store_true")
-    parser.add_argument("--tuning", action="store_true")
-    parser.add_argument("--small", action="store_true")
-    parser.add_argument("--large", action="store_true")
+    parser.add_argument("--dataset", type=str, help="Input dataset.", options=["circa10", "rcd", "causil"])
+    parser.add_argument("--output-path", type=str, default="output", help="Output cache.")
+    parser.add_argument("--length", type=int, default=10, help="Time series length.")
+    parser.add_argument("--model", type=str, default="pc_pagerank", help="func name")
 
     args = parser.parse_args()
-
-    assert args.alpha in [0.005, 0.01, 0.05, 0.1, 0.2]
-
-    # assert args.tau in [3, 6, 10]
 
     # check if args.model is defined here
     if args.model not in globals():
         raise ValueError(f"{args.model=} not defined. Available: {AVAILABLE_METHODS}")
+    
+    # assert dataset
 
-    if args.verbose:
-        print(json.dumps(vars(args), indent=2, sort_keys=True))
+
     return args
 
 
 args = parse_args()
 
-SEARCH_SPACE = {  # large space as default
-    "indep_list": ["fisherz", "gsq", "chisq"],
-    "alpha_list": [0.005, 0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.5],
-    "stable_list": [True, False],
-}
+
+# download dataset
 
 
-if args.small is True:
-    SEARCH_SPACE = {
-        "indep_list": ["gsq", "chisq"],
-        "alpha_list": [0.005, 0.01, 0.05, 0.1, 0.2],
-        "stable_list": [True, False],
-    }
-elif args.large is True:
-    SEARCH_SPACE = {
-        "indep_list": ["fisherz", "gsq", "chisq"],
-        "alpha_list": [0.005, 0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.5],
-        "stable_list": [True, False],
-    }
 
-
-# ==== PREPARE PATHS ====
-if args.tuning is True:
-    scale = "small" if args.small else "large"
-    art_name = f"{basename(args.input_path)}_{args.model.replace('_', '-')}_tuning_{scale}"
-else:
-    art_name = f"{basename(args.input_path)}_l{args.length}_{args.model.replace('_', '-')}_stable-{args.stable}_{args.test}_{args.alpha}"
-
-output_path = f"{args.output_path}/{art_name}"
-report_path = join(output_path, f"{art_name}.xlsx")
+# prepare output path
+output_path = f"{args.output_path}"
+report_path = join(output_path, "report.xlsx")
 result_path = join(output_path, "results")
-
 if not exists(args.output_path):
     os.makedirs(args.output_path)
-
-# if exists(result_path):
-#     shutil.rmtree(result_path)
 os.makedirs(result_path, exist_ok=True)
-
 dump_json(filename=join(output_path, "args.json"), data=vars(args))
 
 
-# ==== PROCESS TO GENERATE JSON ====
 data_paths = list(glob.glob(os.path.join(args.input_path, "**/data.csv"), recursive=True))
-
 
 def evaluate():
     eval_data = {
@@ -210,7 +153,6 @@ def evaluate():
         "SHD": [],
     }
 
-    # print("Evaluate...")
     for data_path in data_paths:
         # for circa and rcd
         if "_circa" in data_path or "_rcd" in data_path:
