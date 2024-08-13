@@ -139,3 +139,31 @@ def download_train_ticket_dataset(local_path=None):
     with zipfile.ZipFile("train-ticket.zip", 'r') as file:
         file.extractall(local_path)
     os.remove("train-ticket.zip")
+    
+
+def download_syn_rcd_dataset(local_path=None):
+    """Download the syn_rcd dataset from Zenodo."""
+    if local_path == None:
+        local_path = "data"
+    if not os.path.exists(local_path):
+        os.makedirs(local_path)
+    if os.path.exists(join(local_path, "syn_rcd")):
+        return
+    download_data("https://zenodo.org/records/13305663/files/syn_rcd.zip?download=1", "syn_rcd.zip")
+    with zipfile.ZipFile("syn_rcd.zip", 'r') as file:
+        file.extractall(local_path)
+    os.remove("syn_rcd.zip")
+    
+
+def download_syn_circa_dataset(local_path=None):
+    """Download the syn_circa dataset from Zenodo."""
+    if local_path == None:
+        local_path = "data"
+    if not os.path.exists(local_path):
+        os.makedirs(local_path)
+    if os.path.exists(join(local_path, "syn_circa")):
+        return
+    download_data("https://zenodo.org/records/13305663/files/syn_circa.zip?download=1", "syn_circa.zip")
+    with zipfile.ZipFile("syn_circa.zip", 'r') as file:
+        file.extractall(local_path)
+    os.remove("syn_circa.zip")
