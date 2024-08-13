@@ -97,3 +97,45 @@ def download_online_boutique_dataset(local_path=None):
     with zipfile.ZipFile("online-boutique.zip", 'r') as file:
         file.extractall(local_path)
     os.remove("online-boutique.zip")
+    
+    
+def download_sock_shop_1_dataset(local_path=None):
+    """Download the Sock Shop 1 dataset from Zenodo."""
+    if local_path == None:
+        local_path = "data"
+    if not os.path.exists(local_path):
+        os.makedirs(local_path)
+    if os.path.exists(join(local_path, "sock-shop-1")):
+        return
+    download_data("https://zenodo.org/records/13305663/files/sock-shop-1.zip?download=1", "sock-shop-1.zip")
+    with zipfile.ZipFile("sock-shop-1.zip", 'r') as file:
+        file.extractall(local_path)
+    os.remove("sock-shop-1.zip")
+
+    
+def download_sock_shop_2_dataset(local_path=None):
+    """Download the Sock Shop 2 dataset from Zenodo."""
+    if local_path == None:
+        local_path = "data"
+    if not os.path.exists(local_path):
+        os.makedirs(local_path)
+    if os.path.exists(join(local_path, "sock-shop-2")):
+        return
+    download_data("https://zenodo.org/records/13305663/files/sock-shop-2.zip?download=1", "sock-shop-2.zip")
+    with zipfile.ZipFile("sock-shop-2.zip", 'r') as file:
+        file.extractall(local_path)
+    os.remove("sock-shop-2.zip")
+    
+
+def download_train_ticket_dataset(local_path=None):
+    """Download the Train Ticket dataset from Zenodo."""
+    if local_path == None:
+        local_path = "data"
+    if not os.path.exists(local_path):
+        os.makedirs(local_path)
+    if os.path.exists(join(local_path, "train-ticket")):
+        return
+    download_data("https://zenodo.org/records/13305663/files/train-ticket.zip?download=1", "train-ticket.zip")
+    with zipfile.ZipFile("train-ticket.zip", 'r') as file:
+        file.extractall(local_path)
+    os.remove("train-ticket.zip")
