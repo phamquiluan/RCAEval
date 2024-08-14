@@ -99,15 +99,12 @@ AVAILABLE_METHODS = sorted(
 
 def parse_args():
     parser = argparse.ArgumentParser(description="RCAEval evaluation")
-    # for data
+    parser.add_argument("--method", type=str, help="Choose a method.")
     parser.add_argument("--dataset", type=str, help="Choose a dataset.", choices=[
         "rcd10", "rcd50", "circa10", "circa50", "online-boutique", "sock-shop-1", "sock-shop-2", "train-ticket"
     ])
     parser.add_argument("--length", type=int, default=2000, help="data points, in minutes")
     parser.add_argument("--tbias", type=int, default=0)
-
-    # for method
-    parser.add_argument("-m", "--model", type=str, default="pc_pagerank", help="func name")
     args = parser.parse_args()
 
     # check if args.model is defined here
