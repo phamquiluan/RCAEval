@@ -401,7 +401,6 @@ for service in services:
                     s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
                     f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, "latency"))
 
-                # if "rca_" in args.input_path:
                 if is_synthetic:
                     s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
                     f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, fault))
@@ -417,12 +416,10 @@ for service in services:
 
 
 print("Evaluation results")
-# if "rca_" in args.input_path:
 if is_synthetic:
     print(round(f_evaluator_all.average(5), 2))
 
-else:
-#### THIS ONE IS FOR REAL DATASET ####
+else: # for real datasets
     for name, s_evaluator, f_evaluator in [
         ("cpu", s_evaluator_cpu, f_evaluator_cpu),
         ("mem", s_evaluator_mem, f_evaluator_mem),
