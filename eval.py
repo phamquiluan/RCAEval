@@ -101,7 +101,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="RCAEval evaluation")
     # for data
     parser.add_argument("--dataset", type=str, help="Choose a dataset.", choices=[
-        "rcd10", "rcd50", "circa10", "circa50", "online-boutique", "sock-shop-1", "sock-shop-2", "train ticket"
+        "rcd10", "rcd50", "circa10", "circa50", "online-boutique", "sock-shop-1", "sock-shop-2", "train-ticket"
     ])
     parser.add_argument("--length", type=int, default=2000, help="data points, in minutes")
     parser.add_argument("--tbias", type=int, default=0)
@@ -118,11 +118,14 @@ def parse_args():
 
 
 args = parse_args()
+is_synthetic = False
 
 # download dataset
 if "circa" in args.dataset:
+    is_synthetic = True
     download_rca_circa_dataset()
 elif "rcd" in args.dataset:
+    is_synthetic = True
     download_rca_rcd_dataset()
 elif "online-boutique" in args.dataset:
     download_online_boutique_dataset()
@@ -130,13 +133,25 @@ elif "sock-shop-1" in args.dataset:
     download_sock_shop_1_dataset()
 elif "sock-shop-2" in args.dataset:
     download_sock_shop_2_dataset()
-elif "train ticket" in args.dataset:
+elif "train-ticket" in args.dataset:
     download_train_ticket_dataset()
+
+DATASET_MAP = {
+    "circa10": "data/rca_circa/10",
+    "circa50": "data/rca_circa/50",
+    "rcd10": "data/rca_rcd/10",
+    "rcd50": "data/rca_rcd/50",
+    "online-boutique": "data/online-boutique",
+    "sock-shop-1": "data/sock-shop-1",
+    "sock-shop-2": "data/sock-shop-2",
+    "train-ticket": "data/train-ticket",
+}
+dataset = DATASET_MAP[args.dataset]
 
 
 
 # prepare input paths
-data_paths = list(glob.glob(os.path.join(args.input_path, "**/data.csv"), recursive=True))
+data_paths = list(glob.glob(os.path.join(dataset, "**/data.csv"), recursive=True))
 new_data_paths = []
 for p in data_paths: 
     if os.path.exists(p.replace("data.csv", "simple_data.csv")):
@@ -167,7 +182,7 @@ def process(data_path):
     data_dir = dirname(data_path)
     # for synthetic dataset
     if "rca_" in data_path:
-        dataset = basename(dirname(dirname(dirname(dirname(data_path)))))
+        # dataset = basename(dirname(dirname(dirname(dirname(data_path)))))
         case = basename(dirname(data_path))
 
         service = "SIM"
@@ -185,7 +200,7 @@ def process(data_path):
         sli = "SIM_" + sli
     # for real world dataset
     else:
-        dataset = basename(dirname(dirname(dirname(data_path))))
+        # dataset = basename(dirname(dirname(dirname(data_path))))
         service, metric = basename(dirname(dirname(data_path))).split("_")
         case = basename(dirname(data_path))
 
@@ -261,7 +276,7 @@ def process(data_path):
         out = func(
             data,
             inject_time,
-            dataset=dataset,
+            dataset=args.dataset,
             anomalies=None,
             dk_select_useful=False,
             sli=sli,
@@ -390,7 +405,8 @@ for service in services:
                     s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
                     f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, "latency"))
 
-                if "rca_" in args.input_path:
+                # if "rca_" in args.input_path:
+                if is_synthetic:
                     s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
                     f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, fault))
         eval_data["service-fault"].append(f"{service}_{fault}")
@@ -405,7 +421,8 @@ for service in services:
 
 
 print("Evaluation results")
-if "rca_" in args.input_path:
+# if "rca_" in args.input_path:
+if is_synthetic:
     print(round(f_evaluator_all.average(5), 2))
 
 else:
