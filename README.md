@@ -25,7 +25,7 @@ This repository includes artifacts for reuse and reproduction of experimental re
 
 ## Installation
 
-Detailed installation instructions for all methods can be found in [SETUP.md](SETUP.md). The `default` environment, are used for most methods, can be easily installed as follows. We require Ubuntu OS and Python 3.10 to reproduce our results stably.
+Detailed installation instructions for all methods can be found in [SETUP.md](SETUP.md). The `default` environment, are used for most methods, can be easily installed as follows. We require Ubuntu and Python 3.10 to reproduce our results stably.
 
 
 Open your terminal and run the following commands
