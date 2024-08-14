@@ -178,12 +178,154 @@ We can replace the baro method with other methods (e.g., nsigma, fci_randomwalk)
 
 ### Reproduce RQ3 - Efficiency
 
-The average execution time of each method is recorded in the scripts rq1.py and rq2.py, as described and presented above.
+The average execution time of each method is recorded in the scripts of RQ1 and RQ2 as we described and presented above.
 
 
 ### Reproduce RQ4 - Data lengths
 
-Our RQ4 relies on the scripts of RQ1 and RQ2, which we presented above.
+Our RQ4 relies on the scripts of RQ1 and RQ2 as we described and presented above, with the option `--length`. 
+
+As presented in Figure 3, BARO maintains stable accuracy on the Online Boutique dataset when we vary $t_delta$ from 60 to 600. To reproduce these results, for example, you can run the following Bash script:
+
+```bash
+for length in 60 120 180 240 300 360 420 480 540 600; do
+    python rq2.py --dataset online-boutique --method baro --length $length
+done
+```
+
+
+<details>
+<summary>Expected output after running the above code (it takes few minutes)</summary>
+
+<br />
+
+The output list presents the `Avg@5` scores when we vary $t_\Delta$. You can see that BARO can maintain a stable performance.
+
+
+```
+No module named 'causalai'                                                                                            
+fges not available                                                                                                    
+causalrca not available                                                                                               
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.63it/s]                                                                                                                                               
+--- Evaluation results ---                                                                                                                                                                                                                                                                                                 
+Avg@5-CPU:   0.84                                                                                                     
+Avg@5-MEM:   0.98                                                                                                     
+Avg@5-DISK:  0.94                                                                                                                                                                                                                           
+Avg@5-DELAY: 0.98                                                                                                                                                                                                                           
+Avg@5-LOSS:  0.66                                                                                                     
+---                                                                                                                   
+Avg speed: 0.07                                                                                                       
+No module named 'causalai'                                                                                            
+fges not available                                                                                                    
+causalrca not available                                                                                               
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.42it/s]                                                                                                                                               
+--- Evaluation results ---                                                                                                                                                                                                                                                                                                 
+Avg@5-CPU:   0.82                                                                                                     
+Avg@5-MEM:   0.99                                                                                                     
+Avg@5-DISK:  0.94                                                                                                                                                                                                                           
+Avg@5-DELAY: 0.98                                                                                                                                                                                                                           
+Avg@5-LOSS:  0.66                                                                                                     
+---                                                                                                                   
+Avg speed: 0.07                                                                                                       
+No module named 'causalai'                                                                                            
+fges not available                                                                                                    
+causalrca not available                                                                                               
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.63it/s]                                                                                                                                               
+--- Evaluation results ---                                                                                                                                                                                                                                                                                                 
+Avg@5-CPU:   0.82                                                                                                                                            
+Avg@5-MEM:   0.99                                                                                                                                            
+Avg@5-DISK:  0.94                                                                                                                                            
+Avg@5-DELAY: 0.98                                                                                                                                            
+Avg@5-LOSS:  0.66                                                                                                                                            
+---                                                                                                                                                          
+Avg speed: 0.07                                                                                                                                              
+No module named 'causalai'                                                                                                                                   
+fges not available                                                                                                                                           
+causalrca not available                                                                                                                                      
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.42it/s]                                                                                                                                               
+--- Evaluation results ---                                                                                                                                   
+Avg@5-CPU:   0.82                                                                                                                                            
+Avg@5-MEM:   0.99                                                                                                                                            
+Avg@5-DISK:  0.94                                                                                                                                            
+Avg@5-DELAY: 0.98                                                                                                                                            
+Avg@5-LOSS:  0.66                                                                                                                                            
+---                                                                                                                                                          
+Avg speed: 0.07                                                                                                                                              
+No module named 'causalai'                                                                                                                                   
+fges not available                                                                                                                                           
+causalrca not available                                                                                                                                      
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.57it/s]                                                                                                                                               
+--- Evaluation results ---                                                                                                                                   
+Avg@5-CPU:   0.82                                                                                                                                            
+Avg@5-MEM:   0.99                                                                                                                                            
+Avg@5-DISK:  0.94                                                                                                                                            
+Avg@5-DELAY: 0.98                                                                                                                                            
+Avg@5-LOSS:  0.66                                                                                                                                            
+---                                                                                                                                                          
+Avg speed: 0.07                                                                                                                                              
+No module named 'causalai'                                                                                                                                   
+fges not available                                                                                                                                           
+causalrca not available                                                                                                                                      
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.60it/s]                                                                                                                                               
+--- Evaluation results ---                                                                                                                                   
+Avg@5-CPU:   0.82                                                                                                                                            
+Avg@5-MEM:   0.99                                                                                                                                            
+Avg@5-DISK:  0.94                                                                                                                                            
+Avg@5-DELAY: 0.98                                                                                                                                            
+Avg@5-LOSS:  0.66                                                                                                                                            
+---                                                                                                                                                          
+Avg speed: 0.07                                                                                                                                              
+No module named 'causalai'                                                                                                                                   
+fges not available                                                                                                                                           
+causalrca not available                                                                                                                                      
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.47it/s]                                                                                                                                               
+--- Evaluation results ---                                                                                                                                   
+Avg@5-CPU:   0.82                                                                                                                                            
+Avg@5-MEM:   0.99                                                                                                                                            
+Avg@5-DISK:  0.94                                                                                                                                            
+Avg@5-DELAY: 0.98                                                                                                                                            
+Avg@5-LOSS:  0.66                                                                                                                                            
+---                                                                                                                                                          
+Avg speed: 0.07                                                                                                                                              
+No module named 'causalai'                                                                                                                                   
+fges not available                                                                                                                                           
+causalrca not available                                                                                                                                      
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.37it/s]                                                                                                                                               
+--- Evaluation results ---                                                                                                                                   
+Avg@5-CPU:   0.82                                                                                                                                            
+Avg@5-MEM:   0.99                                                                                                                                            
+Avg@5-DISK:  0.94                                                                                                                                            
+Avg@5-DELAY: 0.98                                                                                                                                            
+Avg@5-LOSS:  0.66                                                                                                                                            
+---                                                                                                                                                          
+Avg speed: 0.07                                                                                                                                              
+No module named 'causalai'                                                                                                                                   
+fges not available                                                                                                                                           
+causalrca not available                                                                                                                                      
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.52it/s]                                                                                                                                               
+--- Evaluation results ---                                                                                                                                   
+Avg@5-CPU:   0.82                                                                                                                                            
+Avg@5-MEM:   0.99                                                                                                                                            
+Avg@5-DISK:  0.94                                                                                                                                            
+Avg@5-DELAY: 0.98                                                                                                                                            
+Avg@5-LOSS:  0.66                                                                                                                                            
+---                                                                                                                                                          
+Avg speed: 0.07                                                                                                                                              
+No module named 'causalai'                                                                                                                                   
+fges not available                                                                                                                                           
+causalrca not available                                                                                                                                      
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.46it/s]                                                                                                                                               
+--- Evaluation results ---                                                                                                                                   
+Avg@5-CPU:   0.82                                                                                                                                            
+Avg@5-MEM:   0.99                                                                                                                                            
+Avg@5-DISK:  0.94                                                                                                                                            
+Avg@5-DELAY: 0.98                                                                                                                                            
+Avg@5-LOSS:  0.66                                                                                                                                            
+---                                                                                                                                                          
+Avg speed: 0.07    
+```
+</details>
+
 
 ## Download Experimental Data - Supplementary Material
 
