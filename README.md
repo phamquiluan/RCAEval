@@ -134,10 +134,29 @@ options:
   --length LENGTH       Specify the length of the time series (used for RQ4)
 ```
 
-For example, in Table 5, NSigma [ $t_\Delta = 0$ ] achieves Avg@5 of 0.94, 1, 0.9, 0.98, and 0.67 for CPU, MEM, DISK, DELAY, and LOSS fault types on the Online Boutique dataset. To reproduce these results, you can run the following commands:
+For example, in Table 5, BARO [ $t_\Delta = 0$ ] achieves Avg@5 of 0.97, 1, 0.91, 0.98, and 0.67 for CPU, MEM, DISK, DELAY, and LOSS fault types on the Online Boutique dataset. To reproduce these results, you can run the following commands:
 
 ```bash
-python rq2.py --dataset online-boutique --method nsigma 
+python rq2.py --dataset online-boutique --method baro 
+```
+
+The expected output should be exactly as presented in the paper (it takes less than 1 minute to run the code)
+
+```
+--- Evaluation results ---
+Avg@5-CPU:   0.97
+Avg@5-MEM:   1.0
+Avg@5-DISK:  0.91
+Avg@5-DELAY: 0.98
+Avg@5-LOSS:  0.67
+---
+Avg speed: 0.07
+```
+
+As presented in Table 5, BARO [ $t_\Delta = 60$ ] achieves Avg@5 of 0.94, 0.99, 0.87, 0.99, and 0.6 for CPU, MEM, DISK, DELAY, and LOSS fault types on the Online Boutique dataset. To reproduce these results, you can run the following commands:
+
+```bash
+python rq2.py --dataset online-boutique --method baro --tdelta 60
 ```
 
 The expected output should be exactly as presented in the paper (it takes less than 1 minute to run the code)
@@ -145,34 +164,16 @@ The expected output should be exactly as presented in the paper (it takes less t
 ```
 --- Evaluation results ---
 Avg@5-CPU:   0.94
-Avg@5-MEM:   1.0
-Avg@5-DISK:  0.9
-Avg@5-DELAY: 0.98
-Avg@5-LOSS:  0.67
+Avg@5-MEM:   0.99
+Avg@5-DISK:  0.87
+Avg@5-DELAY: 0.99
+Avg@5-LOSS:  0.6
 ---
-Avg speed: 0.06
+Avg speed: 0.07
 ```
 
-As presented in Table 5, NSigma [ $t_\Delta = 60$ ] achieves Avg@5 of 0.16, 0.24, 0.43, 0.55, and 0.38 for CPU, MEM, DISK, DELAY, and LOSS fault types on the Online Boutique dataset. To reproduce the RCA performance of NSigma [ $t_\Delta = 60$ ] as presented in the Table 5. You can run the following commands:
+We can replace the baro method with other methods (e.g., nsigma, fci_randomwalk) and substitute online-boutique with other datasets to replicate the corresponding results shown in Table 5. This reproduction process is also integrated into our Continuous Integration (CI) setup. For more details, refer to the [.github/workflows/reproduce.yml](.github/workflows/reproduce.yml) file.
 
-```bash
-python rq2.py --dataset online-boutique --method nsigma --tdelta 60
-```
-
-The expected output should be exactly as presented in the paper (it takes less than 1 minute to run the code)
-
-```
---- Evaluation results ---
-Avg@5-CPU:   0.94
-Avg@5-MEM:   1.0
-Avg@5-DISK:  0.9
-Avg@5-DELAY: 0.98
-Avg@5-LOSS:  0.67
----
-Avg speed: 0.06
-```
-
-We can replace the method `nsigma` by `baro`, `pc_pagerank`, `fci_pagerank`, `rcd`, `e_diagnosis`, etc. to replicate corresponding results.
 
 ### Reproduce RQ3 - Efficiency
 
