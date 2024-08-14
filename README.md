@@ -8,7 +8,7 @@
 This repository includes artifacts for reuse and reproduction of experimental results presented in our ASE'24 paper titled "Root Cause Analysis for Microservices based on Causal Inference: How Far Are We?".
 
 **Table of Contents** 
-  * [Installation](#installation)
+  * [Setup](#setup)
   * [How-to-use](#how-to-use)
     + [Data format](#data-format)
     + [Basic usage example](#basic-usage-example)
@@ -23,9 +23,9 @@ This repository includes artifacts for reuse and reproduction of experimental re
   * [Acknowledgments](#acknowledgments)
 
 
-## Installation
+## Setup
 
-We maintain 3 separate environments (`default`, `rcd` and `fges`) due to the dependency constraints of certain methods. Detailed installation instructions for all environments can be found in [INSTALL.md](INSTALL.md). The `default` environment, are used for most methods, can be easily installed as follows.
+Detailed setup/installation instructions for all methods can be found in [SETUP.md](SETUP.md). The `default` environment, are used for most methods, can be easily installed as follows.
 
 
 Open your terminal and run the following commands
