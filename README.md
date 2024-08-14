@@ -134,20 +134,6 @@ options:
   --length LENGTH       Specify the length of the time series (used for RQ4)
 ```
 
-For example, in Table 3, PC achieves F1, F1-S, and SHD scores of 0.49, 0.65, and 16 on the CIRCA 10 dataset. To reproduce these results, you can run the following commands:
-
-```bash
-python rq1.py --dataset circa10 --method pc
-```
-
-The expected output should be exactly as presented in the paper (it takes less than 1 minute to run the code)
-
-```
-F1:   0.49
-F1-S: 0.65
-SHD:  16
-```
-
 For example, in Table 5, NSigma [ $t_\Delta = 0$ ] achieves Avg@5 of 0.94, 1, 0.9, 0.98, and 0.67 for CPU, MEM, DISK, DELAY, and LOSS fault types on the Online Boutique dataset. To reproduce these results, you can run the following commands:
 
 ```bash
