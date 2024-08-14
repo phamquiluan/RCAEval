@@ -103,7 +103,7 @@ def parse_args():
     parser.add_argument("--dataset", type=str, help="Choose a dataset.", choices=[
         "rcd10", "rcd50", "circa10", "circa50", "online-boutique", "sock-shop-1", "sock-shop-2", "train-ticket"
     ])
-    parser.add_argument("--length", type=int, default=2000, help="data points, in minutes")
+    parser.add_argument("--length", type=int, default=None, help="Time series length (RQ4).")
     parser.add_argument("--tbias", type=int, default=0)
     args = parser.parse_args()
 
@@ -173,6 +173,8 @@ def process(data_path):
     run_args.data_path = data_path
     
     # convert length from minutes to seconds
+    if args.length is None:
+        args.length = 10 if not is_synthetic else 2000
     data_length = args.length * 60 // 2
 
     data_dir = dirname(data_path)
@@ -299,7 +301,6 @@ for data_path in tqdm(sorted(data_paths)):
 end_time = datetime.now()
 time_taken = end_time - start_time
 avg_speed = round(time_taken.total_seconds() / len(data_paths), 2)
-print("Avg speed:", avg_speed)
 
 
 # ======== EVALUTION ===========
@@ -415,10 +416,9 @@ for service in services:
         eval_data["avg@5_metric"].append(f_evaluator.average(5))
 
 
-print("Evaluation results")
+print("--- Evaluation results ---")
 if is_synthetic:
-    print(round(f_evaluator_all.average(5), 2))
-
+    print("Avg@5:", round(f_evaluator_all.average(5), 2))
 else: # for real datasets
     for name, s_evaluator, f_evaluator in [
         ("cpu", s_evaluator_cpu, f_evaluator_cpu),
@@ -441,7 +441,9 @@ else: # for real datasets
             name = "disk"
 
         if s_evaluator.average(5) is not None:
-            print( f"s_{name}:", round(s_evaluator.average(5), 2))
+            print( f"Avg@5-{name.upper()}:".ljust(12), round(s_evaluator.average(5), 2))
 
-    report_df = pd.DataFrame(eval_data)
-    report_df.to_excel(report_path, index=False)
+
+print("---")
+print("Avg speed:", avg_speed)
+
