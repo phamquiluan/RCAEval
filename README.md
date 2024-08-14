@@ -11,8 +11,6 @@ This repository includes artifacts for reuse and reproduction of experimental re
   * [Installation](#installation)
     + [Pre-installation](#pre-installation)
     + [Install the Default environment](#install-the-default-environment)
-    + [Install the RCD environment](#install-the-rcd-environment)
-    + [Install the fGES environment](#install-the-fges-environment)
   * [How-to-use](#how-to-use)
     + [Data format](#data-format)
     + [Basic usage example](#basic-usage-example)
@@ -42,53 +40,32 @@ sudo apt install -y build-essential \
   python3-tk graphviz
 ```
 
-### Install the Default environment
-By installing this environment, you can run the following:
-- PC-based, FCI-based, LiNGAM-based, GES-based
-- CausalRCA
-- CIRCA, Nsigma, Dummy
+### Clone RCAEval from GitHub
 
 ```bash
-python3.10 -m venv env
-. env/bin/activate
+git clone https://github.com/phamquiluan/RCAEval.git && cd RCAEval
+```
+
+### Install the default environment
+
+By installing the `default` environment, you can run the following methods:
+- PC/FCI/Granger/LiNGAM/GES-based methods
+- CausalRCA
+- CIRCA, Nsigma, Dummy
+For other methods, please check the [INSTALL.md](INSTALL.md).
+
+Install RCAEval from PyPi
+```bash
+# Install RCAEval from PyPi
+pip install RCAEval
+```
+
+OR, build RCAEval from source by running the following commands in a Python virtual environment.
+```bash
 pip install pip==20.0.2
 pip install -e .[default]
 ```
 
-
-### Install the RCD environment
-By installing this environment, you can run the RCD algorithm
-
-```bash
-python3.8 -m venv env-rcd
-. env-rcd/bin/activate
-pip install pip==20.0.2
-pip install -e .[rcd]
-bash script/link.sh
-```
-
-### Install the fGES environment
-By installing this environment, you can run the fGES-based algorithm
-
-```bash
-python3.8 -m venv env-fges
-. env-fges/bin/activate
-
-pip install pip==20.0.2
-pip install -e .[rcd]
-
-cd LIB
-pip install -e .
-cd ..
-
-# it MUST be performed in this order
-sudo apt-get install -y gcc graphviz libgraphviz-dev pkg-config
-pip install dill pygobnilp
-pip install -U numba
-pip install category_encoders sortedcontainers fcit
-pip install pgmpy
-pip install feature_engine
-```
 
 ## How-to-use
 
