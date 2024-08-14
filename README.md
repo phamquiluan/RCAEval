@@ -10,7 +10,7 @@ This repository includes artifacts for reuse and reproduction of experimental re
 **Table of Contents** 
   * [Installation](#installation)
     + [Pre-installation](#pre-installation)
-    + [Install the Dev environment](#install-the-dev-environment)
+    + [Install the Default environment](#install-the-default-environment)
     + [Install the RCD environment](#install-the-rcd-environment)
     + [Install the fGES environment](#install-the-fges-environment)
   * [How-to-use](#how-to-use)
@@ -42,17 +42,17 @@ sudo apt install -y build-essential \
   python3-tk graphviz
 ```
 
-### Install the Dev environment
+### Install the Default environment
 By installing this environment, you can run the following:
 - PC-based, FCI-based, LiNGAM-based, GES-based
 - CausalRCA
 - CIRCA, Nsigma, Dummy
 
 ```bash
-python3.10 -m venv env-dev
-. env-dev/bin/activate
+python3.10 -m venv env
+. env/bin/activate
 pip install pip==20.0.2
-pip install -e .[dev]
+pip install -e .[default]
 ```
 
 

@@ -26,7 +26,7 @@ jobs:
         sudo apt update -y
         sudo apt install -y build-essential libxml2 libxml2-dev zlib1g-dev python3-tk graphviz
         python -m pip install pip==20.0.2
-        python -m pip install .[dev]
+        python -m pip install .[default]
 
     - name: Test
       run: python -m pytest tests/test.py

@@ -33,10 +33,10 @@ git clone https://github.com/phamquiluan/RCAEval.git && cd RCAEval
 
 ```
 # create a virtual environment
-python3.10 -m venv env-dev
+python3.10 -m venv env
 
 # activate the environment
-. env-dev/bin/activate
+. env/bin/activate
 ```
 
 ### Install RCAEval from PyPI or Build RCAEval from source
