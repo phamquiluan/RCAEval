@@ -1,4 +1,4 @@
-name: Reproduce PC performance on the CIRCA10 dataset
+name: Reproduce BARO performance on the Online Boutique dataset  
 
 on:
   push:
@@ -28,5 +28,7 @@ jobs:
         python -m pip install pip==20.0.2
         python -m pip install .[default]
 
-    - name: Reproduce PC performance on the CIRCA10 dataset 
-      run: python rq1.py --method pc --dataset circa10
+    - name: Reproduce BARO performance on the Online Boutique dataset 
+      run: python rq2.py --method baro --dataset online-boutique
+
+
