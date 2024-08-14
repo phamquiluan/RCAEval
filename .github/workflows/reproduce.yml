@@ -1,4 +1,4 @@
-name: Build and test
+name: Reproduce PC performance on the CIRCA10 dataset 
 
 on:
   push:
