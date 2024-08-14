@@ -43,19 +43,21 @@ Clone RCAEval from GitHub
 git clone https://github.com/phamquiluan/RCAEval.git && cd RCAEval
 ```
 
-Install RCAEval from PyPI
+Install RCAEval using pip
+
+```bash
+pip install pip==20.0.2
+pip install -e .[default]
+```
+
+Or, install RCAEval from PyPI
 
 ```bash
 # Install RCAEval from PyPI
 pip install RCAEval[default]
 ```
 
-OR, build RCAEval from source
 
-```bash
-pip install pip==20.0.2
-pip install -e .[default]
-```
 
 ## How-to-use
 
