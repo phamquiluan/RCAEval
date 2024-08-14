@@ -113,7 +113,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="RCAEval evaluation")
     parser.add_argument("--dataset", type=str, help="Input dataset.")
     parser.add_argument("--output-path", type=str, default="output", help="Output cache.")
-    parser.add_argument("--length", type=int, default=10, help="Time series length.")
+    parser.add_argument("--length", type=int, default=10, help="Time series length. Default: 10")
     parser.add_argument("--model", type=str, default="pc_pagerank", help="func name")
 
     args = parser.parse_args()
@@ -140,19 +140,26 @@ elif "rcd" in args.dataset:
     download_syn_rcd_dataset()
 elif "causil" in args.dataset:
     download_syn_causil_dataset()
-
+DATASET_MAP = {
+    "circa10": "data/syn_circa/10",
+    "circa50": "data/syn_circa/50",
+    "causil10": "data/syn_causil/10",
+    "causil50": "data/syn_causil/50",
+    "rcd10": "data/syn_rcd/10",
+    "rcd50": "data/syn_rcd/50"
+}
+dataset = DATASET_MAP[args.dataset]
 
 # prepare output path
 output_path = f"{args.output_path}"
 report_path = join(output_path, "report.xlsx")
 result_path = join(output_path, "results")
-if not exists(args.output_path):
-    os.makedirs(args.output_path)
+if not exists(output_path):
+    os.makedirs(output_path)
 os.makedirs(result_path, exist_ok=True)
-# dump_json(filename=join(output_path, "args.json"), data=vars(args))
 
 
-data_paths = list(glob.glob(os.path.join(args.input_path, "**/data.csv"), recursive=True))
+data_paths = list(glob.glob(os.path.join(dataset, "**/data.csv"), recursive=True))
 
 def evaluate():
     eval_data = {
@@ -280,9 +287,9 @@ def process(data_path):
             indep_test = fisherz 
             adj = pc(
                 np_data,
-                alpha=args.alpha,
+                alpha=0.05,
                 indep_test=indep_test,
-                stable=args.stable,
+                stable=False,
                 show_progress=False,
             ).G.graph
 
@@ -291,7 +298,7 @@ def process(data_path):
             adj = fci(
                 np_data,
                 independence_test_method=indep_test,
-                alpha=args.alpha,
+                alpha=0.05,
                 show_progress=False,
                 verbose=False,
             )[0].graph
