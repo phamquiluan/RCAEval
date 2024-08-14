@@ -74,7 +74,7 @@ AVAILABLE_METHODS = sorted(
 def parse_args():
     parser = argparse.ArgumentParser(description="RCAEval evaluation")
     # for data
-    parser.add_argument("--dataset", type=str, default="data", help="Dataset name",
+    parser.add_argument("--dataset", type=str, default="data", help="Choose a dataset.",
         choices=["circa10", "circa50", "rcd10", "rcd50", "causil10", "causil50"])
     parser.add_argument("--method", type=str, help="Method name")
     parser.add_argument("--length", type=int, default=None, help="length of time series")
