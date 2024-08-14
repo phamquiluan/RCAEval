@@ -71,92 +71,51 @@ AVAILABLE_METHODS = sorted(
 )
 
 
-def adj2generalgraph(adj):
-    G = GeneralGraph(nodes=[f"X{i + 1}" for i in range(len(adj))])
-    for row_idx in range(len(adj)):
-        for col_idx in range(len(adj)):
-            if adj[row_idx, col_idx] == 1:
-                G.add_directed_edge(f"X{col_idx + 1}", f"X{row_idx + 1}")
-    return G
-
-
-def score_g(Data, G, parameters=None):
-    parameters = {"lambda_value": 0}
-
-    score = 0
-    for i, node in enumerate(G.get_nodes()):
-        PA = G.get_parents(node)
-
-        # for granger
-        if len(PA) > 0 and isinstance(PA[0], str):
-            pass  # already in str format
-        else:
-            PA = [p.name for p in PA]
-
-        if len(PA) > 0 and isinstance(PA[0], str):
-            # this is for FCI, bc it doesn't have node_names param
-            # remove X from list ['X6', 'X10']
-            PA = [int(p[1:]) - 1 for p in PA]
-
-
-        delta_score = local_score_BIC(Data, i, PA, parameters)
-
-        # delta_score is nan, ignore
-        if np.isnan(delta_score):
-            continue
-
-        score = score + delta_score
-    return score.sum()
-
-
 def parse_args():
     parser = argparse.ArgumentParser(description="RCAEval evaluation")
     # for data
-    parser.add_argument("-i", "--input-path", type=str, default="data", help="path to data")
-    parser.add_argument(
-        "-o", "--output-path", type=str, default="output", help="for results and reports"
-    )
-    # length
+    parser.add_argument("--dataset", type=str, default="data", help="Dataset name",
+        choices=["circa10", "circa50", "rcd10", "rcd50", "causil10", "causil50"])
+    parser.add_argument("--method", type=str, help="Method name")
     parser.add_argument("--length", type=int, default=None, help="length of time series")
-    parser.add_argument("--bic", default=None)
-
-    # for method
-    parser.add_argument("-m", "--model", type=str, default="pc_pagerank", help="func name")
-    parser.add_argument("-t", "--test", type=str, default=None, help="granger test or pc test")
-    parser.add_argument("-a", "--alpha", type=float, default=0.05)
-    parser.add_argument("--tau", type=float, default=3)
-    parser.add_argument("--stable", action="store_true")
-
-    # for evaluation
-    parser.add_argument("-w", "--worker-num", type=int, default=1, help="number of workers")
-    parser.add_argument("--iter-num", type=int, default=1)
-    parser.add_argument("--eval-step", type=int, default=None)
-
-    parser.add_argument("-v", "--verbose", action="store_true")
-    parser.add_argument("--useful", action="store_true")
-    parser.add_argument("--tuning", action="store_true")
-    parser.add_argument("--small", action="store_true")
-    parser.add_argument("--large", action="store_true")
-
     args = parser.parse_args()
 
-    assert args.alpha in [0.005, 0.01, 0.05, 0.1, 0.2]
-
+    # assert args.alpha in [0.005, 0.01, 0.05, 0.1, 0.2]
     # assert args.tau in [3, 6, 10]
 
-    # check if args.model is defined here
-    if args.model not in globals():
-        raise ValueError(f"{args.model=} not defined. Available: {AVAILABLE_METHODS}")
+    # check if args.method is defined here
+    if args.method not in globals():
+        raise ValueError(f"{args.method=} not defined. Available: {AVAILABLE_METHODS}")
 
-    if args.verbose:
-        print(json.dumps(vars(args), indent=2, sort_keys=True))
+    if args.dataset not in ["circa10", "circa50", "rcd10", "rcd50", "causil10", "causil50"]:
+        print(f"{args.dataset=} not defined. Available: circa10, circa50, rcd10, rcd50, causil10, causil50")
+        exit()
+
     return args
 
 
 args = parse_args()
 
 
-# ==== PREPARE PATHS ====
+# download dataset
+if "circa" in args.dataset:
+    download_syn_circa_dataset()
+elif "rcd" in args.dataset:
+    download_syn_rcd_dataset()
+elif "causil" in args.dataset:
+    download_syn_causil_dataset()
+DATASET_MAP = {
+    "circa10": "data/syn_circa/10",
+    "circa50": "data/syn_circa/50",
+    "causil10": "data/syn_causil/10",
+    "causil50": "data/syn_causil/50",
+    "rcd10": "data/syn_rcd/10",
+    "rcd50": "data/syn_rcd/50"
+}
+dataset = DATASET_MAP[args.dataset]
+
+
+
 output_path = TemporaryDirectory().name
 report_path = join(output_path, "report.xlsx")
 result_path = join(output_path, "results")
@@ -164,7 +123,7 @@ os.makedirs(result_path, exist_ok=True)
 
 
 # ==== PROCESS TO GENERATE JSON ====
-data_paths = list(glob.glob(os.path.join(args.input_path, "**/data.csv"), recursive=True))
+data_paths = list(glob.glob(os.path.join(dataset, "**/data.csv"), recursive=True))
 
 
 def evaluate():
@@ -278,43 +237,43 @@ def process(data_path):
 
     st = datetime.now()
     try:
-        if args.model == "pc":
+        if args.method == "pc":
             adj = pc(
                 np_data,
                 stable=False,
                 show_progress=False,
             ).G.graph
-        elif args.model == "fci":
+        elif args.method == "fci":
             adj = fci(
                 np_data,
                 show_progress=False,
                 verbose=False,
             )[0].graph
-        elif args.model == "fges":
+        elif args.method == "fges":
             adj = fges(pd.DataFrame(np_data))
-        elif args.model == "ICALiNGAM":
+        elif args.method == "ICALiNGAM":
             model = ICALiNGAM()
             model.fit(np_data)
             adj = model.adjacency_matrix_
             adj = adj.astype(bool).astype(int)
-        elif args.model == "VARLiNGAM":
+        elif args.method == "VARLiNGAM":
             raise NotImplementedError
-        elif args.model == "DirectLiNGAM":
+        elif args.method == "DirectLiNGAM":
             model = DirectLiNGAM()
             model.fit(np_data)
             adj = model.adjacency_matrix_
             adj = adj.astype(bool).astype(int)
-        elif args.model == "ges":
+        elif args.method == "ges":
             record = ges(np_data)
             adj = record["G"].graph
-        elif args.model == "granger":
-            adj = granger(data, test=args.test, maxlag=args.tau, p_val_threshold=args.alpha)
-        elif args.model == "pcmci":
+        elif args.method == "granger":
+            adj = granger(data)
+        elif args.method == "pcmci":
             adj = pcmci(pd.DataFrame(np_data))
-        elif args.model == "ntlr":
+        elif args.method == "ntlr":
             adj = ntlr(pd.DataFrame(np_data))
         else:
-            raise ValueError(f"{args.model=} not defined. Available: {AVAILABLE_METHODS}")
+            raise ValueError(f"{args.method=} not defined. Available: {AVAILABLE_METHODS}")
 
         if "circa" in data_path:
             est_graph = MemoryGraph.from_adj(
@@ -327,7 +286,7 @@ def process(data_path):
 
     except Exception as e:
         raise e
-        print(f"{args.model=} failed on {data_path=}")
+        print(f"{args.method=} failed on {data_path=}")
         est_graph = MemoryGraph.from_adj([], nodes=[])
         est_graph.dump(join(result_path, f"{graph_idx}_{case_idx}_failed.json"))
 
