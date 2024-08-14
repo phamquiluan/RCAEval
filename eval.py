@@ -29,10 +29,6 @@ from RCAEval.utility import (
     download_train_ticket_dataset,
 )
 
-download_sock_shop_1_dataset()
-download_sock_shop_2_dataset()
-download_train_ticket_dataset()
-
 
 if is_py310():
     from RCAEval.e2e import ( 
@@ -113,8 +109,7 @@ def parse_args():
     parser.add_argument("-m", "--model", type=str, default="pc_pagerank", help="func name")
 
     # for evaluation
-    parser.add_argument("-w", "--worker-num", type=int, default=1, help="number of workers")
-    parser.add_argument("--iter-num", type=int, default=1)
+    # parser.add_argument("-w", "--worker-num", type=int, default=1, help="number of workers")
 
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
@@ -147,7 +142,7 @@ args = parse_args()
 
 
 # ==== PREPARE PATHS ====
-art_name = f"{basename(args.input_path)}_{args.model.replace('_', '-')}_l{args.length}_i{args.iter_num}"
+art_name = f"{basename(args.input_path)}_{args.model.replace('_', '-')}_l{args.length}"
 
 output_path = f"{args.output_path}/{art_name}"
 
@@ -177,7 +172,6 @@ data_paths = new_data_paths
 
 
 def process(data_path):
-    # for RUN method
     run_args = argparse.Namespace()
     run_args.root_path = os.getcwd()
     run_args.data_path = data_path
@@ -277,61 +271,34 @@ def process(data_path):
     # == PROCESS ==
     func = globals()[args.model]
 
-    ranks_dict = {}
-    out = None
-
-    
     try:
-        for i in range(args.iter_num):
-            st = datetime.now()
-            out = func(
-                data,
-                inject_time,
-                dataset=dataset,
-                anomalies=None,
-                dk_select_useful=False,
-                sli=sli,
-                verbose=args.verbose,
-                n_iter=num_node,
-                args=run_args,
-            )
-            root_causes = out.get("ranks")
-
-            s_ranks = [i.split("_")[0] for i in root_causes]
-            service_ranks = (
-                [s_ranks[0]]
-                + [s_ranks[i] for i in range(1, len(s_ranks)) if s_ranks[i] not in s_ranks[:i]]
-                if s_ranks
-                else []
-            )
-
-            ranks_dict[i] = root_causes
-
-            with open(join(result_path, f"{service}_{metric}_{case}_{i}_time_taken.txt"), "w") as f:
-                tt = datetime.now() - st
-                tt = tt - timedelta(microseconds=tt.microseconds)
-                f.write(f"Time taken: {tt}")
-
-        # == SAVE ==
-        dump_json(filename=rp, data=ranks_dict)
+        st = datetime.now()
+        out = func(
+            data,
+            inject_time,
+            dataset=dataset,
+            anomalies=None,
+            dk_select_useful=False,
+            sli=sli,
+            verbose=args.verbose,
+            n_iter=num_node,
+            args=run_args,
+        )
+        root_causes = out.get("ranks")
+        dump_json(filename=rp, data={0: root_causes})
     except Exception as e:
         raise e
         print(f"{args.model=} failed on {data_path=}")
         print(e)
         rp = join(result_path, f"{service}_{metric}_{case}_failed.json")
-
         with open(rp, "w") as f:
             json.dump({"error": str(e)}, f)
 
 
 start_time = datetime.now()
 
-if args.worker_num > 1:
-    with Pool(min(args.worker_num, os.cpu_count() - 2)) as p:
-        list(tqdm(p.imap(process, data_paths), total=len(data_paths)))
-else:  # single worker
-    for data_path in tqdm(sorted(data_paths)):
-        process(data_path)
+for data_path in tqdm(sorted(data_paths)):
+    process(data_path)
 
 end_time = datetime.now()
 time_taken = end_time - start_time
