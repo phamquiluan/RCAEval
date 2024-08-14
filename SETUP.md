@@ -1,17 +1,17 @@
-# Installation
+# Setup
 
 We assume the users already satisfy the [REQUIREMENTS.md](REQUIREMENTS.md) and ready to have Python 3.10 installed. Then, users can install RCAEval from PyPI or build RCAEval from source. In addition, users who familiar with Continuous Integration (CI) can take a look at our [build-and-test.yml](.github/workflows/build-and-test.yml) configuration to see how we install and test our RCAEval on Linux and Windows machine from Python 3.7 to 3.12.
 
 **Table of contents**
 
-  * [Installation Instruction](#installation-instruction)
+  * [Setup Instruction](#setup-instruction)
     + [Install Python 3.10](#install-python-310)
     + [Clone RCAEval from GitHub](#clone-rcaeval-from-github)
     + [Create and activate a virtual environment](#create-and-activate-a-virtual-environment)
     + [Install RCAEval from PyPI or Build RCAEval from source](#install-rcaeval-from-pypi-or-build-rcaeval-from-source)
   * [Test the installation](#test-the-installation)
   * [Basic usage example](#basic-usage-example)
-## Installation Instruction
+## Setup Instruction
 
 ### Install Python 3.10
 
