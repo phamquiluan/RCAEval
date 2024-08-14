@@ -103,12 +103,6 @@ def parse_args():
 
     # for method
     parser.add_argument("-m", "--model", type=str, default="pc_pagerank", help="func name")
-    parser.add_argument("--bocpd", action="store_true", help="use bocpd")
-    parser.add_argument("--nsigma", action="store_true", help="use nsigma ad")
-    parser.add_argument("--birch", action="store_true", help="use birch ad")
-    parser.add_argument("--spot", action="store_true", help="use spot ad")
-    parser.add_argument("--unibcp", action="store_true", help="use uni bocpd")
-    parser.add_argument("--robust-bocpd", action="store_true", help="use robust bocpd")
 
     # for rcd
     parser.add_argument("-g", "--gamma", type=int, default=5, help="subset size")
@@ -334,37 +328,6 @@ def process(data_path):
             }
         )
 
-    # get the bocpd output
-    anomalies = None
-    if args.robust_bocpd is True:
-        anomalies = load_json(join(data_dir, "robust_bocpd.json"))
-        if len(anomalies) == 2:
-            anomalies = [anomalies[1]]
-        else:
-            anomalies = load_json(join(data_dir, "naive_bocpd.json"))
-            anomalies = [i[0] for i in anomalies]
-
-    if args.bocpd is True:
-        anomalies = load_json(join(data_dir, "naive_bocpd.json"))
-        anomalies = [i[0] for i in anomalies]
-
-    if args.nsigma is True:
-        anomalies = load_json(join(data_dir, "nsigma.json"))
-
-    if args.unibcp is True:
-        anomalies = load_json(join(data_dir, "univariate_bocpd.json"))
-
-    if args.birch is True:
-        anomalies = load_json(join(data_dir, "birch.json"))
-
-    if args.spot is True:
-        anomalies = load_json(join(data_dir, "spot.json"))
-
-    if anomalies is not None:
-        print("-" * 20)
-        print(anomalies)
-        print("-" * 20)
-
     # == PROCESS ==
     func = globals()[args.model]
 
@@ -379,7 +342,7 @@ def process(data_path):
                 data,
                 inject_time,
                 dataset=dataset,
-                anomalies=anomalies,
+                anomalies=None,
                 dk_select_useful=args.useful,
                 sli=sli,
                 verbose=args.verbose,
