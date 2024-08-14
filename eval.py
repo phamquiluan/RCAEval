@@ -20,7 +20,6 @@ from RCAEval.classes.graph import Node
 
 from RCAEval.io.time_series import drop_constant, drop_time, preprocess
 from RCAEval.utility import dump_json, is_py310, load_json
-from RCAEval.utility.visualization import draw_adj
 
 
 if is_py310():
@@ -62,7 +61,6 @@ except ImportError:
 
 try:
     import torch
-    # prevent the program see gpu
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
     from RCAEval.e2e.causalrca import causalrca
 except ImportError:
