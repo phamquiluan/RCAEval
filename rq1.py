@@ -7,7 +7,7 @@ import os
 import pickle
 import warnings
 from datetime import datetime, timedelta
-from multiprocessing import Pool
+from tempfile import TemporaryDirectory
 from os.path import abspath, basename, dirname, exists, join
 
 warnings.filterwarnings("ignore")
@@ -31,6 +31,8 @@ from RCAEval.utility import (
     is_py310,
     load_json,
 )
+
+
 
 if is_py310():
     from causallearn.search.ConstraintBased.FCI import fci
@@ -69,60 +71,18 @@ AVAILABLE_METHODS = sorted(
 )
 
 
-def adj2generalgraph(adj):
-    G = GeneralGraph(nodes=[f"X{i + 1}" for i in range(len(adj))])
-    for row_idx in range(len(adj)):
-        for col_idx in range(len(adj)):
-            if adj[row_idx, col_idx] == 1:
-                G.add_directed_edge(f"X{col_idx + 1}", f"X{row_idx + 1}")
-    return G
-
-
-def score_g(Data, G, parameters=None):
-    # calculate the score for the current G
-    # here G is a DAG
-    parameters = {"lambda_value": 0}
-
-    score = 0
-    for i, node in enumerate(G.get_nodes()):
-        PA = G.get_parents(node)
-
-        # for granger
-        if len(PA) > 0 and isinstance(PA[0], str):
-            pass  # already in str format
-        else:
-            PA = [p.name for p in PA]
-
-        if len(PA) > 0 and isinstance(PA[0], str):
-            # this is for FCI, bc it doesn't have node_names param
-            # remove X from list ['X6', 'X10']
-            PA = [int(p[1:]) - 1 for p in PA]
-
-
-        delta_score = local_score_BIC(Data, i, PA, parameters)
-
-        # delta_score is nan, ignore
-        if np.isnan(delta_score):
-            continue
-
-        score = score + delta_score
-    return score.sum()
-
-
 def parse_args():
     parser = argparse.ArgumentParser(description="RCAEval evaluation")
-    parser.add_argument("--dataset", type=str, help="Input dataset.")
-    parser.add_argument("--output-path", type=str, default="output", help="Output cache.")
-    parser.add_argument("--length", type=int, default=10, help="Time series length. Default: 10")
-    parser.add_argument("--model", type=str, default="pc_pagerank", help="func name")
-
+    # for data
+    parser.add_argument("--dataset", type=str, default="data", help="Dataset name",
+        choices=["circa10", "circa50", "rcd10", "rcd50", "causil10", "causil50"])
+    parser.add_argument("--method", type=str, help="Method name")
+    parser.add_argument("--length", type=int, default=None, help="length of time series")
     args = parser.parse_args()
 
-    # check if args.model is defined here
-    if args.model not in globals():
-        raise ValueError(f"{args.model=} not defined. Available: {AVAILABLE_METHODS}")
-    
-    # assert dataset
+    if args.method not in globals():
+        raise ValueError(f"{args.method=} not defined. Available: {AVAILABLE_METHODS}")
+
     if args.dataset not in ["circa10", "circa50", "rcd10", "rcd50", "causil10", "causil50"]:
         print(f"{args.dataset=} not defined. Available: circa10, circa50, rcd10, rcd50, causil10, causil50")
         exit()
@@ -150,16 +110,17 @@ DATASET_MAP = {
 }
 dataset = DATASET_MAP[args.dataset]
 
-# prepare output path
-output_path = f"{args.output_path}"
+
+
+output_path = TemporaryDirectory().name
 report_path = join(output_path, "report.xlsx")
 result_path = join(output_path, "results")
-if not exists(output_path):
-    os.makedirs(output_path)
 os.makedirs(result_path, exist_ok=True)
 
 
+# ==== PROCESS TO GENERATE JSON ====
 data_paths = list(glob.glob(os.path.join(dataset, "**/data.csv"), recursive=True))
+
 
 def evaluate():
     eval_data = {
@@ -170,7 +131,6 @@ def evaluate():
         "Precision-Skel": [],
         "Recall-Skel": [],
         "F1-Skel": [],
-        "BIC": [],
         "SHD": [],
     }
 
@@ -179,7 +139,8 @@ def evaluate():
             num_node = int(basename(dirname(dirname(dirname(dirname(data_path))))))
             graph_idx = int(basename(dirname(dirname(dirname(data_path)))))
             case_idx = int(basename(dirname(data_path)))
-        elif "causil" in data_path:
+
+        if "causil" in data_path:
             graph_idx = int(basename(dirname(data_path))[-1:])
             case_idx = 0
 
@@ -196,11 +157,11 @@ def evaluate():
             true_graph_path = join(dirname(dirname(dirname(data_path))), "graph.json")
             true_graph = MemoryGraph.load(true_graph_path)
 
-        elif "causil" in data_path:
+        if "causil" in data_path:
             dag_gt = pickle.load(open(join(dirname(data_path), "DAG.gpickle"), "rb"))
             true_graph = MemoryGraph(dag_gt)
 
-        elif "rcd" in data_path:
+        if "rcd" in data_path:
             dag_gt = pickle.load(
                 open(join(dirname(dirname(dirname(data_path))), "g_graph.pkl"), "rb")
             )
@@ -228,26 +189,12 @@ def evaluate():
     avg_precision_skel = np.mean(eval_data["Precision-Skel"])
     avg_recall_skel = np.mean(eval_data["Recall-Skel"])
     avg_f1_skel = np.mean(eval_data["F1-Skel"])
-
     avg_shd = np.mean(eval_data["SHD"])
-    avg_bic = np.mean(eval_data["BIC"])
-
-    eval_data["Case"].insert(0, "Average")
-    eval_data["Precision"].insert(0, avg_precision)
-    eval_data["Recall"].insert(0, avg_recall)
-    eval_data["F1-Score"].insert(0, avg_f1)
-    eval_data["Precision-Skel"].insert(0, avg_precision_skel)
-    eval_data["Recall-Skel"].insert(0, avg_recall_skel)
-    eval_data["F1-Skel"].insert(0, avg_f1_skel)
-    eval_data["BIC"].insert(0, avg_bic)
-    eval_data["SHD"].insert(0, avg_shd)
 
     print(f"F1:   {avg_f1:.2f}")
     print(f"F1-S: {avg_f1_skel:.2f}")
     print(f"SHD:  {math.floor(avg_shd)}")
 
-    report_df = pd.DataFrame(eval_data)
-    report_df.to_excel(report_path, index=False)
 
 
 def process(data_path):
@@ -255,20 +202,23 @@ def process(data_path):
         num_node = int(basename(dirname(dirname(dirname(dirname(data_path))))))
         graph_idx = int(basename(dirname(dirname(dirname(data_path)))))
         case_idx = int(basename(dirname(data_path)))
-    elif "causil" in data_path:
+
+    if "causil" in data_path:
         num_node = int(basename(dirname(dirname(dirname(data_path)))).split("_")[0])
         graph_idx = int(basename(dirname(data_path))[-1:])
         case_idx = 0
-    elif "rcd" in data_path:
+
+    if "rcd" in data_path:
         num_node = int(basename(dirname(dirname(dirname(dirname(data_path))))))
         graph_idx = int(basename(dirname(dirname(dirname(data_path)))))
         case_idx = int(basename(dirname(data_path)))
 
-    if "circa" in data_path:  
+    if "circa" in data_path: 
         data = pd.read_csv(data_path, header=None)
         data.header = list(map(str, range(0, data.shape[1])))
     else:
         data = pd.read_csv(data_path)
+
 
     # == PROCESS ==
     data = data.fillna(method="ffill")
@@ -283,56 +233,43 @@ def process(data_path):
 
     st = datetime.now()
     try:
-        if args.model == "pc":
-            indep_test = fisherz 
+        if args.method == "pc":
             adj = pc(
                 np_data,
-                alpha=0.05,
-                indep_test=indep_test,
                 stable=False,
                 show_progress=False,
             ).G.graph
-
-        elif args.model == "fci":
-            indep_test = fisherz
+        elif args.method == "fci":
             adj = fci(
                 np_data,
-                independence_test_method=indep_test,
-                alpha=0.05,
                 show_progress=False,
                 verbose=False,
             )[0].graph
-        elif args.model == "fges":
+        elif args.method == "fges":
             adj = fges(pd.DataFrame(np_data))
-        elif args.model == "ICALiNGAM":
+        elif args.method == "ICALiNGAM":
             model = ICALiNGAM()
             model.fit(np_data)
             adj = model.adjacency_matrix_
             adj = adj.astype(bool).astype(int)
-        elif args.model == "DirectLiNGAM":
+        elif args.method == "VARLiNGAM":
+            raise NotImplementedError
+        elif args.method == "DirectLiNGAM":
             model = DirectLiNGAM()
             model.fit(np_data)
             adj = model.adjacency_matrix_
             adj = adj.astype(bool).astype(int)
-        elif args.model == "ges":
+        elif args.method == "ges":
             record = ges(np_data)
             adj = record["G"].graph
-        elif args.model == "granger":
-            # assert args.test in [None, "ssr_ftest", "ssr_chi2test", "lrtest", "params_ftest"]
-            # adj = granger(data, test=args.test, maxlag=args.tau, p_val_threshold=args.alpha)
+        elif args.method == "granger":
             adj = granger(data)
-        elif args.model == "pcmci":
+        elif args.method == "pcmci":
             adj = pcmci(pd.DataFrame(np_data))
-        elif args.model == "cmlp":
-            adj = cmlp(pd.DataFrame(np_data))
-        elif args.model == "notears":
-            adj = notears(pd.DataFrame(np_data))
-        elif args.model == "ntlr":
+        elif args.method == "ntlr":
             adj = ntlr(pd.DataFrame(np_data))
-        elif args.model == "dag_gnn":
-            adj = dag_gnn(pd.DataFrame(np_data))
         else:
-            raise ValueError(f"{args.model=} not defined. Available: {AVAILABLE_METHODS}")
+            raise ValueError(f"{args.method=} not defined. Available: {AVAILABLE_METHODS}")
 
         if "circa" in data_path:
             est_graph = MemoryGraph.from_adj(
@@ -342,17 +279,12 @@ def process(data_path):
             est_graph = MemoryGraph.from_adj(adj, nodes=data.columns.to_list())
 
         est_graph.dump(join(result_path, f"{graph_idx}_{case_idx}_est_graph.json"))
+
     except Exception as e:
         raise e
-        print(f"{args.model=} failed on {data_path=}")
+        print(f"{args.method=} failed on {data_path=}")
         est_graph = MemoryGraph.from_adj([], nodes=[])
         est_graph.dump(join(result_path, f"{graph_idx}_{case_idx}_failed.json"))
-
-    with open(join(result_path, f"{graph_idx}_{case_idx}_time_taken.txt"), "w") as f:
-        tt = datetime.now() - st
-        tt = tt - timedelta(microseconds=tt.microseconds)
-
-        f.write(f"Time taken: {tt}")
 
 
 start_time = datetime.now()
@@ -362,11 +294,8 @@ for data_path in tqdm(data_paths):
 
 end_time = datetime.now()
 time_taken = end_time - start_time
-time_taken = time_taken - timedelta(microseconds=time_taken.microseconds)
-with open(join(output_path, "time_taken.txt"), "w") as f:
-    s = f"Time taken: {time_taken}"
-    print(s)
-    f.write(s)
+avg_speed = round(time_taken.total_seconds() / len(data_paths), 2)
 
 
 evaluate()
+print("Avg speed:", avg_speed)
