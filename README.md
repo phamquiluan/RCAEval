@@ -115,53 +115,76 @@ We can replace the pc method with other methods (e.g., fci, granger) and substit
 
 ### Reproduce RQ2 - Root Cause Analysis Performance
 
-To reproduce the root cause analysis performance, as presented in Table 5. You can download the corresponding dataset and extracted to folder `./data`. Then, you can run the file `eval.py` to reproduce the results. For example:
+We provide a script named `rq2.py` to assist in reproducing the RQ2 results from our paper. This script can be executed using Python with the following syntax: 
 
+```
+python rq2.py [-h] [--dataset] [--method] [--tbias TBIAS] [--length LENGTH] 
+```
 
-As presented in Table 5, NSigma [ $t_\Delta = 0$ ] achieves Avg@5 of 0.94, 1, 0.9, 0.98, and 0.67 for CPU, MEM, DISK, DELAY, and LOSS fault types on the Online Boutique dataset. To reproduce the RCA performance of NSigma [ $t_\Delta = 0$ ] as presented in the Table 5. You can run the following commands:
+The available options and their descriptions are as follows:
+
+```
+options:
+  -h, --help            Show this help message and exit
+  --dataset             Choose a dataset. Valid options:
+                        [online-boutique, sock-shop-1, sock-shop-2, train-ticket,
+                         circa10, circa50, rcd10, rcd50, causil10, causil50]
+  --method METHOD       Choose a method (e.g. `nsigma`, `baro`, etc.)
+  --tdelta              Specify $t_delta$ to simulate delay in anomaly detection
+  --length LENGTH       Specify the length of the time series (used for RQ4)
+```
+
+For example, in Table 3, PC achieves F1, F1-S, and SHD scores of 0.49, 0.65, and 16 on the CIRCA 10 dataset. To reproduce these results, you can run the following commands:
 
 ```bash
-python eval.py -i data/online-boutique -o output-tmp -m nsigma --iter-num 10 -w 10 --length 10
+python rq1.py --dataset circa10 --method pc
 ```
 
-<details>
-<summary>Expected output after running the above code (it takes around 1 minute)</summary>
+The expected output should be exactly as presented in the paper (it takes less than 1 minute to run the code)
 
-<br />
+```
+F1:   0.49
+F1-S: 0.65
+SHD:  16
+```
 
-The results are exactly as presented in the paper (Table 5).
+For example, in Table 5, NSigma [ $t_\Delta = 0$ ] achieves Avg@5 of 0.94, 1, 0.9, 0.98, and 0.67 for CPU, MEM, DISK, DELAY, and LOSS fault types on the Online Boutique dataset. To reproduce these results, you can run the following commands:
+
+```bash
+python rq2.py --dataset online-boutique --method nsigma 
 ```
-Evaluation results
-s_cpu: 0.94
-s_mem: 1.0
-s_disk: 0.9
-s_delay: 0.98
-s_loss: 0.67
+
+The expected output should be exactly as presented in the paper (it takes less than 1 minute to run the code)
+
 ```
-</details>
+--- Evaluation results ---
+Avg@5-CPU:   0.94
+Avg@5-MEM:   1.0
+Avg@5-DISK:  0.9
+Avg@5-DELAY: 0.98
+Avg@5-LOSS:  0.67
+---
+Avg speed: 0.06
+```
 
 As presented in Table 5, NSigma [ $t_\Delta = 60$ ] achieves Avg@5 of 0.16, 0.24, 0.43, 0.55, and 0.38 for CPU, MEM, DISK, DELAY, and LOSS fault types on the Online Boutique dataset. To reproduce the RCA performance of NSigma [ $t_\Delta = 60$ ] as presented in the Table 5. You can run the following commands:
 
 ```bash
-python eval.py -i data/online-boutique -o output-tmp -m nsigma --iter-num 10 -w 10 --length 10 --ad-delay 60
+python rq2.py --dataset online-boutique --method nsigma --tdelta 60
 ```
 
-<details>
-<summary>Expected output after running the above code (it takes around 1 minute)</summary>
+The expected output should be exactly as presented in the paper (it takes less than 1 minute to run the code)
 
-<br />
-
-The results are exactly as presented in the paper (Table 5).
 ```
-Evaluation results
-s_cpu: 0.16
-s_mem: 0.24
-s_disk: 0.43
-s_delay: 0.55
-s_loss: 0.38
+--- Evaluation results ---
+Avg@5-CPU:   0.94
+Avg@5-MEM:   1.0
+Avg@5-DISK:  0.9
+Avg@5-DELAY: 0.98
+Avg@5-LOSS:  0.67
+---
+Avg speed: 0.06
 ```
-</details>
-
 
 We can replace the method `nsigma` by `baro`, `pc_pagerank`, `fci_pagerank`, `rcd`, `e_diagnosis`, etc. to replicate corresponding results.
 
