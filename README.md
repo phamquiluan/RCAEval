@@ -24,12 +24,10 @@ This repository includes artifacts for reuse and reproduction of experimental re
 
 ## Installation
 
-We maintain 3 separate environments (`default`, `rcd` and `fges`) due to the dependency constraints of certain methods. Detailed installation instructions for all environments can be found in [INSTALL.md](INSTALL.md).
-
-The `default` environment, are used for most methods, can be easily installed as follows.
+We maintain 3 separate environments (`default`, `rcd` and `fges`) due to the dependency constraints of certain methods. Detailed installation instructions for all environments can be found in [INSTALL.md](INSTALL.md). The `default` environment, are used for most methods, can be easily installed as follows.
 
 
-**Open your terminal and run the following commands**
+Open your terminal and run the following commands
 
 ```bash
 sudo apt update -y
@@ -38,20 +36,20 @@ sudo apt install -y build-essential \
   python3-tk graphviz
 ```
 
-**Clone RCAEval from GitHub**
+Clone RCAEval from GitHub
 
 ```bash
 git clone https://github.com/phamquiluan/RCAEval.git && cd RCAEval
 ```
 
-**Install RCAEval from PyPI**
+Install RCAEval from PyPI
 
 ```bash
 # Install RCAEval from PyPI
 pip install RCAEval[default]
 ```
 
-**OR, build RCAEval from source**
+OR, build RCAEval from source
 
 ```bash
 pip install pip==20.0.2
