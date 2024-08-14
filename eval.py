@@ -99,9 +99,6 @@ def parse_args():
     parser = argparse.ArgumentParser(description="RCAEval evaluation")
     # for data
     parser.add_argument("-i", "--input-path", type=str, default="data", help="path to data")
-    parser.add_argument(
-        "-o", "--output-path", type=str, default="output", help="for results and reports"
-    )
     parser.add_argument("--length", type=int, default=2000, help="data points, in minutes")
     parser.add_argument("--tbias", type=int, default=0)
 
