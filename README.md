@@ -108,6 +108,7 @@ The expected output should be exactly as presented in the paper (it takes less t
 F1:   0.49
 F1-S: 0.65
 SHD:  16
+Avg speed: 0.08
 ```
 
 We can replace the pc method with other methods (e.g., fci, granger) and substitute circa10 with other datasets to replicate the corresponding results shown in Table 3. This reproduction process is also integrated into our Continuous Integration (CI) setup. For more details, refer to the [.github/workflows/reproduce.yml](.github/workflows/reproduce.yml) file.
@@ -177,7 +178,8 @@ We can replace the baro method with other methods (e.g., nsigma, fci_randomwalk)
 
 ### Reproduce RQ3 - Efficiency
 
-The efficiency is captured in our evaluation script and saved in the corresponding output directory.
+The average execution time of each method is recorded in the scripts rq1.py and rq2.py, as described and presented above.
+
 
 ### Reproduce RQ4 - Data lengths
 
