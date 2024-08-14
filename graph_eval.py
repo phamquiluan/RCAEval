@@ -80,10 +80,6 @@ def parse_args():
     parser.add_argument("--length", type=int, default=None, help="length of time series")
     args = parser.parse_args()
 
-    # assert args.alpha in [0.005, 0.01, 0.05, 0.1, 0.2]
-    # assert args.tau in [3, 6, 10]
-
-    # check if args.method is defined here
     if args.method not in globals():
         raise ValueError(f"{args.method=} not defined. Available: {AVAILABLE_METHODS}")
 
