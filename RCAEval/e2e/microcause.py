@@ -2362,11 +2362,3 @@ def microcause(
         "node_names": node_names,
         "ranks": ranks,
     }
-
-    # except Exception as e:
-    #     print("==== EXCEPTION ====")
-    #     print(e)
-    #     print("==== EXCEPTION ====")
-    #     return {
-    #         "ranks": node_names
-    #     }

@@ -13,10 +13,12 @@ from RCAEval.io.time_series import (
     preprocess,
     select_useful_cols,
 )
+from RCAEval.e2e import rca
 
 warnings.filterwarnings("ignore")
 
 
+@rca
 def lingam_pagerank(data, inject_time=None, dataset=None, num_loop=None, sli=None, **kwargs):
     data = preprocess(
         data=data, dataset=dataset, dk_select_useful=kwargs.get("dk_select_useful", False)
@@ -24,24 +26,17 @@ def lingam_pagerank(data, inject_time=None, dataset=None, num_loop=None, sli=Non
 
     node_names = data.columns.to_list()
 
-    adj = []
-    try:
-        model = ICALiNGAM()
-        model.fit(data.to_numpy().astype(float))
-        # print(model.causal_order_)
-        adj = model.adjacency_matrix_
-        adj = adj.astype(bool).astype(int)
-    except Exception as e:
-        print(e)
+    model = ICALiNGAM()
+    model.fit(data.to_numpy().astype(float))
+    adj = model.adjacency_matrix_
+    adj = adj.astype(bool).astype(int)
 
     # check if adj values are all 0
     if len(adj) == 0 or adj.sum().sum() == 0:
-        # print("ET O ET")
         return {
             "adj": adj,
             "node_names": node_names,
-            # "ranks": [],
-            "ranks": node_names,  # hmm should we return empty or random?
+            "ranks": node_names, 
         }
 
     ranks = page_rank(adj, node_names=node_names)

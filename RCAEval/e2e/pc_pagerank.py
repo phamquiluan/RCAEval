@@ -16,11 +16,8 @@ def pc_pagerank(
     data = preprocess(data=data, dataset=dataset, dk_select_useful=dk_select_useful)
     node_names = data.columns.to_list()
 
-    adj = []
-    # try:
     cg = pc(data.to_numpy())
     adj = cg.G.graph
-    # Change the adj to graph
     G = nx.DiGraph()
     for i in range(len(adj)):
         for j in range(len(adj)):
@@ -34,12 +31,6 @@ def pc_pagerank(
     pagerank = PageRank()
     scores = pagerank.fit_transform(adj.T)
     ranks = list(zip(node_names, scores))
-
-    # adj = pc_default(data, with_bg=with_bg)
-    # ranks = page_rank(adj, node_names=node_names, n_iter=n_iter)
-    # except ValueError as e:
-    #     print(e)
-    #     return {"adj": [], "node_names": node_names, "ranks": node_names}
     ranks = sorted(ranks, key=lambda x: x[1], reverse=True)
     ranks = [x[0] for x in ranks]
     return {
@@ -49,6 +40,7 @@ def pc_pagerank(
     }
 
 
+@rca
 def cmlp_pagerank(
     data, inject_time=None, dataset=None, dk_select_useful=False, with_bg=False, n_iter=10, **kwargs
 ):
@@ -57,17 +49,11 @@ def cmlp_pagerank(
     data = preprocess(data=data, dataset=dataset, dk_select_useful=dk_select_useful)
     node_names = data.columns.to_list()
 
-    adj = []
-    try:
-        adj = cmlp(data, max_iter=20000)
+    adj = cmlp(data, max_iter=20000)
 
-        pagerank = PageRank()
-        scores = pagerank.fit_transform(adj.T)
-        ranks = list(zip(node_names, scores))
-
-    except ValueError as e:
-        print(e)
-        return {"adj": [], "node_names": node_names, "ranks": node_names}
+    pagerank = PageRank()
+    scores = pagerank.fit_transform(adj.T)
+    ranks = list(zip(node_names, scores))
     ranks = sorted(ranks, key=lambda x: x[1], reverse=True)
     ranks = [x[0] for x in ranks]
     return {
@@ -77,6 +63,7 @@ def cmlp_pagerank(
     }
 
 
+@rca
 def ntlr_pagerank(
     data, inject_time=None, dataset=None, dk_select_useful=False, with_bg=False, n_iter=10, **kwargs
 ):
@@ -85,17 +72,10 @@ def ntlr_pagerank(
     data = preprocess(data=data, dataset=dataset, dk_select_useful=dk_select_useful)
     node_names = data.columns.to_list()
 
-    adj = []
-    try:
-        adj = notears_low_rank(data)
-
-        pagerank = PageRank()
-        scores = pagerank.fit_transform(adj.T)
-        ranks = list(zip(node_names, scores))
-
-    except ValueError as e:
-        print(e)
-        return {"adj": [], "node_names": node_names, "ranks": node_names}
+    adj = notears_low_rank(data)
+    pagerank = PageRank()
+    scores = pagerank.fit_transform(adj.T)
+    ranks = list(zip(node_names, scores))
     ranks = sorted(ranks, key=lambda x: x[1], reverse=True)
     ranks = [x[0] for x in ranks]
     return {

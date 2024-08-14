@@ -25,7 +25,6 @@ def calc_pearson(matrix, method="default", zero_diag=True):
         zero_diag:
                 if zero the self correlation value (in diagonal position)
     """
-    # 一行是一个数据
     if method == "numpy":
         res = np.corrcoef(np.array(matrix))
         if zero_diag:

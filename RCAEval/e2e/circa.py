@@ -9,8 +9,10 @@ from RCAEval.io.time_series import (
     drop_time,
     select_useful_cols,
 )
+from RCAEval.e2e import rca
 
 
+@rca
 def circa(data, inject_time=None, dataset=None, **kwargs):
     time_col = data["time"]
 
@@ -23,34 +25,12 @@ def circa(data, inject_time=None, dataset=None, **kwargs):
     # add time again
     data["time"] = time_col
 
-
-    # if dataset is not None:
-    #     data = drop_constant(data)
-    #     data = convert_mem_mb(data)
-    #     
-    #     if kwargs.get("dk_select_useful", False) is True:
-    #         data = drop_near_constant(drop_extra(data))
-    #         data = data[select_useful_cols(data)]
-    # node_names = data.columns.to_list()
-
     # graph construction
     pc_input = data.drop(columns=["time"])
     node_names = pc_input.columns.to_list()
 
-    adj = []
-    try:
-        adj = pc_default(pc_input, dataset="ob")
-    except Exception as e:
-        print("PC failed, using empty graph")
-        print(e)
-        return {
-            "adj": adj,
-            "node_names": node_names,
-            "ranks": node_names,
-        }
-
+    adj = pc_default(pc_input, dataset="ob")
     ranks = rht(adj, inject_time, data)
-
     ranks = sorted(ranks, key=lambda x: x[1], reverse=True)
     ranks = [x[0] for x in ranks]
     return {
