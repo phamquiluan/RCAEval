@@ -305,12 +305,56 @@ Avg speed: 0.07
 </details>
 
 
-## Download Experimental Data - Supplementary Material
+## Download Datasets
 
 Our datasets and their description are publicly available in Zenodo repository with the following information:
 - Dataset DOI: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13305663.svg)](https://doi.org/10.5281/zenodo.13305663)
 - Dataset URL: https://zenodo.org/records/13305663
 
+We also provide utility functions to download our datasets using Python. The downloaded datasets will be available at directory `data`.
+
+```python
+from RCAEval.utility import (
+    download_syn_rcd_dataset,
+    download_syn_circa_dataset,
+    download_syn_causil_dataset,
+    download_rca_circa_dataset,
+    download_rca_rcd_dataset,
+    download_online_boutique_dataset,
+    download_sock_shop_1_dataset,
+    download_sock_shop_2_dataset,
+    download_train_ticket_dataset,
+)
+
+download_syn_rcd_dataset()
+download_syn_circa_dataset()
+download_syn_causil_dataset()
+download_rca_circa_dataset()
+download_rca_rcd_dataset()
+download_online_boutique_dataset()
+download_sock_shop_1_dataset()
+download_sock_shop_2_dataset()
+download_train_ticket_dataset()
+```
+<details>
+<summary>Expected output after running the above code (it takes few minutes to download our datasets)</summary>
+
+```
+$ python test.py
+Downloading syn_rcd.zip..: 100%|██████████| 11.2M/11.2M [00:03<00:00, 3.56MiB/s]
+Downloading syn_circa.zip..: 100%|████████| 52.5M/52.5M [00:06<00:00, 7.51MiB/s]
+Downloading syn_causil.zip..: 100%|███████| 73.8M/73.8M [00:09<00:00, 8.05MiB/s]
+Downloading rca_circa.zip..: 100%|████████| 52.7M/52.7M [00:06<00:00, 7.95MiB/s]
+Downloading rca_rcd.zip..: 100%|██████████| 22.7M/22.7M [00:04<00:00, 5.16MiB/s]
+Downloading online-boutique.zip..: 100%|██| 31.0M/31.0M [00:04<00:00, 6.49MiB/s]
+Downloading sock-shop-1.zip..: 100%|██████| 3.54M/3.54M [00:02<00:00, 1.68MiB/s]
+Downloading sock-shop-2.zip..: 100%|██████| 79.1M/79.1M [00:09<00:00, 8.38MiB/s]
+Downloading train-ticket.zip..: 100%|███████| 280M/280M [00:27<00:00, 10.1MiB/s]
+```
+</details>
+
+
+## Download Supplementary Material
 In addition, you can download our supplementary material and all the data we used for this research from this [Google Drive](https://drive.google.com/drive/folders/1BG2P1ETEyKW62dU0I1ZpE64Ng9fy5_ju?usp=sharing).
 
 ## Licensing
