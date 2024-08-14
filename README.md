@@ -26,7 +26,7 @@ This repository includes artifacts for reuse and reproduction of experimental re
 
 ## Installation
 
-We maintain 3 separate environments due to the dependency constraints of certain methods: `default`, `rcd` and `fges`. Detailed installation instructions for all environments can be found in [INSTALL.md](INSTALL.md).
+We maintain 3 separate environments (`default`, `rcd` and `fges`) due to the dependency constraints of certain methods. Detailed installation instructions for all environments can be found in [INSTALL.md](INSTALL.md).
 
 The `default` environment, suitable for running most methods, can be easily installed as follows.
 
