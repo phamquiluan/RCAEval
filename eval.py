@@ -104,9 +104,6 @@ def parse_args():
     # for method
     parser.add_argument("-m", "--model", type=str, default="pc_pagerank", help="func name")
 
-    # for pagerank and randomwalk, number of walk * len(nodes)
-    parser.add_argument("--n-iter", type=int, default=1)
-
     # for evaluation
     parser.add_argument("-w", "--worker-num", type=int, default=1, help="number of workers")
     parser.add_argument("--iter-num", type=int, default=1)
@@ -343,7 +340,7 @@ def process(data_path):
                 dk_select_useful=args.useful,
                 sli=sli,
                 verbose=args.verbose,
-                n_iter=args.n_iter * num_node,
+                n_iter=num_node,
                 args=run_args,
             )
             root_causes = out.get("ranks")
@@ -366,7 +363,7 @@ def process(data_path):
         # == SAVE ==
         dump_json(filename=rp, data=ranks_dict)
     except Exception as e:
-        # raise e
+        raise e
         print(f"{args.model=} failed on {data_path=}")
         print(e)
         rp = join(result_path, f"{service}_{metric}_{case}_failed.json")

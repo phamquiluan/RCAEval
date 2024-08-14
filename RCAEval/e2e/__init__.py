@@ -15,6 +15,19 @@ from RCAEval.io.time_series import (
 )
 from RCAEval.utility import is_py310
 
+
+def rca(func):
+    """RCA Wrapper to tolerate the case when the RCA algorithm fails."""
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            from RCAEval.io.time_series import preprocess
+            data = preprocess(data=args[0], dataset=kwargs.get("dataset"), dk_select_useful=False)
+            dummy = data.columns.to_list()
+            return {"adj": [], "node_names": dummy, "ranks": dummy}
+    return wrapper
+
 if is_py310():
     try:
         from .causalai import causalai
@@ -272,3 +285,7 @@ def ht(data, inject_time=None, dataset=None, num_loop=None, sli=None, anomalies=
         "node_names": normal_df.columns.to_list(),
         "ranks": ranks,
     }
+
+
+
+
