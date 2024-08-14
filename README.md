@@ -79,27 +79,21 @@ TBD
 
 ### Reproduce RQ1 - Causal Discovery Performance
 
-We have provided a file named `graph_eval.py` to assist in reproducing the causal discovery results of our paper, which can be run using Python with the following syntax: 
+We have provided a file named `rq1.py` to assist in reproducing the RQ1 results of our paper, which can be run using Python with the following syntax: 
 
 ```
-python graph_eval.py [-h] [-i INPUT_PATH] [-o OUTPUT_PATH] [--length LENGTH] [-m MODEL]
+python rq1.py [-h] [--dataset] [--method] [--length LENGTH]
 ```
-The description for the arguments/options of the file `graph_eval.py` are as follows:
+The description for the arguments/options of the file `rq1.py` are as follows:
 
 ```
 options:
-  -h, --help            show this help message and exit
-  --input-path          Choose a dataset to analyse. Options:
-                        ['syn']
-                        path to data
-  -o OUTPUT_PATH, --output-path OUTPUT_PATH
-                        for results and reports
-  --length LENGTH       length of time series
-  -m MODEL, --model MODEL
-                        func name
+  -h, --help            Show this help message and exit
+  --dataset             Choose a dataset. Valid Options:
+                        [circa10, circa50, rcd10, rcd50, causil10, causil50]
+  --method METHOD       Choose a method (e.g. `pc`, `fci`, etc)
+  --length LENGTH       length of time series, for RQ4)
 ```
-
-
 
 To reproduce the causal discovery performance, as presented in Table 3. You can download the corresponding dataset and extracted to folder `./data`. Then, you can run the file `graph_eval.py` to obtain the results for one iteration. For example:
 
