@@ -239,29 +239,18 @@ def process(data_path):
     data = data.fillna(method="ffill")
     data = data.fillna(0)
 
-    # check if there is any nan or inf
-    if data.isnull().values.any():
-        print(f"{data_path=} has nan")
-
-    if data.isin([np.inf, -np.inf]).values.any():
-        print(f"{data_path=} has inf")
-
     cut_length = 0
     if "rca_" in data_dir:
         normal_df = data[data["time"] < inject_time].tail(data_length)
         anomal_df = data[data["time"] >= inject_time].head(data_length)
-
         cut_length = min(normal_df.time) - min(data.time)
-
         data = pd.concat([normal_df, anomal_df], ignore_index=True)
     else:
         with open(join(data_dir, "inject_time.txt")) as f:
             inject_time = int(f.readlines()[0].strip()) + args.tbias
         normal_df = data[data["time"] < inject_time].tail(data_length)
         anomal_df = data[data["time"] >= inject_time].head(data_length)
-
         cut_length = min(normal_df.time) - min(data.time)
-
         data = pd.concat([normal_df, anomal_df], ignore_index=True)
 
     # num column, exclude time
