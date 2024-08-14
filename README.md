@@ -44,15 +44,15 @@ sudo apt install -y build-essential \
 git clone https://github.com/phamquiluan/RCAEval.git && cd RCAEval
 ```
 
-**Install the default environment**
+**Install RCAEval from PyPI**
 
-Install RCAEval from PyPi
 ```bash
-# Install RCAEval from PyPi
+# Install RCAEval from PyPI
 pip install RCAEval[default]
 ```
 
-OR, build RCAEval from source by running the following commands in a Python virtual environment.
+**OR, build RCAEval from source**
+
 ```bash
 pip install pip==20.0.2
 pip install -e .[default]
