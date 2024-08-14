@@ -133,7 +133,7 @@ def parse_args():
 
 args = parse_args()
 
-# prepare paths
+# prepare output paths
 from tempfile import TemporaryDirectory
 output_path = TemporaryDirectory().name
 report_path = join(output_path, f"report.xlsx")
@@ -141,7 +141,7 @@ result_path = join(output_path, "results")
 os.makedirs(result_path, exist_ok=True)
 
 
-# ==== PROCESS TO GENERATE JSON ====
+# prepare input paths
 data_paths = list(glob.glob(os.path.join(args.input_path, "**/data.csv"), recursive=True))
 new_data_paths = []
 for p in data_paths: 
@@ -283,11 +283,8 @@ for data_path in tqdm(sorted(data_paths)):
 
 end_time = datetime.now()
 time_taken = end_time - start_time
-# remove set milliseconds to 0
-time_taken = time_taken - timedelta(microseconds=time_taken.microseconds)
-with open(join(output_path, "time_taken.txt"), "w") as f:
-    s = f"Time taken: {time_taken}"
-    f.write(s)
+avg_speed = round(time_taken.total_seconds() / len(data_paths), 2)
+print("Avg speed:", avg_speed)
 
 
 # ======== EVALUTION ===========
