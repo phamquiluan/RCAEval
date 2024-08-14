@@ -18,7 +18,7 @@ This repository includes artifacts for reuse and reproduction of experimental re
     + [Reproduce RQ3 - Efficiency](#reproduce-rq3---efficiency)
     + [Reproduce RQ4 - Data lengths](#reproduce-rq4---data-lengths)
   * [Download Datasets](#download-datasets)
-  * [Download Supplementary Material](#download-supplementary-material)
+  * [Download Paper and Supplementary Material](#download-paper-and-supplementary-material)
   * [Licensing](#licensing)
   * [Acknowledgments](#acknowledgments)
 
