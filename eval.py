@@ -104,9 +104,6 @@ def parse_args():
     # for method
     parser.add_argument("-m", "--model", type=str, default="pc_pagerank", help="func name")
 
-    # for rcd
-    parser.add_argument("-g", "--gamma", type=int, default=5, help="subset size")
-
     # for pagerank and randomwalk, number of walk * len(nodes)
     parser.add_argument("--n-iter", type=int, default=1)
 
@@ -347,7 +344,6 @@ def process(data_path):
                 sli=sli,
                 verbose=args.verbose,
                 n_iter=args.n_iter * num_node,
-                gamma=args.gamma,
                 args=run_args,
             )
             root_causes = out.get("ranks")
