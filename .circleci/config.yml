@@ -23,7 +23,7 @@ jobs:
           name: "Build "
           command: |
               pip install pip==20.0.2
-              pip install RCAEval[default]
+              pip install -e .[default]
       - run:
           name: "Run test"
           command: pytest tests/test.py
