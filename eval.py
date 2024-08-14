@@ -285,19 +285,6 @@ def process(data_path):
         if f"{service}_latency" in data:
             sli = f"{service}_latency"
 
-    # preprocess fse-* latency
-    if "fse-ob" in data_path or "fse-ss" in data_path or "fse-tt" in data_path:
-        data = data.loc[:, ~data.columns.str.endswith("latency-50")]
-
-        # rename all cols endswith *-latency-90 to *-latency
-        data = data.rename(
-            columns={
-                c: c.replace("_latency-90", "_latency")
-                for c in data.columns
-                if c.endswith("_latency-90")
-            }
-        )
-
     # == PROCESS ==
     func = globals()[args.model]
 
@@ -425,9 +412,6 @@ for service in services:
                     else []
                 )
 
-                # for metric ranks, need a bit careful
-                # gt_fault in ["delay", "loss"]
-                # but the estimated metric is in ["latency"]
                 f_ranks = [Node(x.split("_")[0], x.split("_")[1]) for x in ranks]
 
                 s_evaluator.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
@@ -470,7 +454,6 @@ for service in services:
 
                 if "rca_" in args.input_path:
                     s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    # print(fault)
                     f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, fault))
         eval_data["service-fault"].append(f"{service}_{fault}")
         eval_data["top_1_service"].append(s_evaluator.accuracy(1))
@@ -495,7 +478,6 @@ else:
         ("io", s_evaluator_io, f_evaluator_io),
         ("delay", s_evaluator_lat, f_evaluator_lat),
         ("loss", s_evaluator_loss, f_evaluator_loss),
-        # ("all", s_evaluator_all, f_evaluator_all),
     ]:
         eval_data["service-fault"].append(f"overall_{name}")
         eval_data["top_1_service"].append(s_evaluator.accuracy(1))
@@ -512,8 +494,6 @@ else:
 
         if s_evaluator.average(5) is not None:
             print( f"s_{name}:", round(s_evaluator.average(5), 2))
-
-
 
     report_df = pd.DataFrame(eval_data)
     report_df.to_excel(report_path, index=False)
