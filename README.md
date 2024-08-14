@@ -17,7 +17,8 @@ This repository includes artifacts for reuse and reproduction of experimental re
     + [Reproduce RQ2 - Root Cause Analysis Performance](#reproduce-rq2---root-cause-analysis-performance)
     + [Reproduce RQ3 - Efficiency](#reproduce-rq3---efficiency)
     + [Reproduce RQ4 - Data lengths](#reproduce-rq4---data-lengths)
-  * [Download Experimental Data - Supplementary Material](#download-experimental-data---supplementary-material)
+  * [Download Datasets](#download-datasets)
+  * [Download Supplementary Material](#download-supplementary-material)
   * [Licensing](#licensing)
   * [Acknowledgments](#acknowledgments)
 
