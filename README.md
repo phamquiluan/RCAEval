@@ -58,7 +58,6 @@ pip install pip==20.0.2
 pip install -e .[default]
 ```
 
-
 ## How-to-use
 
 ### Data format
