@@ -23,6 +23,8 @@ from RCAEval.utility import (
     dump_json,
     is_py310,
     load_json,
+    download_rca_circa_dataset,
+    download_rca_rcd_dataset,
     download_online_boutique_dataset,
     download_sock_shop_1_dataset,
     download_sock_shop_2_dataset,
@@ -98,7 +100,9 @@ AVAILABLE_METHODS = sorted(
 def parse_args():
     parser = argparse.ArgumentParser(description="RCAEval evaluation")
     # for data
-    parser.add_argument("-i", "--input-path", type=str, default="data", help="path to data")
+    parser.add_argument("--dataset", type=str, help="Choose a dataset.", choices=[
+        "rcd10", "rcd50", "circa10", "circa50", "online-boutique", "sock-shop-1", "sock-shop-2", "train ticket"
+    ])
     parser.add_argument("--length", type=int, default=2000, help="data points, in minutes")
     parser.add_argument("--tbias", type=int, default=0)
 
@@ -110,32 +114,25 @@ def parse_args():
     if args.model not in globals():
         raise ValueError(f"{args.model=} not defined. Available: {AVAILABLE_METHODS}")
 
-    # check if args.model is defined here
-    if basename(args.input_path) not in [
-        "5",
-        "10",
-        "50",
-        "online-boutique",
-        "sock-shop",
-        "sock-shop-1",
-        "sock-shop-2",
-        "train-ticket",
-    ]:
-        raise ValueError(
-            f"{args.input_path=} should be data/<real-dataset> or data/<synthetic-dataset>/<num-node>"
-        )
-
     return args
 
 
 args = parse_args()
 
-# prepare output paths
-from tempfile import TemporaryDirectory
-output_path = TemporaryDirectory().name
-report_path = join(output_path, f"report.xlsx")
-result_path = join(output_path, "results")
-os.makedirs(result_path, exist_ok=True)
+# download dataset
+if "circa" in args.dataset:
+    download_rca_circa_dataset()
+elif "rcd" in args.dataset:
+    download_rca_rcd_dataset()
+elif "online-boutique" in args.dataset:
+    download_online_boutique_dataset()
+elif "sock-shop-1" in args.dataset:
+    download_sock_shop_1_dataset()
+elif "sock-shop-2" in args.dataset:
+    download_sock_shop_2_dataset()
+elif "train ticket" in args.dataset:
+    download_train_ticket_dataset()
+
 
 
 # prepare input paths
@@ -147,6 +144,16 @@ for p in data_paths:
     else:
         new_data_paths.append(p)
 data_paths = new_data_paths
+
+
+# prepare output paths
+from tempfile import TemporaryDirectory
+output_path = TemporaryDirectory().name
+report_path = join(output_path, f"report.xlsx")
+result_path = join(output_path, "results")
+os.makedirs(result_path, exist_ok=True)
+
+
 
 
 def process(data_path):
