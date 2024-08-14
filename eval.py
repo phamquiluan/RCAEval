@@ -133,24 +133,12 @@ def parse_args():
 
 args = parse_args()
 
-
-# ==== PREPARE PATHS ====
-art_name = f"{basename(args.input_path)}_{args.model.replace('_', '-')}_l{args.length}"
-
-output_path = f"{args.output_path}/{art_name}"
-
-report_path = join(output_path, f"{art_name}.xlsx")
+# prepare paths
+from tempfile import TemporaryDirectory
+output_path = TemporaryDirectory().name
+report_path = join(output_path, f"report.xlsx")
 result_path = join(output_path, "results")
-
-if not exists(args.output_path):
-    os.makedirs(args.output_path)
-
-if exists(result_path):
-    shutil.rmtree(result_path)
-
 os.makedirs(result_path, exist_ok=True)
-
-dump_json(filename=join(output_path, "args.json"), data=vars(args))
 
 
 # ==== PROCESS TO GENERATE JSON ====
