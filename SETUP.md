@@ -1,6 +1,6 @@
 # Setup
 
-We assume the users already satisfy the [REQUIREMENTS.md](REQUIREMENTS.md) and ready to have Python 3.10 installed. Then, users can install RCAEval from PyPI or build RCAEval from source. In addition, users who familiar with Continuous Integration (CI) can take a look at our [build-and-test.yml](.github/workflows/build-and-test.yml) configuration to see how we install and test our RCAEval on Linux and Windows machine from Python 3.7 to 3.12.
+We assume the users are on Ubuntu machine and ready to have Python 3.10 installed. Then, users can follow this instruction to install RCAEval using pip. In addition, users who familiar with Continuous Integration (CI) can take a look at our [.github/workflows](.github/workflows) and [.circleci](.circleci) to see how we install, test, and reproduce our RCAEval on different CI platforms including GitHub Action and CircleCI.
 
 **Table of contents**
 
