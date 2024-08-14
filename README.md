@@ -195,4 +195,4 @@ We have included their corresponding LICENSE into the [LICENSES](LICENSES) direc
 
 ## Acknowledgments
 
-We would like to express our sincere gratitude to the researchers and developers who created the baselines used in our study. Their work has been instrumental in making this project possible. We deeply appreciate the time, effort, and expertise that have gone into developing and maintaining these resources. Your commitment to advancing the field of root cause analysis and making your work accessible to the research community has been invaluable. This project would not have been feasible without your contributions.
+We would like to express our sincere gratitude to the researchers and developers who created the baselines used in our study. Their work has been instrumental in making this project possible. We deeply appreciate the time, effort, and expertise that have gone into developing and maintaining these resources. This project would not have been feasible without their contributions.
