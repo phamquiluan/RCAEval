@@ -203,127 +203,106 @@ The output list presents the `Avg@5` scores when we vary $t_\Delta$. You can see
 
 
 ```
-No module named 'causalai'                                                                                            
-fges not available                                                                                                    
-causalrca not available                                                                                               
-100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.63it/s]                                                                                                                                               
---- Evaluation results ---                                                                                                                                                                                                                                                                                                 
-Avg@5-CPU:   0.84                                                                                                     
-Avg@5-MEM:   0.98                                                                                                     
-Avg@5-DISK:  0.94                                                                                                                                                                                                                           
-Avg@5-DELAY: 0.98                                                                                                                                                                                                                           
-Avg@5-LOSS:  0.66                                                                                                     
----                                                                                                                   
-Avg speed: 0.07                                                                                                       
-No module named 'causalai'                                                                                            
-fges not available                                                                                                    
-causalrca not available                                                                                               
-100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.42it/s]                                                                                                                                               
---- Evaluation results ---                                                                                                                                                                                                                                                                                                 
-Avg@5-CPU:   0.82                                                                                                     
-Avg@5-MEM:   0.99                                                                                                     
-Avg@5-DISK:  0.94                                                                                                                                                                                                                           
-Avg@5-DELAY: 0.98                                                                                                                                                                                                                           
-Avg@5-LOSS:  0.66                                                                                                     
----                                                                                                                   
-Avg speed: 0.07                                                                                                       
-No module named 'causalai'                                                                                            
-fges not available                                                                                                    
-causalrca not available                                                                                               
-100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.63it/s]                                                                                                                                               
---- Evaluation results ---                                                                                                                                                                                                                                                                                                 
-Avg@5-CPU:   0.82                                                                                                                                            
-Avg@5-MEM:   0.99                                                                                                                                            
-Avg@5-DISK:  0.94                                                                                                                                            
-Avg@5-DELAY: 0.98                                                                                                                                            
-Avg@5-LOSS:  0.66                                                                                                                                            
----                                                                                                                                                          
-Avg speed: 0.07                                                                                                                                              
-No module named 'causalai'                                                                                                                                   
-fges not available                                                                                                                                           
-causalrca not available                                                                                                                                      
-100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.42it/s]                                                                                                                                               
---- Evaluation results ---                                                                                                                                   
-Avg@5-CPU:   0.82                                                                                                                                            
-Avg@5-MEM:   0.99                                                                                                                                            
-Avg@5-DISK:  0.94                                                                                                                                            
-Avg@5-DELAY: 0.98                                                                                                                                            
-Avg@5-LOSS:  0.66                                                                                                                                            
----                                                                                                                                                          
-Avg speed: 0.07                                                                                                                                              
-No module named 'causalai'                                                                                                                                   
-fges not available                                                                                                                                           
-causalrca not available                                                                                                                                      
-100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.57it/s]                                                                                                                                               
---- Evaluation results ---                                                                                                                                   
-Avg@5-CPU:   0.82                                                                                                                                            
-Avg@5-MEM:   0.99                                                                                                                                            
-Avg@5-DISK:  0.94                                                                                                                                            
-Avg@5-DELAY: 0.98                                                                                                                                            
-Avg@5-LOSS:  0.66                                                                                                                                            
----                                                                                                                                                          
-Avg speed: 0.07                                                                                                                                              
-No module named 'causalai'                                                                                                                                   
-fges not available                                                                                                                                           
-causalrca not available                                                                                                                                      
-100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.60it/s]                                                                                                                                               
---- Evaluation results ---                                                                                                                                   
-Avg@5-CPU:   0.82                                                                                                                                            
-Avg@5-MEM:   0.99                                                                                                                                            
-Avg@5-DISK:  0.94                                                                                                                                            
-Avg@5-DELAY: 0.98                                                                                                                                            
-Avg@5-LOSS:  0.66                                                                                                                                            
----                                                                                                                                                          
-Avg speed: 0.07                                                                                                                                              
-No module named 'causalai'                                                                                                                                   
-fges not available                                                                                                                                           
-causalrca not available                                                                                                                                      
-100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.47it/s]                                                                                                                                               
---- Evaluation results ---                                                                                                                                   
-Avg@5-CPU:   0.82                                                                                                                                            
-Avg@5-MEM:   0.99                                                                                                                                            
-Avg@5-DISK:  0.94                                                                                                                                            
-Avg@5-DELAY: 0.98                                                                                                                                            
-Avg@5-LOSS:  0.66                                                                                                                                            
----                                                                                                                                                          
-Avg speed: 0.07                                                                                                                                              
-No module named 'causalai'                                                                                                                                   
-fges not available                                                                                                                                           
-causalrca not available                                                                                                                                      
-100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.37it/s]                                                                                                                                               
---- Evaluation results ---                                                                                                                                   
-Avg@5-CPU:   0.82                                                                                                                                            
-Avg@5-MEM:   0.99                                                                                                                                            
-Avg@5-DISK:  0.94                                                                                                                                            
-Avg@5-DELAY: 0.98                                                                                                                                            
-Avg@5-LOSS:  0.66                                                                                                                                            
----                                                                                                                                                          
-Avg speed: 0.07                                                                                                                                              
-No module named 'causalai'                                                                                                                                   
-fges not available                                                                                                                                           
-causalrca not available                                                                                                                                      
-100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.52it/s]                                                                                                                                               
---- Evaluation results ---                                                                                                                                   
-Avg@5-CPU:   0.82                                                                                                                                            
-Avg@5-MEM:   0.99                                                                                                                                            
-Avg@5-DISK:  0.94                                                                                                                                            
-Avg@5-DELAY: 0.98                                                                                                                                            
-Avg@5-LOSS:  0.66                                                                                                                                            
----                                                                                                                                                          
-Avg speed: 0.07                                                                                                                                              
-No module named 'causalai'                                                                                                                                   
-fges not available                                                                                                                                           
-causalrca not available                                                                                                                                      
-100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.46it/s]                                                                                                                                               
---- Evaluation results ---                                                                                                                                   
-Avg@5-CPU:   0.82                                                                                                                                            
-Avg@5-MEM:   0.99                                                                                                                                            
-Avg@5-DISK:  0.94                                                                                                                                            
-Avg@5-DELAY: 0.98                                                                                                                                            
-Avg@5-LOSS:  0.66                                                                                                                                            
----                                                                                                                                                          
-Avg speed: 0.07    
-```
+100%|█████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.64it/s]
+--- Evaluation results ---
+Avg@5-CPU:   0.84
+Avg@5-MEM:   0.98
+Avg@5-DISK:  0.94
+Avg@5-DELAY: 0.98
+Avg@5-LOSS:  0.66
+---
+Avg speed: 0.07
+=== VARY LENGTH: 120 ===
+100%|█████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.37it/s]
+--- Evaluation results ---
+Avg@5-CPU:   0.82
+Avg@5-MEM:   0.99
+Avg@5-DISK:  0.94
+Avg@5-DELAY: 0.98
+Avg@5-LOSS:  0.66
+---
+Avg speed: 0.07
+=== VARY LENGTH: 180 ===
+100%|█████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.46it/s]
+--- Evaluation results ---
+Avg@5-CPU:   0.82
+Avg@5-MEM:   0.99
+Avg@5-DISK:  0.94
+Avg@5-DELAY: 0.98
+Avg@5-LOSS:  0.66
+---
+Avg speed: 0.07
+=== VARY LENGTH: 240 ===
+100%|█████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.47it/s]
+--- Evaluation results ---
+Avg@5-CPU:   0.82
+Avg@5-MEM:   0.99
+Avg@5-DISK:  0.94
+Avg@5-DELAY: 0.98
+Avg@5-LOSS:  0.66
+---
+Avg speed: 0.07
+=== VARY LENGTH: 300 ===
+100%|█████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.40it/s]
+--- Evaluation results ---
+Avg@5-CPU:   0.82
+Avg@5-MEM:   0.99
+Avg@5-DISK:  0.94
+Avg@5-DELAY: 0.98
+Avg@5-LOSS:  0.66
+---
+Avg speed: 0.07
+=== VARY LENGTH: 360 ===
+100%|█████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.42it/s]
+--- Evaluation results ---
+Avg@5-CPU:   0.82
+Avg@5-MEM:   0.99
+Avg@5-DISK:  0.94
+Avg@5-DELAY: 0.98
+Avg@5-LOSS:  0.66
+---
+Avg speed: 0.07
+=== VARY LENGTH: 420 ===
+100%|█████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.53it/s]
+--- Evaluation results ---
+Avg@5-CPU:   0.82
+Avg@5-MEM:   0.99
+Avg@5-DISK:  0.94
+Avg@5-DELAY: 0.98
+Avg@5-LOSS:  0.66
+---
+Avg speed: 0.07
+=== VARY LENGTH: 480 ===
+100%|█████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.37it/s]
+--- Evaluation results ---
+Avg@5-CPU:   0.82
+Avg@5-MEM:   0.99
+Avg@5-DISK:  0.94
+Avg@5-DELAY: 0.98
+Avg@5-LOSS:  0.66
+---
+Avg speed: 0.07
+=== VARY LENGTH: 540 ===
+100%|█████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.50it/s]
+--- Evaluation results ---
+Avg@5-CPU:   0.82
+Avg@5-MEM:   0.99
+Avg@5-DISK:  0.94
+Avg@5-DELAY: 0.98
+Avg@5-LOSS:  0.66
+---
+Avg speed: 0.07
+=== VARY LENGTH: 600 ===
+100%|█████████████████████████████████████████████████████████████████████| 125/125 [00:08<00:00, 14.49it/s]
+--- Evaluation results ---
+Avg@5-CPU:   0.82
+Avg@5-MEM:   0.99
+Avg@5-DISK:  0.94
+Avg@5-DELAY: 0.98
+Avg@5-LOSS:  0.66
+---
+Avg speed: 0.07
+
 </details>
 
 
