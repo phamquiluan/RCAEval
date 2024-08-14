@@ -107,9 +107,8 @@ def parse_args():
     parser.add_argument("--tbias", type=int, default=0)
     args = parser.parse_args()
 
-    # check if args.model is defined here
-    if args.model not in globals():
-        raise ValueError(f"{args.model=} not defined. Available: {AVAILABLE_METHODS}")
+    if args.method not in globals():
+        raise ValueError(f"{args.method=} not defined. Available: {AVAILABLE_METHODS}")
 
     return args
 
@@ -266,7 +265,7 @@ def process(data_path):
             sli = f"{service}_latency"
 
     # == PROCESS ==
-    func = globals()[args.model]
+    func = globals()[args.method]
 
     try:
         st = datetime.now()
@@ -285,7 +284,7 @@ def process(data_path):
         dump_json(filename=rp, data={0: root_causes})
     except Exception as e:
         raise e
-        print(f"{args.model=} failed on {data_path=}")
+        print(f"{args.method=} failed on {data_path=}")
         print(e)
         rp = join(result_path, f"{service}_{metric}_{case}_failed.json")
         with open(rp, "w") as f:
