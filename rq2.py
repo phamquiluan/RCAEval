@@ -103,8 +103,8 @@ def parse_args():
     parser.add_argument("--dataset", type=str, help="Choose a dataset.", choices=[
         "rcd10", "rcd50", "circa10", "circa50", "online-boutique", "sock-shop-1", "sock-shop-2", "train-ticket"
     ])
-    parser.add_argument("--length", type=int, default=None, help="Time series length (RQ4).")
-    parser.add_argument("--tbias", type=int, default=0)
+    parser.add_argument("--length", type=int, default=None, help="Time series length (RQ4)")
+    parser.add_argument("--tdelta", type=int, default=0, help="Specify $t_delta$ to simulate delay in anomaly detection")
     args = parser.parse_args()
 
     if args.method not in globals():
@@ -191,7 +191,7 @@ def process(data_path):
 
         # read inject_time
         with open(join(data_dir, "inject_time.txt")) as f:
-            inject_time = int(f.readlines()[0].strip()) + args.tbias
+            inject_time = int(f.readlines()[0].strip()) + args.tdelta
 
         with open(join(data_dir, "fe_service.txt")) as f:
             sli = f.readlines()[0].strip()
@@ -240,7 +240,7 @@ def process(data_path):
         data = pd.concat([normal_df, anomal_df], ignore_index=True)
     else:
         with open(join(data_dir, "inject_time.txt")) as f:
-            inject_time = int(f.readlines()[0].strip()) + args.tbias
+            inject_time = int(f.readlines()[0].strip()) + args.tdelta
         normal_df = data[data["time"] < inject_time].tail(data_length)
         anomal_df = data[data["time"] >= inject_time].head(data_length)
         cut_length = min(normal_df.time) - min(data.time)
