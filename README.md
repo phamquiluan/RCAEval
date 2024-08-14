@@ -355,8 +355,10 @@ Downloading train-ticket.zip..: 100%|███████| 280M/280M [00:27<00:
 </details>
 
 
-## Download Supplementary Material
-In addition, you can download our supplementary material and all the data we used for this research from this [Google Drive](https://drive.google.com/drive/folders/1BG2P1ETEyKW62dU0I1ZpE64Ng9fy5_ju?usp=sharing).
+## Download Paper and Supplementary Material
+
+- Our paper can be downloaded at [docs/ase-paper.pdf](docs/ase-paper.pdf)
+- Our supplementary material can be downloaded at [docs/ase-paper-supplementary-material.pdf](docs/ase-paper-supplementary-material.pdf)
 
 ## Licensing
 
