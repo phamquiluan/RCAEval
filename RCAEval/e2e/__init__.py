@@ -32,7 +32,8 @@ if is_py310():
     try:
         from .causalai import causalai
     except Exception as e:
-        print(e)
+        pass
+        # print(e)
     from .circa import circa
     from .cloudranger import cloudranger
     from .fci_pagerank import fci_pagerank

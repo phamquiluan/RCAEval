@@ -74,7 +74,8 @@ try:
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
     from RCAEval.e2e.causalrca import causalrca
 except ImportError:
-    print("causalrca not available")
+    pass
+    # print("causalrca not available")
 
 
 

@@ -7,7 +7,8 @@ from RCAEval.e2e import rca
 try:
     from RCAEval.graph_construction.fges import fges
 except:
-    print("fges not available")
+    pass
+    # print("fges not available")
 
 
 def ges_pagerank(data, inject_time=None, dataset=None, **kwargs):
