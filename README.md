@@ -112,7 +112,7 @@ SHD:  16
 Avg speed: 0.08
 ```
 
-We can replace the pc method with other methods (e.g., fci, granger) and substitute circa10 with other datasets to replicate the corresponding results shown in Table 3. This reproduction process is also integrated into our Continuous Integration (CI) setup. For more details, refer to the [.github/workflows/reproduce.yml](.github/workflows/reproduce.yml) file.
+We can replace the pc method with other methods (e.g., fci, granger) and substitute circa10 with other datasets to replicate the corresponding results shown in Table 3. This reproduction process is also integrated into our Continuous Integration (CI) setup. For more details, refer to the [.github/workflows/reproduce-rq1.yml](.github/workflows/reproduce-rq1.yml) file.
 
 
 ### Reproduce RQ2 - Root Cause Analysis Performance
@@ -174,7 +174,7 @@ Avg@5-LOSS:  0.6
 Avg speed: 0.07
 ```
 
-We can replace the baro method with other methods (e.g., nsigma, fci_randomwalk) and substitute online-boutique with other datasets to replicate the corresponding results shown in Table 5. This reproduction process is also integrated into our Continuous Integration (CI) setup. For more details, refer to the [.github/workflows/reproduce.yml](.github/workflows/reproduce.yml) file.
+We can replace the baro method with other methods (e.g., nsigma, fci_randomwalk) and substitute online-boutique with other datasets to replicate the corresponding results shown in Table 5. This reproduction process is also integrated into our Continuous Integration (CI) setup. For more details, refer to the [.github/workflows/reproduce-rq2.yml](.github/workflows/reproduce-rq2.yml) file.
 
 
 ### Reproduce RQ3 - Efficiency
