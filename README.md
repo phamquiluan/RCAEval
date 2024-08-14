@@ -28,11 +28,11 @@ This repository includes artifacts for reuse and reproduction of experimental re
 
 We maintain 3 separate environments (`default`, `rcd` and `fges`) due to the dependency constraints of certain methods. Detailed installation instructions for all environments can be found in [INSTALL.md](INSTALL.md).
 
-The `default` environment, suitable for running most methods, can be easily installed as follows.
+The `default` environment, are used for most methods, can be easily installed as follows.
 
-### Pre-installation
 
-Open your terminal and run commands
+**Open your terminal and run the following commands**
+
 ```bash
 sudo apt update -y
 sudo apt install -y build-essential \
@@ -40,24 +40,18 @@ sudo apt install -y build-essential \
   python3-tk graphviz
 ```
 
-### Clone RCAEval from GitHub
+**Clone RCAEval from GitHub**
 
 ```bash
 git clone https://github.com/phamquiluan/RCAEval.git && cd RCAEval
 ```
 
-### Install the default environment
-
-By installing the `default` environment, you can run the following methods:
-- PC/FCI/Granger/LiNGAM/GES-based methods
-- CausalRCA
-- CIRCA, Nsigma, Dummy
-For other methods, please check the [INSTALL.md](INSTALL.md).
+**Install the default environment**
 
 Install RCAEval from PyPi
 ```bash
 # Install RCAEval from PyPi
-pip install RCAEval
+pip install RCAEval[default]
 ```
 
 OR, build RCAEval from source by running the following commands in a Python virtual environment.
