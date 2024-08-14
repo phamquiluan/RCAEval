@@ -19,7 +19,19 @@ from RCAEval.benchmark.evaluation import Evaluator
 from RCAEval.classes.graph import Node
 
 from RCAEval.io.time_series import drop_constant, drop_time, preprocess
-from RCAEval.utility import dump_json, is_py310, load_json
+from RCAEval.utility import (
+    dump_json,
+    is_py310,
+    load_json,
+    download_online_boutique_dataset,
+    download_sock_shop_1_dataset,
+    download_sock_shop_2_dataset,
+    download_train_ticket_dataset,
+)
+
+download_sock_shop_1_dataset()
+download_sock_shop_2_dataset()
+download_train_ticket_dataset()
 
 
 if is_py310():
@@ -95,9 +107,7 @@ def parse_args():
         "-o", "--output-path", type=str, default="output", help="for results and reports"
     )
     parser.add_argument("--length", type=int, default=2000, help="data points, in minutes")
-    parser.add_argument(
-        "--tbias", type=int, default=0, help="anomaly detetction delay, in second"
-    )
+    parser.add_argument("--tbias", type=int, default=0)
 
     # for method
     parser.add_argument("-m", "--model", type=str, default="pc_pagerank", help="func name")
@@ -165,18 +175,9 @@ for p in data_paths:
         new_data_paths.append(p)
 data_paths = new_data_paths
 
-# if len(list(glob.glob(os.path.join(args.input_path, "**/simple_data.csv"), recursive=True))) > 0:
-#     data_paths = list(
-#         glob.glob(os.path.join(args.input_path, "**/simple_data.csv"), recursive=True)
-#     )
-
-# data_paths = [p for p in data_paths if "adservice_cpu" in p]
-# print(data_paths)
-
 
 def process(data_path):
-
-    # FOR RUN only
+    # for RUN method
     run_args = argparse.Namespace()
     run_args.root_path = os.getcwd()
     run_args.data_path = data_path
@@ -184,15 +185,10 @@ def process(data_path):
     # convert length from minutes to seconds
     data_length = args.length * 60 // 2
 
-    # for debug
-    # if "data/fse-ob/productcatalogservice_delay/1" not in data_path:
-    #     return
-
     data_dir = dirname(data_path)
+    # for synthetic dataset
     if "rca_" in data_path:
-        # data/rca_rcd/1/cases/0/data.csv
         dataset = basename(dirname(dirname(dirname(dirname(data_path)))))
-        # service, metric = basename(dirname(dirname(data_path))).split("_")
         case = basename(dirname(data_path))
 
         service = "SIM"
@@ -204,45 +200,36 @@ def process(data_path):
         with open(join(data_dir, "inject_time.txt")) as f:
             inject_time = int(f.readlines()[0].strip()) + args.tbias
 
-        # read fe_service  as sli
         with open(join(data_dir, "fe_service.txt")) as f:
             sli = f.readlines()[0].strip()
 
-        # if "rca_circa" in data_path:
         sli = "SIM_" + sli
+    # for real world dataset
     else:
-        # data/train-ticket/ts-auth-service_cpu/3/data.csv
         dataset = basename(dirname(dirname(dirname(data_path))))
         service, metric = basename(dirname(dirname(data_path))).split("_")
         case = basename(dirname(data_path))
 
     rp = join(result_path, f"{service}_{metric}_{case}.json")
 
-    # == LOAD DATA AND PREPARE ==
+    # == Load and Preprocess data ==
     data = pd.read_csv(data_path)
     if "time.1" in data:
         data = data.drop(columns=["time.1"])
 
     if "rca_" in data_path:
-        # add prefix SIM_ in every column
         data.columns = ["SIM_" + c for c in data.columns]
 
     if "time" not in data:
-        # add time column
         data["time"] = data.index
 
-    if "sock-shop" in data_path and "my-sock-shop" not in data_path:
-        # remove any cols endswith _lat50 or _lat99
+    if "sock-shop" in data_path:
         data = data.loc[:, ~data.columns.str.endswith("_lat_50")]
         data = data.loc[:, ~data.columns.str.endswith("_lat_99")]
 
     if "train-ticket" in data_path:
         time_col = data["time"]
-
-        # select cols startswith ts-*
         data = data.loc[:, data.columns.str.startswith("ts-")]
-
-        # add time column
         data["time"] = time_col
 
     # handle inf
@@ -530,12 +517,3 @@ else:
 
     report_df = pd.DataFrame(eval_data)
     report_df.to_excel(report_path, index=False)
-
-    # print(f"Results are saved to {result_path}")
-    # print(f"Report is saved to {abspath(report_path)}")
-    top1 = round(s_evaluator.accuracy(1), 2)
-    top3 = round(s_evaluator.accuracy(3), 2)
-    avg5 = round(s_evaluator.average(5), 2)
-    # print(f"service: {top1=} {top3=} {avg5=}")
-
-
