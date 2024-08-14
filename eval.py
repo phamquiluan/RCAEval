@@ -107,11 +107,6 @@ def parse_args():
 
     # for method
     parser.add_argument("-m", "--model", type=str, default="pc_pagerank", help="func name")
-
-    # for evaluation
-    # parser.add_argument("-w", "--worker-num", type=int, default=1, help="number of workers")
-
-    parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
 
     # check if args.model is defined here
@@ -133,8 +128,6 @@ def parse_args():
             f"{args.input_path=} should be data/<real-dataset> or data/<synthetic-dataset>/<num-node>"
         )
 
-    if args.verbose:
-        print(json.dumps(vars(args), indent=2, sort_keys=True))
     return args
 
 
@@ -280,7 +273,7 @@ def process(data_path):
             anomalies=None,
             dk_select_useful=False,
             sli=sli,
-            verbose=args.verbose,
+            verbose=False,
             n_iter=num_node,
             args=run_args,
         )
