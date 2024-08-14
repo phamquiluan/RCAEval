@@ -159,7 +159,8 @@ data_paths = new_data_paths
 
 # prepare output paths
 from tempfile import TemporaryDirectory
-output_path = TemporaryDirectory().name
+# output_path = TemporaryDirectory().name
+output_path = "output"
 report_path = join(output_path, f"report.xlsx")
 result_path = join(output_path, "results")
 os.makedirs(result_path, exist_ok=True)
