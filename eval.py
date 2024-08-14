@@ -267,8 +267,8 @@ def process(data_path):
     # num column, exclude time
     num_node = len(data.columns) - 1
 
-    # == Get SLI ===
-    if "my-sock-shop" in data_path or "fse-ss" in data_path:
+    # select sli for certain methods
+    if "my-sock-shop" in data_path:
         sli = "front-end_cpu"
         if f"{service}_latency" in data:
             sli = f"{service}_latency"
@@ -276,11 +276,11 @@ def process(data_path):
         sli = "front-end_cpu"
         if f"{service}_lat_90" in data:
             sli = f"{service}_lat_90"
-    elif "train-ticket" in data_path or "fse-tt" in data_path:
+    elif "train-ticket" in data_path:
         sli = "ts-ui-dashboard_latency-90"
         if f"{service}_latency" in data:
             sli = f"{service}_latency"
-    elif "online-boutique" in data_path or "fse-ob" in data_path:
+    elif "online-boutique" in data_path:
         sli = "frontend_latency-90"
         if f"{service}_latency" in data:
             sli = f"{service}_latency"
