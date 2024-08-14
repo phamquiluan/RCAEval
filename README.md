@@ -178,14 +178,13 @@ We can replace the baro method with other methods (e.g., nsigma, fci_randomwalk)
 
 ### Reproduce RQ3 - Efficiency
 
-The average execution time of each method is recorded in the scripts of RQ1 and RQ2 as we described and presented above.
-
+The running time of each method is recorded in the scripts of RQ1 and RQ2 as we described and presented above.
 
 ### Reproduce RQ4 - Data lengths
 
 Our RQ4 relies on the scripts of RQ1 and RQ2 as we described and presented above, with the option `--length`. 
 
-As presented in Figure 3, BARO maintains stable accuracy on the Online Boutique dataset when we vary $t_delta$ from 60 to 600. To reproduce these results, for example, you can run the following Bash script:
+As presented in Figure 3, BARO maintains stable accuracy on the Online Boutique dataset when we vary the data length from 60 to 600. To reproduce these results, for example, you can run the following Bash script:
 
 ```bash
 for length in 60 120 180 240 300 360 420 480 540 600; do
@@ -199,7 +198,7 @@ done
 
 <br />
 
-The output list presents the `Avg@5` scores when we vary $t_\Delta$. You can see that BARO can maintain a stable performance.
+The output list presents the `Avg@5` scores when we vary the data length. You can see that BARO can maintain a stable performance.
 
 
 ```
