@@ -22,6 +22,7 @@ from RCAEval.io.time_series import drop_constant, drop_time, preprocess
 from RCAEval.utility import dump_json, is_py310, load_json
 from RCAEval.utility.visualization import draw_adj
 
+
 if is_py310():
     from RCAEval.e2e import ( 
         # here
@@ -66,32 +67,6 @@ try:
     from RCAEval.e2e.causalrca import causalrca
 except ImportError:
     print("causalrca not available")
-
-
-def get_anomalous_metrics(data, inject_time=None, alpha=0.1):
-    normal_df = data[data["time"] < inject_time]
-    anomal_df = data[data["time"] >= inject_time]
-
-    normal_df = drop_constant(normal_df)
-    anomal_df = drop_constant(anomal_df)
-
-    # intersect
-    intersects = [x for x in normal_df.columns if x in anomal_df.columns]
-    normal_df = normal_df[intersects]
-    anomal_df = anomal_df[intersects]
-
-    anomalous = []
-
-    for col in normal_df.columns:
-        normal_median = normal_df[col].median()
-        anomal_median = anomal_df[col].median()
-
-        score = abs(normal_median - anomal_median)
-
-        if score > alpha:
-            anomalous.append((col, score))
-
-    return anomalous
 
 
 
