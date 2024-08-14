@@ -9,8 +9,6 @@ This repository includes artifacts for reuse and reproduction of experimental re
 
 **Table of Contents** 
   * [Installation](#installation)
-    + [Pre-installation](#pre-installation)
-    + [Install the Default environment](#install-the-default-environment)
   * [How-to-use](#how-to-use)
     + [Data format](#data-format)
     + [Basic usage example](#basic-usage-example)
