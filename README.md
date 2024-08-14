@@ -62,11 +62,51 @@ pip install -e .[default]
 
 ### Data format
 
-TBD
+The data must be a `pandas.DataFrame` that consists of multivariate time series metrics data. We require the data to have a column named `time` that stores the timestep. Each other column stores a time series for metrics data with the name format of `<service>_<metric>`. For example, the column `cart_cpu` stores the CPU utilization of service `cart`. A sample of valid data could be downloaded using the `download_data()` method that we will demonstrate shortly below.
+
+
 
 ### Basic usage example
 
-TBD
+RCAEval stores all the RCA methods in the `e2e` module (implemented in `RCAEval.e2e`). The basic sample commands to perform root cause analysis using RCAEval are presented as follows,
+
+```python
+# You can put the code here to a file named test.py
+from baro.anomaly_detection import bocpd
+from baro.root_cause_analysis import robust_scorer
+from baro.utility import download_data, read_data
+
+# download a sample data to data.csv
+download_data()
+
+# read data from data.csv
+data = read_data("data.csv")
+
+# perform anomaly detection 
+anomalies = bocpd(data) 
+print("Anomalies are detected at timestep:", anomalies[0])
+
+# perform root cause analysis
+root_causes = robust_scorer(data, anomalies=anomalies)["ranks"]
+
+# print the top 5 root causes
+print("Top 5 root causes:", root_causes[:5])
+```
+
+<details>
+<summary>Expected output after running the above code (it takes around 1 minute)</summary>
+
+```
+python test.py
+Downloading data.csv..: 100%|████████████████████████████████| 570k/570k [00:00<00:00, 17.1MiB/s]
+Anomalies are detected at timestep: 243
+Top 5 root causes: ['checkoutservice_latency', 'cartservice_mem', 'cartservice_latency', 'cartservice_cpu', 'main_mem']
+```
+</details>
+
+👉 For more detailed tutorials, you can also check this [tutorials/how-to-use-baro.ipynb](tutorials/how-to-use-baro.ipynb).
+
+
 
 
 ## Reproducibility
