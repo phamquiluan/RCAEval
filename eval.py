@@ -96,7 +96,7 @@ def parse_args():
     )
     parser.add_argument("--length", type=int, default=2000, help="data points, in minutes")
     parser.add_argument(
-        "--ad-delay", type=int, default=0, help="anomaly detetction delay, in second"
+        "--tbias", type=int, default=0, help="anomaly detetction delay, in second"
     )
 
     # for method
@@ -107,9 +107,6 @@ def parse_args():
     parser.add_argument("--iter-num", type=int, default=1)
 
     parser.add_argument("-v", "--verbose", action="store_true")
-    parser.add_argument("--useful", action="store_true")
-    parser.add_argument("--cache", action="store_true")
-
     args = parser.parse_args()
 
     # check if args.model is defined here
@@ -125,11 +122,7 @@ def parse_args():
         "sock-shop",
         "sock-shop-1",
         "sock-shop-2",
-        "causalrca-sock-shop",
-        "new-sock-shop",
-        "my-sock-shop",
         "train-ticket",
-        "train-ticket-comprehensive",
     ]:
         raise ValueError(
             f"{args.input_path=} should be data/<real-dataset> or data/<synthetic-dataset>/<num-node>"
@@ -144,7 +137,7 @@ args = parse_args()
 
 
 # ==== PREPARE PATHS ====
-art_name = f"{basename(args.input_path)}_{args.model.replace('_', '-')}_l{args.length}_i{args.iter_num}_{args.useful}"
+art_name = f"{basename(args.input_path)}_{args.model.replace('_', '-')}_l{args.length}_i{args.iter_num}"
 
 output_path = f"{args.output_path}/{art_name}"
 
@@ -154,7 +147,7 @@ result_path = join(output_path, "results")
 if not exists(args.output_path):
     os.makedirs(args.output_path)
 
-if not args.cache and exists(result_path):
+if exists(result_path):
     shutil.rmtree(result_path)
 
 os.makedirs(result_path, exist_ok=True)
@@ -209,7 +202,7 @@ def process(data_path):
 
         # read inject_time
         with open(join(data_dir, "inject_time.txt")) as f:
-            inject_time = int(f.readlines()[0].strip()) + args.ad_delay
+            inject_time = int(f.readlines()[0].strip()) + args.tbias
 
         # read fe_service  as sli
         with open(join(data_dir, "fe_service.txt")) as f:
@@ -224,8 +217,6 @@ def process(data_path):
         case = basename(dirname(data_path))
 
     rp = join(result_path, f"{service}_{metric}_{case}.json")
-    if exists(rp) and args.cache:
-        return
 
     # == LOAD DATA AND PREPARE ==
     data = pd.read_csv(data_path)
@@ -278,7 +269,7 @@ def process(data_path):
         data = pd.concat([normal_df, anomal_df], ignore_index=True)
     else:
         with open(join(data_dir, "inject_time.txt")) as f:
-            inject_time = int(f.readlines()[0].strip()) + args.ad_delay
+            inject_time = int(f.readlines()[0].strip()) + args.tbias
         normal_df = data[data["time"] < inject_time].tail(data_length)
         anomal_df = data[data["time"] >= inject_time].head(data_length)
 
@@ -335,7 +326,7 @@ def process(data_path):
                 inject_time,
                 dataset=dataset,
                 anomalies=None,
-                dk_select_useful=args.useful,
+                dk_select_useful=False,
                 sli=sli,
                 verbose=args.verbose,
                 n_iter=num_node,
