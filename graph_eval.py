@@ -176,20 +176,16 @@ def evaluate():
         "Precision-Skel": [],
         "Recall-Skel": [],
         "F1-Skel": [],
-        "BIC": [],
         "SHD": [],
     }
 
-    # print("Evaluate...")
     for data_path in data_paths:
-        # for circa and rcd
-        if "_circa" in data_path or "_rcd" in data_path:
+        if "circa" in data_path or "rcd" in data_path:
             num_node = int(basename(dirname(dirname(dirname(dirname(data_path))))))
             graph_idx = int(basename(dirname(dirname(dirname(data_path)))))
             case_idx = int(basename(dirname(data_path)))
 
-        # === for CausIL
-        if "syn_causil" in data_path:
+        if "causil" in data_path:
             graph_idx = int(basename(dirname(data_path))[-1:])
             case_idx = 0
 
@@ -197,30 +193,20 @@ def evaluate():
         est_graph_name = f"{graph_idx}_{case_idx}_est_graph.json"
         est_graph_path = join(result_path, est_graph_name)
 
-        # for real circa pc
-        # est_graph_name = f"../CIRCA/results/{graph_idx}_{case_idx}.json"
-        # est_graph_path = est_graph_name
-
         if not exists(est_graph_path):
             continue
         est_graph = MemoryGraph.load(est_graph_path)
 
         # ====== READ TRUE GRAPH =====
-        # for circa
-        # /home/luan/ws/RCAEval/data/syn_circa/10/0/cases/0/data.csv
-        if "_circa" in data_path:
+        if "circa" in data_path:
             true_graph_path = join(dirname(dirname(dirname(data_path))), "graph.json")
             true_graph = MemoryGraph.load(true_graph_path)
 
-        # for causil
-        # /home/luan/ws/RCAEval/data/syn_causil/10_services/synthetic/Graph0/data.csv
-        if "syn_causil" in data_path:
+        if "causil" in data_path:
             dag_gt = pickle.load(open(join(dirname(data_path), "DAG.gpickle"), "rb"))
             true_graph = MemoryGraph(dag_gt)
-            # draw_digraph(dag_gt, figsize=(8, 8))
 
-        # for rcd
-        if "_rcd" in data_path:
+        if "rcd" in data_path:
             dag_gt = pickle.load(
                 open(join(dirname(dirname(dirname(data_path))), "g_graph.pkl"), "rb")
             )
@@ -248,30 +234,11 @@ def evaluate():
     avg_precision_skel = np.mean(eval_data["Precision-Skel"])
     avg_recall_skel = np.mean(eval_data["Recall-Skel"])
     avg_f1_skel = np.mean(eval_data["F1-Skel"])
-
     avg_shd = np.mean(eval_data["SHD"])
-    avg_bic = np.mean(eval_data["BIC"])
 
-    eval_data["Case"].insert(0, "Average")
-    eval_data["Precision"].insert(0, avg_precision)
-    eval_data["Recall"].insert(0, avg_recall)
-    eval_data["F1-Score"].insert(0, avg_f1)
-    eval_data["Precision-Skel"].insert(0, avg_precision_skel)
-    eval_data["Recall-Skel"].insert(0, avg_recall_skel)
-    eval_data["F1-Skel"].insert(0, avg_f1_skel)
-    eval_data["BIC"].insert(0, avg_bic)
-    eval_data["SHD"].insert(0, avg_shd)
-
-    # print Average
-    # print("================================")
     print(f"F1:   {avg_f1:.2f}")
     print(f"F1-S: {avg_f1_skel:.2f}")
     print(f"SHD:  {math.floor(avg_shd)}")
-
-    eval_data.pop("BIC")
-
-    report_df = pd.DataFrame(eval_data)
-    report_df.to_excel(report_path, index=False)
 
 
 
