@@ -1,31 +1,45 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/configuration-reference
 version: 2.1
+orbs:
+  python: circleci/python@1.2
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/jobs-steps/#jobs-overview & https://circleci.com/docs/configuration-reference/#jobs
-jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/executor-intro/ & https://circleci.com/docs/configuration-reference/#executor-job
+executors:
+  my-executor:
     docker:
-      # Specify the version you desire here
-      # See: https://circleci.com/developer/images/image/cimg/base
-      - image: cimg/base:current
-
-    # Add steps to the job
-    # See: https://circleci.com/docs/jobs-steps/#steps-overview & https://circleci.com/docs/configuration-reference/#steps
+      - image: cimg/python:3.10
+    environment:
+      TZ: "Australia/Melbourne"
+      
+jobs:
+  build-and-test:
+    executor: my-executor
     steps:
-      # Checkout the code as the first step.
       - checkout
+      - run: 
+          name: "Install packages
+          command: | 
+              sudo apt update -y 
+              sudo apt install -y build-essential libxml2 libxml2-dev zlib1g-dev python3-tk graphviz
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: "Build "
+          command: pip install RCAEval[default]
+      - run:
+          name: "Run test"
+          command: pytest tests/test.py
+          no_output_timeout: 3h
+      - run: 
+          name: "Reproduce BARO performance on the Online Boutique dataset"
+          command: python rq2.py --method baro --dataset online-boutique
 
-# Orchestrate jobs using workflows
-# See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  say-hello-workflow: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
+  main-flow:
     jobs:
-      - say-hello
+      - build-and-test
+  build-daily:
+    triggers:
+      - schedule:
+          cron: "49 15 * * *"
+          filters:
+            branches:
+              only: main
+    jobs:
+      - build-and-test
