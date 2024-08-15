@@ -1,7 +1,7 @@
 from os.path import join, dirname, abspath
 from setuptools import setup
 
-VERSION = "0.0.10"
+VERSION = "0.0.11"
 
 cwd = dirname(abspath(__file__))
 version_path = join(cwd, "RCAEval", "version.py")
