@@ -368,7 +368,7 @@ Downloading train-ticket.zip..: 100%|███████| 280M/280M [00:27<00:
 
 ## Licensing
 
-This repository includes code from various sources with different licenses:
+This repository includes code from various sources with different licenses. We have included their corresponding LICENSE into the [LICENSES](LICENSES) directory:
 
 - **CIRCA**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE_CIRCA). Original source: [CIRCA GitHub Repository](https://github.com/NetManAIOps/CIRCA).
 - **RCD**: Licensed under the [MIT License](LICENSES/LICENSE_RCD). Original source: [RCD GitHub Repository](https://github.com/azamikram/rcd).
@@ -376,7 +376,7 @@ This repository includes code from various sources with different licenses:
 - **CausalAI**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE_CausalAI). Original source: [CausalAI GitHub Repository](https://github.com/salesforce/causalai).
 - **MicroCause**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE_MicroCause). Original source: [MicroCause GitHub Repository](https://github.com/PanYicheng/dycause_rca).
 
-We have included their corresponding LICENSE into the [LICENSES](LICENSES) directory. For the code implemented by us, we distribute them under the [MIT LICENSE](LICENSE).
+**For the code implemented by us and for our datasets, we distribute them under the [MIT LICENSE](LICENSE)**.
 
 ## Acknowledgments
 
