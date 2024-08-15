@@ -73,7 +73,7 @@ The data must be a `pandas.DataFrame` that consists of multivariate time series 
 
 ### Basic usage example
 
-RCAEval stores all the RCA methods in the `e2e` module (implemented in `RCAEval.e2e`). A basic example to use BARO to perform root cause analysis are presented as follows,
+RCAEval stores all the RCA methods in the `e2e` module (implemented in `RCAEval.e2e`). A basic example to use BARO, an RCA baseline, to perform RCA are presented as follows,
 
 ```python
 # You can put the code here to a file named test.py
