@@ -73,13 +73,34 @@ The data must be a `pandas.DataFrame` that consists of multivariate time series 
 
 ### Basic usage example
 
-RCAEval stores all the RCA methods in the `e2e` module (implemented in `RCAEval.e2e`). The basic sample commands to perform root cause analysis using RCAEval are presented as follows,
+RCAEval stores all the RCA methods in the `e2e` module (implemented in `RCAEval.e2e`). A basic example to use BARO to perform root cause analysis are presented as follows,
 
 ```python
-TBD
+# You can put the code here to a file named test.py
+from RCAEval.e2e import baro
+from RCAEval.utility import download_data, read_data
+
+# download a sample data to data.csv
+download_data()
+
+# read data from data.csv
+data = read_data("data.csv")
+anomaly_detected_timestamp = 1692569339
+
+# perform root cause analysis
+root_causes = baro(data, anomaly_detected_timestamp)["ranks"]
+
+# print the top 5 root causes
+print("Top 5 root causes:", root_causes[:5])
 ```
 
+Expected output after running the above code (it takes around 1 minute)
 
+```
+$ python test.py
+Downloading data.csv..: 100%|████████████████████| 570k/570k [00:00<00:00, 19.8MiB/s]
+Top 5 root causes: ['emailservice_mem', 'recommendationservice_mem', 'cartservice_mem', 'checkoutservice_latency', 'cartservice_latency']
+```
 
 
 ## Reproducibility
