@@ -1,13 +1,6 @@
 from os.path import join, dirname, abspath
 from setuptools import setup
 
-VERSION = "0.0.11"
-
-cwd = dirname(abspath(__file__))
-version_path = join(cwd, "RCAEval", "version.py")
-with open(version_path, "w") as ref:
-    ref.write(f"__version__ = '{VERSION}'\n")
-
 # parse requirements.txt to requirement list
 with open("requirements.txt") as f:
     requirements = f.read().splitlines()
@@ -20,7 +13,7 @@ with open("README.md", encoding="utf-8") as f:
     
 setup(
     name="RCAEval",
-    version=VERSION,
+    version="0.0.12",
     packages=["RCAEval"],
     include_package_data=True,
     long_description=long_description,
