@@ -31,7 +31,6 @@ sudo apt install -y build-essential \
 
 ## Clone RCAEval from GitHub
 
-
 ```bash
 git clone https://github.com/phamquiluan/RCAEval.git && cd RCAEval
 ```
