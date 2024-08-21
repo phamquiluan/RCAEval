@@ -40,7 +40,7 @@ git clone https://github.com/phamquiluan/RCAEval.git && cd RCAEval
 We maintain three difference modes: `default`, `rcd`, `fges` for RCAEval due to the dependency constraints. Specifically, most methods use the `default` mode. RCD method uses the `rcd` mode. Fges-based methods uses the `fges` mode. We can easily install RCAEval in different modes as follows.
 
 
-### Install RCAEval in default mode
+### Install RCAEval in DEFAULT mode
 
 **Create and activate a virtual environment**
 
@@ -59,7 +59,100 @@ python3.10 -m venv env
 pip install -e .[default]
 ```
 
-## Test the installation
+**Test the installation**
+
+Users can perform testing using the following commands:
+
+```bash
+pytest tests/test.py
+```
+
+<details>
+<summary>The expected output would look like this</summary>
+
+```bash
+
+(ins)(env) luan@machine:~/ws/RCAEval$ pytest tests/test.py 
+============================================ test session starts =============================================
+platform linux -- Python 3.10.13, pytest-7.4.0, pluggy-1.3.0
+rootdir: /home/luan/ws/RCAEval
+collected 4 items                                                                                            
+
+tests/test.py ....                                                                                     [100%]
+
+======================================= 4 passed in 501.44s (0:08:21) ========================================
+(ins)(env) luan@machine:~/ws/RCAEval$ 
+
+```
+</details>
+
+
+### Install RCAEval in RCD mode
+
+**Create and activate a virtual environment**
+
+```bash
+# create a virtual environment
+python3.10 -m venv env
+
+# activate the environment
+. env/bin/activate
+```
+
+**Install RCAEval using Pip**
+
+```bash
+# build RCAEval from source
+pip install -e .[default]
+```
+
+**Test the installation**
+
+Users can perform testing using the following commands:
+
+```bash
+pytest tests/test.py
+```
+
+<details>
+<summary>The expected output would look like this</summary>
+
+```bash
+
+(ins)(env) luan@machine:~/ws/RCAEval$ pytest tests/test.py 
+============================================ test session starts =============================================
+platform linux -- Python 3.10.13, pytest-7.4.0, pluggy-1.3.0
+rootdir: /home/luan/ws/RCAEval
+collected 4 items                                                                                            
+
+tests/test.py ....                                                                                     [100%]
+
+======================================= 4 passed in 501.44s (0:08:21) ========================================
+(ins)(env) luan@machine:~/ws/RCAEval$ 
+
+```
+</details>
+
+### Install RCAEval in FGES mode
+
+**Create and activate a virtual environment**
+
+```bash
+# create a virtual environment
+python3.10 -m venv env
+
+# activate the environment
+. env/bin/activate
+```
+
+**Install RCAEval using Pip**
+
+```bash
+# build RCAEval from source
+pip install -e .[default]
+```
+
+**Test the installation**
 
 Users can perform testing using the following commands:
 
