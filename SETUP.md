@@ -4,13 +4,14 @@ We assume the users are on Ubuntu machine and ready to have Python 3.10 installe
 
 **Table of contents**
 
-  * [Setup Instruction](#setup-instruction)
-    + [Install Python 3.10](#install-python-310)
-    + [Clone RCAEval from GitHub](#clone-rcaeval-from-github)
-    + [Create and activate a virtual environment](#create-and-activate-a-virtual-environment)
-    + [Install RCAEval from PyPI or Build RCAEval from source](#install-rcaeval-from-pypi-or-build-rcaeval-from-source)
-  * [Test the installation](#test-the-installation)
+  * [Install Python and required packages](#install-python-and-required-packages)
+  * [Clone RCAEval from GitHub](#clone-rcaeval-from-github)
+  * [Install RCAEval](#install-rcaeval)
+    + [Install RCAEval in DEFAULT mode](#install-rcaeval-in-default-mode)
+    + [Install RCAEval in RCD mode](#install-rcaeval-in-rcd-mode)
+    + [Install RCAEval in FGES mode](#install-rcaeval-in-fges-mode)
   * [Basic usage example](#basic-usage-example)
+
 
 
 ## Install Python and required packages
