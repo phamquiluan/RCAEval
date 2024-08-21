@@ -11,17 +11,23 @@ We assume the users are on Ubuntu machine and ready to have Python 3.10 installe
     + [Install RCAEval from PyPI or Build RCAEval from source](#install-rcaeval-from-pypi-or-build-rcaeval-from-source)
   * [Test the installation](#test-the-installation)
   * [Basic usage example](#basic-usage-example)
-## Setup Instruction
 
-### Install Python 3.10
+
+## Install Python 3.10 and required packages
 
 ```bash
+# install Python 3.10
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt update -y
 sudo apt-get install -y python3.10 python3.10-dev python3.10-venv
+
+# install required packages
+sudo apt install -y build-essential \
+  libxml2 libxml2-dev zlib1g-dev \
+  python3-tk graphviz
 ```
 
-### Clone RCAEval from GitHub
+## Clone RCAEval from GitHub
 
 
 ```bash
@@ -29,7 +35,7 @@ git clone https://github.com/phamquiluan/RCAEval.git && cd RCAEval
 ```
 
 
-### Create and activate a virtual environment
+## Create and activate a virtual environment
 
 ```
 # create a virtual environment
@@ -46,7 +52,7 @@ python3.10 -m venv env
 pip install RCAEval
 
 # build RCAEval from source
-pip install -e .
+pip install -e .[default]
 ```
 
 ## Test the installation
