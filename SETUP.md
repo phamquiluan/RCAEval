@@ -35,17 +35,6 @@ sudo apt install -y build-essential \
 git clone https://github.com/phamquiluan/RCAEval.git && cd RCAEval
 ```
 
-
-## Create and activate a virtual environment
-
-```
-# create a virtual environment
-python3.10 -m venv env
-
-# activate the environment
-. env/bin/activate
-```
-
 ## Install RCAEval
 
 We maintain three difference modes: `default`, `rcd`, `fges` for RCAEval due to the dependency constraints. Specifically, most methods use the `default` mode. RCD method uses the `rcd` mode. Fges-based methods uses the `fges` mode. We can easily install RCAEval in different modes as follows.
@@ -53,10 +42,19 @@ We maintain three difference modes: `default`, `rcd`, `fges` for RCAEval due to 
 
 ### Install RCAEval in default mode
 
-```bash
-# install RCAEval from PyPI
-pip install RCAEval
+**Create and activate a virtual environment**
 
+```bash
+# create a virtual environment
+python3.10 -m venv env
+
+# activate the environment
+. env/bin/activate
+```
+
+**Install RCAEval using Pip**
+
+```bash
 # build RCAEval from source
 pip install -e .[default]
 ```
