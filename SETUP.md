@@ -13,12 +13,13 @@ We assume the users are on Ubuntu machine and ready to have Python 3.10 installe
   * [Basic usage example](#basic-usage-example)
 
 
-## Install Python 3.10 and required packages
+## Install Python and required packages
 
 ```bash
-# install Python 3.10
+# install Python 3.8 and Python3.10
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt update -y
+sudo apt-get install -y python3.8 python3.8-dev python3.8-venv
 sudo apt-get install -y python3.10 python3.10-dev python3.10-venv
 
 # install required packages
@@ -45,7 +46,12 @@ python3.10 -m venv env
 . env/bin/activate
 ```
 
-### Install RCAEval from PyPI or Build RCAEval from source
+## Install RCAEval
+
+We maintain three difference modes: `default`, `rcd`, `fges` for RCAEval due to the dependency constraints. Specifically, most methods use the `default` mode. RCD method uses the `rcd` mode. Fges-based methods uses the `fges` mode. We can easily install RCAEval in different modes as follows.
+
+
+### Install RCAEval in default mode
 
 ```bash
 # install RCAEval from PyPI
