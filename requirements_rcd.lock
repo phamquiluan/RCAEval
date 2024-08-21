@@ -72,7 +72,6 @@ idna==3.4
 igraph==0.10.4
 iniconfig==2.0.0
 ipykernel==6.23.1
-ipython==8.13.2
 iterative-telemetry==0.0.8
 jedi==0.18.2
 jmespath==1.0.1
@@ -167,6 +166,5 @@ voluptuous==0.13.1
 wcwidth==0.2.6
 webencodings==0.5.1
 wrapt==1.15.0
-xarray==2023.5.0
 yarl==1.9.2
 zc.lockfile==3.0.post1
