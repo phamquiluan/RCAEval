@@ -93,10 +93,10 @@ tests/test.py ....                                                              
 
 ```bash
 # create a virtual environment
-python3.10 -m venv env
+python3.8 -m venv env-rcd
 
 # activate the environment
-. env/bin/activate
+. env-rcd/bin/activate
 ```
 
 **Install RCAEval using Pip**
