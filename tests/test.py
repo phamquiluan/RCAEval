@@ -2,6 +2,8 @@
 import os
 import shutil
 from os import path
+import subprocess
+import pytest
 
 from typing import Callable
 import numpy as np
@@ -40,3 +42,10 @@ def test_download_dataset(func: Callable):
     assert path.exists(local_path), local_path
     shutil.rmtree(local_path)    
     
+
+def test_rq2_script():
+    command = ["python", "rq2.py", "--method", "baro", "--dataset", "online-boutique"]
+    result = subprocess.run(command, capture_output=True, text=True)
+
+    # Check if the script ran successfully
+    assert result.returncode == 0, f"Script failed with return code {result.returncode}\nOutput: {result.stdout}\nError: {result.stderr}"
