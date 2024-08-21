@@ -49,3 +49,12 @@ def test_rq2_script():
 
     # Check if the script ran successfully
     assert result.returncode == 0, f"Script failed with return code {result.returncode}\nOutput: {result.stdout}\nError: {result.stderr}"
+
+
+def test_rq1_script():
+    command = ["python", "rq1.py", "--method", "pc", "--dataset", "circa10"]
+    result = subprocess.run(command, capture_output=True, text=True)
+
+    # Check if the script ran successfully
+    assert result.returncode == 0, f"Script failed with return code {result.returncode}\nOutput: {result.stdout}\nError: {result.stderr}"
+    
