@@ -245,7 +245,7 @@ Our RQ4 relies on the scripts of RQ1 and RQ2 as we described and presented above
 As presented in Figure 3, BARO maintains stable accuracy on the Online Boutique dataset when we vary the data length from 60 to 600. To reproduce these results, for example, you can run the following Bash script:
 
 ```bash
-# You can put the code here to a file named tmp.sh
+# You can put the code here to a file named tmp.sh, and run the script by `bash tmp.sh`
 for length in 60 120 180 240 300 360 420 480 540 600; do
     python rq2.py --dataset online-boutique --method baro --length $length
 done
