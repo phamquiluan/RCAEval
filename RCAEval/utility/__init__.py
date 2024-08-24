@@ -210,4 +210,29 @@ def download_rca_circa_dataset(local_path=None):
     os.remove("rca_circa.zip")
 
 
+def read_data(data_path, strip=True):
+    """Read CSV data for root cause analysis."""
+    data = pd.read_csv(data_path)
+    data_dir = os.path.dirname(data_path)
+
+    ############# PREPROCESSING ###############
+    if "time.1" in data:
+        data = data.drop(columns=["time.1"])
+    data = data.replace([np.inf, -np.inf], np.nan)
+    data = data.ffill()
+    data = data.fillna(0)
+
+    # remove latency-50 columns
+    data = data.loc[:, ~data.columns.str.endswith("latency-50")]
+    # rename latency-90 columns to latency
+    data = data.rename(
+        columns={
+            c: c.replace("_latency-90", "_latency")
+            for c in data.columns
+            if c.endswith("_latency-90")
+        }
+    )
+
+    return data
+
 
