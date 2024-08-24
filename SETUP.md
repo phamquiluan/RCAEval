@@ -103,7 +103,7 @@ python3.8 -m venv env-rcd
 
 ```bash
 # build RCAEval from source
-pip install -e .[default]
+pip install -e .[rcd]
 ```
 
 **Test the installation**
@@ -133,23 +133,23 @@ tests/test.py ....                                                              
 ```
 </details>
 
-### Install RCAEval in FGES mode
+### Install RCAEval in fGES mode
 
 **Create and activate a virtual environment**
 
 ```bash
 # create a virtual environment
-python3.10 -m venv env
+python3.8 -m venv env-fges
 
 # activate the environment
-. env/bin/activate
+. env-fges/bin/activate
 ```
 
 **Install RCAEval using Pip**
 
 ```bash
 # build RCAEval from source
-pip install -e .[default]
+pip install -e .[fges]
 ```
 
 **Test the installation**
