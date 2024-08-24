@@ -191,6 +191,7 @@ options:
   --method METHOD       Choose a method (e.g. `nsigma`, `baro`, etc.)
   --tdelta              Specify $t_delta$ to simulate delay in anomaly detection
   --length LENGTH       Specify the length of the time series (used for RQ4)
+  --test                Perform smoke test on certain methods without fully run
 ```
 
 For example, in Table 5, BARO [ $t_\Delta = 0$ ] achieves Avg@5 of 0.97, 1, 0.91, 0.98, and 0.67 for CPU, MEM, DISK, DELAY, and LOSS fault types on the Online Boutique dataset. To reproduce these results, you can run the following commands:
