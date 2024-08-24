@@ -29,7 +29,7 @@ We recommend using machines equipped with at least 8 cores, 16GB RAM, and ~30GB 
 
 ## Installation
 
-Detailed installation instructions for all methods are in [SETUP.md](SETUP.md). The `default` environment, are used for most methods, can be easily installed as follows. We require Ubuntu and Python 3.10 to reproduce our results stably.
+The `default` environment, are used for most methods, can be easily installed as follows. We require Ubuntu and Python 3.10 to reproduce our results stably. Detailed installation instructions for all methods are in [SETUP.md](SETUP.md).
 
 
 Open your terminal and run the following commands
