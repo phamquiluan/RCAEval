@@ -1,6 +1,6 @@
 # Setup
 
-We assume the users are on Ubuntu machine and ready to have Python 3.10 installed. Then, the users can follow this instruction to install our RCAEval package. In addition, users who familiar with Continuous Integration (CI) can take a look at our CI configuration at [.github/workflows](.github/workflows) and [.circleci](.circleci) to see how we install, test, and reproduce our RCAEval on different CI platforms including GitHub Action and CircleCI.
+We assume the users are on Ubuntu machine and ready to have Python 3.10 installed. Then, the users can follow this instruction to install our RCAEval package. In addition, users who familiar with Continuous Integration (CI) can take a look at our CI configuration at [.circleci](.circleci) and [.github/workflows](.github/workflows)  to see how we install, test, and reproduce our RCAEval on different CI platforms including GitHub Action and CircleCI.
 
 **Table of contents**
 
