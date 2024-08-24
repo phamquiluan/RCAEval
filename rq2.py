@@ -104,6 +104,7 @@ def parse_args():
     ])
     parser.add_argument("--length", type=int, default=None, help="Time series length (RQ4)")
     parser.add_argument("--tdelta", type=int, default=0, help="Specify $t_delta$ to simulate delay in anomaly detection")
+    parser.add_argument("--test", action="store_true", help="Perform smoke test on certain method without fully run on all data")
     args = parser.parse_args()
 
     if args.method not in globals():
@@ -154,6 +155,8 @@ for p in data_paths:
     else:
         new_data_paths.append(p)
 data_paths = new_data_paths
+if args.test is True:
+    data_paths = data_paths[:2]
 
 
 # prepare output paths
