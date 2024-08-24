@@ -78,6 +78,7 @@ def parse_args():
         choices=["circa10", "circa50", "rcd10", "rcd50", "causil10", "causil50"])
     parser.add_argument("--method", type=str, help="Method name")
     parser.add_argument("--length", type=int, default=None, help="length of time series")
+    parser.add_argument("--test", action="store_true", help="Perform smoke test on certain method without fully run on all data")
     args = parser.parse_args()
 
     if args.method not in globals():
@@ -120,6 +121,8 @@ os.makedirs(result_path, exist_ok=True)
 
 # ==== PROCESS TO GENERATE JSON ====
 data_paths = list(glob.glob(os.path.join(dataset, "**/data.csv"), recursive=True))
+if args.test is True:
+    data_paths = data_paths[:2]
 
 
 def evaluate():
