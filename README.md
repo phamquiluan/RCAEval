@@ -431,6 +431,7 @@ This repository includes code from various sources with different licenses. We h
 - **PC/FCI/LiNGAM**: Licensed under the [MIT License](LICENSES/LICENSE-CausalLearn). Original source: [Causal-learn GitHub Repository](https://github.com/py-why/causal-learn/blob/main/LICENSE).
 - **Granger**: Licensed under the [BSD 3-Clause "New" or "Revised" License](LICENSES/LICENSE-Granger). Original source: [Statsmodels GitHub Repository](https://github.com/statsmodels/statsmodels/blob/main/LICENSE.txt).
 - **CausalRCA**: No License. Original source: [CausalRCA GitHub Repository](https://github.com/AXinx/CausalRCA_code)
+- **RUN**: No License. Original source: [RUN GitHub Repository](https://github.com/zmlin1998/RUN)
 
 **For the code implemented by us and for our datasets, we distribute them under the [MIT LICENSE](LICENSE)**.
 
