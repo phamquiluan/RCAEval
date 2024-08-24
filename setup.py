@@ -19,5 +19,5 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=[],
-    extras_require={"rcd": rcd_requirements, "default": requirements},
+    extras_require={"default": requirements, "rcd": rcd_requirements, "fges": rcd_requirements},
 )
