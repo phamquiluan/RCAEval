@@ -426,7 +426,7 @@ This repository includes code from various sources with different licenses. We h
 - **CIRCA**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE-CIRCA). Original source: [CIRCA GitHub Repository](https://github.com/NetManAIOps/CIRCA/blob/master/LICENSE).
 - **RCD**: Licensed under the [MIT License](LICENSES/LICENSE-RCD). Original source: [RCD GitHub Repository](https://github.com/azamikram/rcd).
 - **E-Diagnosis**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE-E-Diagnosis). Original source: [PyRCA GitHub Repository](https://github.com/salesforce/PyRCA/blob/main/LICENSE).
-- **CausalAI**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE-CausalAI). Original source: [CausalAI GitHub Repository](https://github.com/salesforce/causalai).
+- **CausalAI**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE-CausalAI). Original source: [CausalAI GitHub Repository](https://github.com/salesforce/causalai/blob/main/LICENSE).
 - **MicroCause**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE-MicroCause). Original source: [MicroCause GitHub Repository](https://github.com/PanYicheng/dycause_rca).
 - **PC/FCI**: Licensed under the [MIT License](LICENSES/LICENSE-CausalLearn). Original source: [Causal-learn GitHub Repository](https://github.com/py-why/causal-learn/blob/main/LICENSE).
 
