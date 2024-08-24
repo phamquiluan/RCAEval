@@ -53,7 +53,7 @@ jobs:
         python -m venv env-rcd
         . env-rcd/bin/activate
         python -m pip install pip==20.0.2
-        python -m pip install wheel
+        python -m pip install wheel pytest
         python -m pip install .[rcd]
         bash script/link.sh
 
