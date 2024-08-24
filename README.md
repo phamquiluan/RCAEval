@@ -139,7 +139,7 @@ Top 5 root causes: ['emailservice_mem', 'recommendationservice_mem', 'cartservic
 We provide a script named `rq1.py` to assist in reproducing the RQ1 results from our paper. This script can be executed using Python with the following syntax: 
 
 ```
-python rq1.py [-h] [--dataset] [--method] [--length LENGTH]
+python rq1.py [-h] [--dataset] [--method] [--length LENGTH] [--test]
 ```
 
 The available options and their descriptions are as follows:
@@ -177,7 +177,7 @@ We can replace the pc method with other methods (e.g., fci, granger) and substit
 We provide a script named `rq2.py` to assist in reproducing the RQ2 results from our paper. This script can be executed using Python with the following syntax: 
 
 ```
-python rq2.py [-h] [--dataset] [--method] [--tbias TBIAS] [--length LENGTH] 
+python rq2.py [-h] [--dataset] [--method] [--tbias TBIAS] [--length LENGTH] [--test] 
 ```
 
 The available options and their descriptions are as follows:
