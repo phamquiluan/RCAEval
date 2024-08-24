@@ -185,4 +185,4 @@ Avg speed: 32.33
 
 ## Basic usage example
 
-Users can check a basic usage example of RCAEval in the [README.md#basic-usage-example](README.md#how-to-use) section.
+Users can check the basic usage example of RCAEval in the [README.md#basic-usage-example](README.md#how-to-use) section.
