@@ -78,7 +78,7 @@ def parse_args():
         choices=["circa10", "circa50", "rcd10", "rcd50", "causil10", "causil50"])
     parser.add_argument("--method", type=str, help="Method name")
     parser.add_argument("--length", type=int, default=None, help="length of time series")
-    parser.add_argument("--test", action="store_true", help="Perform smoke test on certain method without fully run on all data")
+    parser.add_argument("--test", action="store_true", help="Perform smoke test on certain method without fully run")
     args = parser.parse_args()
 
     if args.method not in globals():
