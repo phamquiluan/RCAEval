@@ -71,6 +71,12 @@ pip install RCAEval[default]
 Test the installation
 
 ```bash
+python rq2.py --method baro --dataset online-boutique --test
+```
+
+Expected output after running the above code (it takes less than 1 minute)
+
+```bash 
 $ python rq2.py --method baro --dataset online-boutique --test
 Downloading online-boutique.zip..: 100%|████| 31.0M/31.0M [00:06<00:00, 4.96MiB/s]
 100%|███████████████████████████████████████████████| 2/2 [00:00<00:00, 13.76it/s]
