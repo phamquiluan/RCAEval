@@ -37,7 +37,7 @@ git clone https://github.com/phamquiluan/RCAEval.git && cd RCAEval
 
 ## Install RCAEval
 
-We maintain three difference modes: `default`, `rcd`, `fges` for RCAEval due to the dependency constraints. Specifically, most methods use the `default` mode. RCD method uses the `rcd` mode. Fges-based methods uses the `fges` mode. We can easily install RCAEval in different modes as follows.
+We maintain three difference modes: `default`, `rcd`, `fges` for RCAEval due to the dependency constraints. Specifically, most methods use the `default` mode. RCD method uses the `rcd` mode. The fGES-based methods uses the `fges` mode. We can easily install RCAEval in different modes as follows.
 
 
 ### Install RCAEval in DEFAULT mode
