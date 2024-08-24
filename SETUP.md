@@ -101,7 +101,8 @@ python3.8 -m venv env-rcd
 **Install RCAEval using Pip**
 
 ```bash
-# build RCAEval from source
+pip install pip==20.0.2
+pip install wheel
 pip install -e .[rcd]
 ```
 
