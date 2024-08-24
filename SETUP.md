@@ -56,6 +56,7 @@ python3.10 -m venv env
 
 ```bash
 # build RCAEval from source
+pip install pip==20.0.2
 pip install -e .[default]
 ```
 
