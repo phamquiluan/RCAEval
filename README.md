@@ -65,6 +65,7 @@ Or, install RCAEval from PyPI
 
 ```bash
 # Install RCAEval from PyPI
+pip install pip==20.0.2
 pip install RCAEval[default]
 ```
 
