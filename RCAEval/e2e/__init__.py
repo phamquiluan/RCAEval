@@ -165,6 +165,8 @@ def robust_scaler(
     }
 
 
+baro = robust_scaler
+
 
 def e_diagnosis(
     data, inject_time=None, dataset=None, num_loop=None, sli=None, anomalies=None, **kwargs
