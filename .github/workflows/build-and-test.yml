@@ -58,5 +58,7 @@ jobs:
         bash script/link.sh
 
     - name: Test
-      run: python -m pytest tests/test_rcd.py
+      run: |
+        . env-rcd/bin/activate
+        python -m pytest tests/test_rcd.py
 
