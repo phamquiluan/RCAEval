@@ -153,7 +153,7 @@ cd ..
 sudo apt-get install -y gcc graphviz libgraphviz-dev pkg-config
 pip install dill pygobnilp
 pip install -U numba
-pip install category_encoders sortedcontainers fcit
+SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL=True pip install category_encoders sortedcontainers fcit
 pip install pgmpy
 pip install feature_engine
 ```
