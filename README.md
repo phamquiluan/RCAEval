@@ -47,6 +47,13 @@ Clone RCAEval from GitHub
 git clone https://github.com/phamquiluan/RCAEval.git && cd RCAEval
 ```
 
+Create virtual environment 
+
+```bash
+python3.10 -m venv env
+. env/bin/activate
+```
+
 Install RCAEval using pip
 
 ```bash
