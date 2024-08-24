@@ -72,18 +72,16 @@ pytest tests/test.py
 <summary>The expected output would look like this</summary>
 
 ```bash
+$ pytest tests/test.py 
+============================== test session starts ===============================
+platform linux -- Python 3.10.12, pytest-7.3.1, pluggy-1.0.0
+rootdir: /home/ubuntu/RCAEval
+plugins: dvc-2.57.3, hydra-core-1.3.2
+collected 11 items                                                               
 
-(ins)(env) luan@machine:~/ws/RCAEval$ pytest tests/test.py 
-============================================ test session starts =============================================
-platform linux -- Python 3.10.13, pytest-7.4.0, pluggy-1.3.0
-rootdir: /home/luan/ws/RCAEval
-collected 4 items                                                                                            
+tests/test.py ...........                                                  [100%]
 
-tests/test.py ....                                                                                     [100%]
-
-======================================= 4 passed in 501.44s (0:08:21) ========================================
-(ins)(env) luan@machine:~/ws/RCAEval$ 
-
+========================= 11 passed in 135.27s (0:02:15) =========================
 ```
 </details>
 
