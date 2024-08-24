@@ -104,6 +104,8 @@ python3.8 -m venv env-rcd
 pip install pip==20.0.2
 pip install wheel
 pip install -e .[rcd]
+#IMPORTANT, run the following command to link the customized PC
+. script/link.sh
 ```
 
 **Test the installation**
