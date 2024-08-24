@@ -136,21 +136,26 @@ Avg speed: 16.2
 
 ### Install RCAEval in fGES mode
 
-**Create and activate a virtual environment**
+**Run the following commands**
 
 ```bash
-# create a virtual environment
 python3.8 -m venv env-fges
-
-# activate the environment
 . env-fges/bin/activate
-```
 
-**Install RCAEval using Pip**
+pip install pip==20.0.2
+pip install -e .[rcd]
 
-```bash
-# build RCAEval from source
-pip install -e .[fges]
+cd LIB
+pip install -e .
+cd ..
+
+# it MUST be performed in this order
+sudo apt-get install -y gcc graphviz libgraphviz-dev pkg-config
+pip install dill pygobnilp
+pip install -U numba
+pip install category_encoders sortedcontainers fcit
+pip install pgmpy
+pip install feature_engine
 ```
 
 **Test the installation**
