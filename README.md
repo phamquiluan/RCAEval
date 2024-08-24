@@ -72,24 +72,22 @@ pip install RCAEval[default]
 Test the installation
 
 ```bash
-python rq2.py --method baro --dataset online-boutique --test
+pytest tests/test.py::test_basic
 ```
 
 Expected output after running the above code (it takes less than 1 minute)
 
 ```bash 
-$ python rq2.py --method baro --dataset online-boutique --test
-Downloading online-boutique.zip..: 100%|████| 31.0M/31.0M [00:06<00:00, 4.96MiB/s]
-100%|███████████████████████████████████████████████| 2/2 [00:00<00:00, 13.76it/s]
---- Evaluation results ---
-Avg@5-CPU:   0.94
-Avg@5-MEM:   0.67
-Avg@5-DISK:  0.72
-Avg@5-DELAY: 0.25
-Avg@5-LOSS:  0.51
----
-Avg speed: 0.07
+$ pytest tests/test.py::test_basic
+============================== test session starts ===============================
+platform linux -- Python 3.10.12, pytest-7.3.1, pluggy-1.0.0
+rootdir: /home/ubuntu/RCAEval
+plugins: dvc-2.57.3, hydra-core-1.3.2
+collected 1 item                                                                 
 
+tests/test.py .                                                            [100%]
+
+=============================== 1 passed in 3.16s ================================
 ```
 
 
