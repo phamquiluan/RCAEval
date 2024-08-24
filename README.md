@@ -68,6 +68,20 @@ Or, install RCAEval from PyPI
 pip install RCAEval[default]
 ```
 
+Test the installation
+
+```bash
+$ python rq2.py --method baro --dataset online-boutique --test
+100%|███████████████████████████████████████████████| 2/2 [00:00<00:00, 14.02it/s]
+--- Evaluation results ---
+Avg@5-CPU:   0.94
+Avg@5-MEM:   0.67
+Avg@5-DISK:  0.72
+Avg@5-DELAY: 0.25
+Avg@5-LOSS:  0.51
+---
+Avg speed: 0.07
+```
 
 
 ## How-to-use
@@ -129,6 +143,7 @@ options:
                         [circa10, circa50, rcd10, rcd50, causil10, causil50]
   --method METHOD       Choose a method (e.g. `pc`, `fci`, etc.)
   --length LENGTH       Specify the length of the time series (used for RQ4)
+  --test                Perform smoke test on certain methods without fully run
 ```
 
 For example, in Table 3, PC achieves F1, F1-S, and SHD scores of 0.49, 0.65, and 16 on the CIRCA 10 dataset. To reproduce these results, you can run the following commands:
