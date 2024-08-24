@@ -423,12 +423,12 @@ Downloading train-ticket.zip..: 100%|███████| 280M/280M [00:27<00:
 
 This repository includes code from various sources with different licenses. We have included their corresponding LICENSE into the [LICENSES](LICENSES) directory:
 
-- **CIRCA**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE_CIRCA). Original source: [CIRCA GitHub Repository](https://github.com/NetManAIOps/CIRCA).
-- **RCD**: Licensed under the [MIT License](LICENSES/LICENSE_RCD). Original source: [RCD GitHub Repository](https://github.com/azamikram/rcd).
-- **E-Diagnosis**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE_E-Diagnosis). Original source: [PyRCA GitHub Repository](https://github.com/salesforce/PyRCA).
-- **CausalAI**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE_CausalAI). Original source: [CausalAI GitHub Repository](https://github.com/salesforce/causalai).
-- **MicroCause**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE_MicroCause). Original source: [MicroCause GitHub Repository](https://github.com/PanYicheng/dycause_rca).
-- **PC/FCI**: Licensed under the [MIT License](LICENSES/LICENSE_CausalLearn). Original source: [Causal-learn GitHub Repository](https://github.com/py-why/causal-learn/blob/main/LICENSE).
+- **CIRCA**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE-CIRCA). Original source: [CIRCA GitHub Repository](https://github.com/NetManAIOps/CIRCA).
+- **RCD**: Licensed under the [MIT License](LICENSES/LICENSE-RCD). Original source: [RCD GitHub Repository](https://github.com/azamikram/rcd).
+- **E-Diagnosis**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE-E-Diagnosis). Original source: [PyRCA GitHub Repository](https://github.com/salesforce/PyRCA).
+- **CausalAI**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE-CausalAI). Original source: [CausalAI GitHub Repository](https://github.com/salesforce/causalai).
+- **MicroCause**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE-MicroCause). Original source: [MicroCause GitHub Repository](https://github.com/PanYicheng/dycause_rca).
+- **PC/FCI**: Licensed under the [MIT License](LICENSES/LICENSE-CausalLearn). Original source: [Causal-learn GitHub Repository](https://github.com/py-why/causal-learn/blob/main/LICENSE).
 
 **For the code implemented by us and for our datasets, we distribute them under the [MIT LICENSE](LICENSE)**.
 
