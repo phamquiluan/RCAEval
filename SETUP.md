@@ -143,7 +143,7 @@ python3.8 -m venv env-fges
 . env-fges/bin/activate
 
 pip install pip==20.0.2
-pip install -e .[rcd]
+pip install -e .[fges]
 
 cd LIB
 pip install -e .
