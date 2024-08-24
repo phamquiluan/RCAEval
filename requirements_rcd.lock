@@ -17,7 +17,7 @@ boto3==1.26.76
 botocore==1.29.76
 cairocffi==1.5.1
 CairoSVG==2.7.0
-causal-learn==0.1.3.3
+causal-learn==0.1.2.3
 causality==0.0.10
 celery==5.2.7
 certifi==2023.5.7
