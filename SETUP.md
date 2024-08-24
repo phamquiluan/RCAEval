@@ -98,40 +98,39 @@ python3.8 -m venv env-rcd
 . env-rcd/bin/activate
 ```
 
-**Install RCAEval using Pip**
+**Install using Pip**
 
 ```bash
 pip install pip==20.0.2
 pip install wheel
 pip install -e .[rcd]
+
 #IMPORTANT, run the following command to link the customized PC
-. script/link.sh
+bash script/link.sh
 ```
 
-**Test the installation**
+**Reproduce RCD**
 
-Users can perform testing using the following commands:
+Users can reproduce the RCA performance of the RCD method using the following command:
 
 ```bash
-pytest tests/test.py
+python rq2.py --method rcd --dataset online-boutique
 ```
 
 <details>
-<summary>The expected output would look like this</summary>
+<summary>The expected output would look like this (it takes ~33 minutes for 1 iteration)</summary>
 
 ```bash
-
-(ins)(env) luan@machine:~/ws/RCAEval$ pytest tests/test.py 
-============================================ test session starts =============================================
-platform linux -- Python 3.10.13, pytest-7.4.0, pluggy-1.3.0
-rootdir: /home/luan/ws/RCAEval
-collected 4 items                                                                                            
-
-tests/test.py ....                                                                                     [100%]
-
-======================================= 4 passed in 501.44s (0:08:21) ========================================
-(ins)(env) luan@machine:~/ws/RCAEval$ 
-
+$ python rq2.py --method rcd --dataset online-boutique
+100%|███████████████████████████████████████████| 125/125 [33:44<00:00, 16.20s/it]
+--- Evaluation results ---
+Avg@5-CPU:   0.94
+Avg@5-MEM:   0.67
+Avg@5-DISK:  0.68
+Avg@5-DELAY: 0.25
+Avg@5-LOSS:  0.51
+---
+Avg speed: 16.2
 ```
 </details>
 
