@@ -1,5 +1,4 @@
-name: Build and test
-
+name: Test PyPI Installation
 on:
   push:
     branches: [ "main" ]
@@ -7,7 +6,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-default:
+  test-pypi-installation:
 
     runs-on: ubuntu-latest
     strategy:
