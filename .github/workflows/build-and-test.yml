@@ -50,6 +50,8 @@ jobs:
       run: |
         sudo apt update -y
         sudo apt install -y build-essential libxml2 libxml2-dev zlib1g-dev python3-tk graphviz
+        python -m venv env-rcd
+        . env-rcd/bin/activate
         python -m pip install pip==20.0.2
         python -m pip install wheel
         python -m pip install .[rcd]
