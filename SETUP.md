@@ -163,25 +163,23 @@ pip install feature_engine
 Users can perform testing using the following commands:
 
 ```bash
-pytest tests/test.py
+python rq2.py --method fges_randomwalk --dataset online-boutique --test
 ```
 
 <details>
 <summary>The expected output would look like this</summary>
 
 ```bash
-
-(ins)(env) luan@machine:~/ws/RCAEval$ pytest tests/test.py 
-============================================ test session starts =============================================
-platform linux -- Python 3.10.13, pytest-7.4.0, pluggy-1.3.0
-rootdir: /home/luan/ws/RCAEval
-collected 4 items                                                                                            
-
-tests/test.py ....                                                                                     [100%]
-
-======================================= 4 passed in 501.44s (0:08:21) ========================================
-(ins)(env) luan@machine:~/ws/RCAEval$ 
-
+$ python rq2.py --method fges_randomwalk --dataset online-boutique --test
+100%|███████████████████████████████████████████████| 2/2 [01:04<00:00, 32.33s/it]
+--- Evaluation results ---
+Avg@5-CPU:   0.94
+Avg@5-MEM:   0.67
+Avg@5-DISK:  0.7
+Avg@5-DELAY: 0.25
+Avg@5-LOSS:  0.51
+---
+Avg speed: 32.33
 ```
 </details>
 
