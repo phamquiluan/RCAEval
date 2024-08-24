@@ -36,7 +36,7 @@ workflows:
   main-flow:
     jobs:
       - build-and-test
-  build-daily:
+  daily-build:
     triggers:
       - schedule:
           cron: "49 15 * * *"
