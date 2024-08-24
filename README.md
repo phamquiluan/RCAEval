@@ -427,6 +427,7 @@ This repository includes code from various sources with different licenses. We h
 - **RCD**: Licensed under the [MIT License](LICENSES/LICENSE-RCD). Original source: [RCD GitHub Repository](https://github.com/azamikram/rcd).
 - **E-Diagnosis**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE-E-Diagnosis). Original source: [PyRCA GitHub Repository](https://github.com/salesforce/PyRCA/blob/main/LICENSE).
 - **CausalAI**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE-CausalAI). Original source: [CausalAI GitHub Repository](https://github.com/salesforce/causalai/blob/main/LICENSE).
+- **NSigma**: Licensed under the [BSD 3-Clause License](LICENSES/LICENSE-NSigma). Original source: [Scikit-learn GitHub Repository](https://github.com/scikit-learn/scikit-learn?tab=BSD-3-Clause-1-ov-file).
 - **MicroCause**: Licensed under the [Apache License 2.0](LICENSES/LICENSE-MicroCause). Original source: [MicroCause GitHub Repository](https://github.com/PanYicheng/dycause_rca/blob/main/LICENSE).
 - **PC/FCI/LiNGAM**: Licensed under the [MIT License](LICENSES/LICENSE-CausalLearn). Original source: [Causal-learn GitHub Repository](https://github.com/py-why/causal-learn/blob/main/LICENSE).
 - **Granger**: Licensed under the [BSD 3-Clause "New" or "Revised" License](LICENSES/LICENSE-Granger). Original source: [Statsmodels GitHub Repository](https://github.com/statsmodels/statsmodels/blob/main/LICENSE.txt).
