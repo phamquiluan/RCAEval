@@ -101,7 +101,9 @@ The data must be a `pandas.DataFrame` that consists of multivariate time series 
 
 ### Basic usage example
 
-RCAEval stores all the RCA methods in the `e2e` module (implemented in `RCAEval.e2e`). A basic example to use BARO, an RCA baseline, to perform RCA are presented as follows,
+RCAEval stores all the RCA methods in the `e2e` module (implemented in `RCAEval.e2e`). Available methods are: pc_pagerank, pc_randomwalk, fci_pagerank, fci_randomwalk, granger_pagerank, granger_randomwalk, lingam_pagerank, lingam_randomwalk, fges_pagerank, fges_randomwalk, ntlr_pagerank, ntlr_randomwalk, causalrca, causalai, run, microcause, e_diagnosis, baro, rcd, nsigma, and circa.
+
+A basic example to use BARO, an RCA baseline, to perform RCA are presented as follows,
 
 ```python
 # You can put the code here to a file named test.py
