@@ -75,7 +75,7 @@ Test the installation
 python -m pytest tests/test.py::test_basic
 ```
 
-Expected output after running the above code (it takes less than 1 minute)
+Expected output after running the above command (it takes less than 1 minute)
 
 ```bash 
 $ pytest tests/test.py::test_basic
