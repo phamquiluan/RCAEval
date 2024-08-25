@@ -178,7 +178,7 @@ We can replace the pc method with other methods (e.g., fci, granger) and substit
 We provide a script named `rq2.py` to assist in reproducing the RQ2 results from our paper. This script can be executed using Python with the following syntax: 
 
 ```
-python rq2.py [-h] [--dataset] [--method] [--tbias TBIAS] [--length LENGTH] [--test] 
+python rq2.py [-h] [--dataset DATASET] [--method METHOD] [--tbias TBIAS] [--length LENGTH] [--test] 
 ```
 
 The available options and their descriptions are as follows:
