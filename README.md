@@ -186,7 +186,7 @@ The available options and their descriptions are as follows:
 ```
 options:
   -h, --help            Show this help message and exit
-  --dataset             Choose a dataset. Valid options:
+  --dataset DATASET     Choose a dataset. Valid options:
                         [online-boutique, sock-shop-1, sock-shop-2, train-ticket,
                          circa10, circa50, rcd10, rcd50, causil10, causil50]
   --method METHOD       Choose a method (`pc_pagerank`, `pc_randomwalk`, `fci_pagerank`, `fci_randomwalk`, `granger_pagerank`, `granger_randomwalk`, `lingam_pagerank`, `lingam_randomwalk`, `fges_pagerank`, `fges_randomwalk`, `ntlr_pagerank`, `ntlr_randomwalk`, `causalrca`, `causalai`, `run`, `microcause`, `e_diagnosis`, `baro`, `rcd`, `nsigma`, and `circa`)
