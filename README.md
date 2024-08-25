@@ -140,7 +140,7 @@ Top 5 root causes: ['emailservice_mem', 'recommendationservice_mem', 'cartservic
 We provide a script named `rq1.py` to assist in reproducing the RQ1 results from our paper. This script can be executed using Python with the following syntax: 
 
 ```
-python rq1.py [-h] [--dataset] [--method] [--length LENGTH] [--test]
+python rq1.py [-h] [--dataset DATASET] [--method METHOD] [--length LENGTH] [--test]
 ```
 
 The available options and their descriptions are as follows:
