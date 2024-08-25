@@ -25,7 +25,7 @@ This repository includes artifacts for reuse and reproduction of experimental re
 
 ## Prerequisites
 
-We recommend using machines equipped with at least 8 cores, 16GB RAM, and ~30GB available disk space with Ubuntu 22.04 or Ubuntu 20.04, and Python3.10 to stably reproduce the experimental results in our paper.
+We recommend using machines equipped with at least 8 cores, 16GB RAM, and ~30GB available disk space with Ubuntu 22.04 or Ubuntu 20.04, and Python3.10 installed to stably reproduce the experimental results in our paper.
 
 ## Installation
 
