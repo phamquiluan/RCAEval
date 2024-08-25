@@ -190,7 +190,7 @@ options:
                         [online-boutique, sock-shop-1, sock-shop-2, train-ticket,
                          circa10, circa50, rcd10, rcd50, causil10, causil50]
   --method METHOD       Choose a method (`pc_pagerank`, `pc_randomwalk`, `fci_pagerank`, `fci_randomwalk`, `granger_pagerank`, `granger_randomwalk`, `lingam_pagerank`, `lingam_randomwalk`, `fges_pagerank`, `fges_randomwalk`, `ntlr_pagerank`, `ntlr_randomwalk`, `causalrca`, `causalai`, `run`, `microcause`, `e_diagnosis`, `baro`, `rcd`, `nsigma`, and `circa`)
-  --tdelta              Specify $t_delta$ to simulate delay in anomaly detection
+  --tdelta              Specify $t_delta$ to simulate delay in anomaly detection (e.g.`--tdelta 60`)
   --length LENGTH       Specify the length of the time series (used for RQ4)
   --test                Perform smoke test on certain methods without fully run
 ```
