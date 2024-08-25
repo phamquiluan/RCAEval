@@ -47,10 +47,9 @@ Clone RCAEval from GitHub
 git clone https://github.com/phamquiluan/RCAEval.git && cd RCAEval
 ```
 
-Create virtual environment 
+Create virtual environment with Python 3.10 (refer [SETUP.md](SETUP.md) to see how to install Python3.10 on Linux)
 
 ```bash
-# you can refer to the SETUP.md file to see how we can install Python3.10 on Linux
 python3.10 -m venv env
 . env/bin/activate
 ```
