@@ -148,7 +148,7 @@ The available options and their descriptions are as follows:
 ```
 options:
   -h, --help            Show this help message and exit
-  --dataset             Choose a dataset. Valid options:
+  --dataset DATASET     Choose a dataset. Valid options:
                         [circa10, circa50, rcd10, rcd50, causil10, causil50]
   --method METHOD       Choose a method (e.g. `pc`, `fci`, `granger`, `ICALiNGAM`, `DirectLiNGAM`, `ges`, `fges`, `pcmci`, `ntlr`.)
   --length LENGTH       Specify the length of the time series (used for RQ4)
