@@ -417,7 +417,7 @@ Downloading train-ticket.zip..: 100%|███████| 280M/280M [00:27<00:
 
 ## Download Paper and Supplementary Material
 
-- Our paper can be downloaded at [docs/ase-paper.pdf](docs/ase-paper.pdf)
+- Our paper can be downloaded at https://dl.acm.org/doi/10.1145/3691620.3695065 or  [docs/ase-paper.pdf](docs/ase-paper.pdf)
 - Our supplementary material can be downloaded at [docs/ase-paper-supplementary-material.pdf](docs/ase-paper-supplementary-material.pdf)
 
 ## Licensing
