@@ -4,7 +4,7 @@ PRODID = "[A-Z0-9]{10}"
 NUM = "\\d+"
 
 
-[EventTemplate]
+[LogTemplate]
 E1 = "AddItemAsync called with userId=<:USERID:>, productId=<:PRODID:>, quantity=<:NUM:>"
 E2 = "GetCartAsync called with userId=<:USERID:>"
 E3 = "EmptyCartAsync called with userId=<:USERID:>"

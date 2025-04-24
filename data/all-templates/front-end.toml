@@ -3,7 +3,7 @@
 ID = "[a-z0-9]{24}"
 CustomerID = "[A-Za-z0-9]{26,34}"
 
-[EventTemplate]
+[LogTemplate]
 E00 = "<:ID:>"
 E0 = "nan"
 E1 = "Sent cookies."

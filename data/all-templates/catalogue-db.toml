@@ -4,7 +4,7 @@ NUM = "\\d+"
 LEVEL = "\\[(?:Warning|Note)\\]"
 HEADER = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3,6}Z \\d+ \\[(?:Warning|Note)\\]"
 
-[EventTemplate]
+[LogTemplate]
 E0 = "nan"
 E1 = "<:HEADER:> Aborted connection <:NUM:> to db: <*> user: <*> host: <*>"
 E2 = "<:HEADER:> Shutting down plugin <*>"

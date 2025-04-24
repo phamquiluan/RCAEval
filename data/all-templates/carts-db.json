@@ -1,0 +1,40 @@
+[
+    {
+      "Id": "01",
+      "LogField": [
+        "attr.message"
+      ],
+      "EventTemplate": {
+        "t": {
+          "$date": "<*>"
+        },
+        "s": "<*>",
+        "c": "<*>",
+        "id": "<*>",
+        "ctx": "<*>",
+        "msg": "<*>",
+        "attr": {
+          "message": "[<*>][<*>], WT_SESSION.checkpoint: [<*>] saving checkpoint snapshot min: <*>, snapshot max: <*> snapshot count: <*>, oldest timestamp: (<*>) , meta checkpoint timestamp: (<*>) base write gen: <*>"
+        }
+      }
+    },
+    {
+      "Id": "02",
+      "EventTemplate": {
+        "t": {
+          "$date": "<*>"
+        },
+        "s": "<*>",
+        "c": "<*>",
+        "id": "<*>",
+        "ctx": "<*>",
+        "msg": "<*>",
+        "attr": {
+          "remote": "<*>",
+          "uuid": "<*>",
+          "connectionId": "<*>",
+          "connectionCount": "<*>"
+        }
+      }
+    }
+  ]

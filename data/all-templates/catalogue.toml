@@ -6,7 +6,7 @@ HEADER = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3,6}Z \\d+ \\[(?:Warning
 METHOD = "(?:List|Get|Health)"
 IMAGES = "\"images/*\""
 
-[EventTemplate]
+[LogTemplate]
 E0 = "ts=<:DATETIME:> caller=logging.go:<:NUM:> method=<:METHOD:> tags= order=id pageNum=<:NUM:> pageSize=<:NUM:> result=<:NUM:> err=null took=<*>s"
 E1 = "ts=<:DATETIME:> caller=logging.go:<:NUM:> method=<:METHOD:> id=<*> sock=<*> err=null took=<*>s"
 E2 = "ts=<:DATETIME:> caller=logging.go:<:NUM:> method=<:METHOD:> result=<:NUM:> took=<*>s"

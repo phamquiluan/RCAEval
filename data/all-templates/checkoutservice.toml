@@ -3,7 +3,7 @@ DATETIME = "\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}"
 NUM = "\\d+"
 USERID = "[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}"
 
-[EventTemplate]
+[LogTemplate]
 E0 = "[PlaceOrder] user_id=\"<:USERID:>\" user_currency=<*>"
 E1 = "payment went through (transaction_id: <:USERID:>)"
 E2 = "order confirmation email sent to \"<*>@<*>.<*>"
