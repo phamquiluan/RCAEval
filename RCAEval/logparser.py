@@ -79,6 +79,8 @@ def mask_dict_values_in_log(log):
     return log
 
 class Template:
+    verbose = False
+
     def __init__(self):
         ...
 
@@ -94,8 +96,7 @@ class Template:
         ...
 
 
-
-class EventTemplate:
+class LogTemplate(Template):
     """
     A class to represent an event type (i.e., log template) for matching events/logs.
     It also offers various useful @staticmethod and @classmethod for mapping/parsing logs.
@@ -148,7 +149,7 @@ class EventTemplate:
             for line in file:
                 line = line.strip()
                 if line and not line.startswith('#'):
-                    templates.append(EventTemplate(template=line))
+                    templates.append(LogTemplate(template=line))
         return templates
 
     @staticmethod
@@ -160,9 +161,9 @@ class EventTemplate:
             config = toml.load(f)
         regex_patterns = config.get("Regex", {})
 
-        event_types = config.get("EventTemplate", {}) 
+        event_types = config.get("LogTemplate", {}) 
         for event_id, template in event_types.items():
-            template = EventTemplate(id=event_id, template=template, known_regex=regex_patterns)
+            template = LogTemplate(id=event_id, template=template, known_regex=regex_patterns)
             templates.append(template)
 
         return templates
@@ -170,9 +171,9 @@ class EventTemplate:
     @staticmethod 
     def load_templates(template_file):
         if template_file.endswith(".toml"):
-            return EventTemplate.load_templates_from_toml(template_file)
+            return LogTemplate.load_templates_from_toml(template_file)
         elif template_file.endswith(".txt"):
-            return EventTemplate.load_templates_from_txt(template_file)
+            return LogTemplate.load_templates_from_txt(template_file)
         else:
             raise ValueError(f"Unsupported template file format: {template_file}. Supported formats are .toml and .txt")
 
@@ -184,7 +185,7 @@ class EventTemplate:
             template_file (str): Path to the template file.
             log_file (str): Path to the log file.
         """
-        templates = EventTemplate.load_templates(template_file=template_file)
+        templates = LogTemplate.load_templates(template_file=template_file)
         log_file = open(log_file)
         df = pd.DataFrame(columns=['log', 'event type'])
         for line in log_file:
@@ -206,7 +207,7 @@ class EventTemplate:
         """
         Check if a log file matches multiple templates.
         """
-        templates = EventTemplate.load_templates(template_file)
+        templates = LogTemplate.load_templates(template_file)
             
         log_file = open(log_file)
         duplicate = False
@@ -233,7 +234,7 @@ class EventTemplate:
         """Check if all logs are match, given a template file"""
         # Load log file and template files
         log_file = open(log_file)
-        templates = EventTemplate.load_templates(template_file)
+        templates = LogTemplate.load_templates(template_file)
 
         # Declare local variables
         completeness = True
