@@ -78,6 +78,23 @@ def mask_dict_values_in_log(log):
  
     return log
 
+class Template:
+    def __init__(self):
+        ...
+
+    def __repr__(self):
+        ... 
+
+    def is_match(self, event):
+        # Check if the event matches the template.
+        ...
+    
+    @staticmethod
+    def load_templates(self, template_file):
+        ...
+
+
+
 class EventTemplate:
     """
     A class to represent an event type (i.e., log template) for matching events/logs.
