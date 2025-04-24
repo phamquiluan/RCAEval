@@ -3,7 +3,7 @@ To debug regex: https://www.debuggex.com/
 """
 import pytest 
 from tempfile import TemporaryFile, NamedTemporaryFile
-from RCAEval.logparser import EventTemplate
+from RCAEval.logparser import LogTemplate
 
 
 
@@ -28,7 +28,7 @@ from RCAEval.logparser import EventTemplate
     ),
 ])
 def test_load_and_match_template(pattern, no_matches, matches):
-    template = EventTemplate(template=pattern)
+    template = LogTemplate(template=pattern)
     
     # Test strings that should NOT match
     for no_match in no_matches:
@@ -47,10 +47,10 @@ def test_load_multiple_templates():
         "SEVERE: Exception while executing runnable <*>"
     )
     temfile.seek(0)
-    templates = EventTemplate.load_templates_from_txt(template_file=temfile.name)
+    templates = LogTemplate.load_templates_from_txt(template_file=temfile.name)
     assert len(templates) == 2
-    assert isinstance(templates[0], EventTemplate)
-    assert isinstance(templates[1], EventTemplate)
+    assert isinstance(templates[0], LogTemplate)
+    assert isinstance(templates[1], LogTemplate)
     assert templates[0].template == "received ad request (context_words=[<*>])"
     assert templates[1].template == "SEVERE: Exception while executing runnable <*>"
 
@@ -73,7 +73,7 @@ def test_file_matching():
     )
     log_file.seek(0)
 
-    df = EventTemplate.parse_logs(
+    df = LogTemplate.parse_logs(
         template_file=template_file.name,
         log_file=log_file.name,
     )
@@ -104,7 +104,7 @@ def test_detect_multiple_template():
     log_file.seek(0)
 
 
-    output = EventTemplate.is_duplicate(
+    output = LogTemplate.is_duplicate(
         template_file=template_file.name,
         log_file=log_file.name,
     )
@@ -131,7 +131,7 @@ def test_completeness():
     )
     log_file1.seek(0)
 
-    output = EventTemplate.is_complete(
+    output = LogTemplate.is_complete(
         template_file=template_file.name,
         log_file=log_file1.name,
     )
@@ -145,14 +145,14 @@ def test_completeness():
     )
     log_file2.seek(0)
 
-    output = EventTemplate.is_complete(
+    output = LogTemplate.is_complete(
         template_file=template_file.name,
         log_file=log_file2.name,
     )
     assert output == True
 
 def test_from_toml():
-    templates = EventTemplate.load_templates_from_toml("tests/data/carts.toml")
+    templates = LogTemplate.load_templates_from_toml("tests/data/carts.toml")
 
     log = """2024-01-18 16:31:07.450  WARN [carts,,,] 1 --- [tion/x-thrift})] z.r.AsyncReporter$BoundedAsyncReporter   : Dropped 2 spans due to UnknownHostException(zipkin)"""
     valid = False
