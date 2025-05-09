@@ -121,7 +121,7 @@ DATASET_MAP = {
     "train-ticket": "data/train-ticket",
     "re1-ob": "data/online-boutique",
     "re1-ss": "data/sock-shop-2",
-    "re1_tt": "data/train-ticket",
+    "re1-tt": "data/train-ticket",
     "re2-ob": "data/RE2/RE2-OB",
     "re2-ss": "data/RE2/RE2-SS",
     "re2-tt": "data/RE2/RE2-TT",
