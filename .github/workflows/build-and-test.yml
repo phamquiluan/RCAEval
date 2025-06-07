@@ -23,7 +23,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update -y
-        sudo apt install -y build-essential libxml2 libxml2-dev zlib1g-dev python3-tk graphviz
+        sudo apt install -y build-essential libxml2 libxml2-dev zlib1g-dev python3-tk graphviz libjpeg-dev zlib1g-dev
         python -m pip install .[default]
 
     - name: Test
@@ -47,7 +47,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update -y
-        sudo apt install -y build-essential libxml2 libxml2-dev zlib1g-dev python3-tk graphviz
+        sudo apt install -y build-essential libxml2 libxml2-dev zlib1g-dev python3-tk graphviz libjpeg-dev zlib1g-dev
         python -m venv env-rcd
         . env-rcd/bin/activate
         python -m pip install pip==20.0.2
