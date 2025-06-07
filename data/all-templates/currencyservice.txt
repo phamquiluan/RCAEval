@@ -1,8 +1,0 @@
-conversion request successful
-Getting supported currencies...
-Profiler disabled.
-CurrencyService gRPC server started on port <*>
-Starting gRPC server on port <*>...
-Tracing enabled.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:<*>) DeprecationWarning: Calling <*> is no longer necessary. It can be safely omitted.

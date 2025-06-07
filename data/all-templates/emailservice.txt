@@ -1,9 +1,0 @@
-A request to send order confirmation email to <*>@<*>.<*> has been received.
-starting the email service in dummy mode.
-Profiler disabled.
-listening on port: <*>
-Exception: non-dummy mode not implemented yet
-Transient error <*> encountered while exporting traces to <*>:<*>, retrying in <*>.
-Traceback (most recent call last):   File "<*>", line <*>, in <*>
-AttributeError: '<*>' object has no attribute '<*>'
-TypeError: <*> missing 1 required positional argument: <*>
