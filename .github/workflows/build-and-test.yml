@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.12"]
 
     steps:
     - uses: actions/checkout@v3
@@ -24,7 +24,6 @@ jobs:
       run: |
         sudo apt update -y
         sudo apt install -y build-essential libxml2 libxml2-dev zlib1g-dev python3-tk graphviz
-        python -m pip install pip==20.0.2
         python -m pip install .[default]
 
     - name: Test
