@@ -13,6 +13,10 @@ from sklearn.preprocessing import StandardScaler
 ENCODING = "utf-8"
 
 
+def is_py312():
+    return sys.version_info.major == 3 and sys.version_info.minor == 12
+
+
 def is_py310():
     return sys.version_info.major == 3 and sys.version_info.minor == 10
 
