@@ -39,7 +39,7 @@ RCAEval is an open-source benchmark that offers three datasets (RE1, RE2, RE3) a
 
 ## Prerequisites
 
-We recommend using machines equipped with at least 8 cores, 16GB RAM, and ~50GB available disk space with Ubuntu 22.04 or Ubuntu 20.04, and Python3.10 or above.
+We recommend using machines equipped with at least 8 cores, 16GB RAM, and ~50GB available disk space with Ubuntu 22.04 or Ubuntu 20.04, and **Python3.12**.
 
 ## Installation
 
@@ -61,10 +61,10 @@ Clone RCAEval from GitHub
 git clone https://github.com/phamquiluan/RCAEval.git && cd RCAEval
 ```
 
-Create virtual environment with Python 3.10 (refer [SETUP.md](docs/SETUP.md) to see how to install Python3.10 on Linux)
+Create virtual environment with Python 3.12 (refer [SETUP.md](docs/SETUP.md) to see how to install Python3.12 on Linux)
 
 ```bash
-python3.10 -m venv env
+python3.12 -m venv env
 . env/bin/activate
 ```
 
@@ -94,7 +94,7 @@ Expected output after running the above command (it takes less than 1 minute)
 ```bash 
 $ pytest tests/test.py::test_basic
 ============================== test session starts ===============================
-platform linux -- Python 3.10.12, pytest-7.3.1, pluggy-1.0.0
+platform linux -- Python 3.12.12, pytest-7.3.1, pluggy-1.0.0
 rootdir: /home/ubuntu/RCAEval
 plugins: dvc-2.57.3, hydra-core-1.3.2
 collected 1 item                                                                 

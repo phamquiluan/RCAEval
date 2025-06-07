@@ -1,6 +1,6 @@
 # Setup
 
-We assume the users are on Ubuntu machine and ready to have Python 3.10 installed. Then, the users can follow this instruction to install our RCAEval package. In addition, users who familiar with Continuous Integration (CI) can take a look at our CI configuration at [.circleci](.circleci) and [.github/workflows](.github/workflows)  to see how we install, test, and reproduce our RCAEval on different CI platforms including GitHub Action and CircleCI.
+We assume the users are on Ubuntu machine and ready to have Python 3.12 installed. Then, the users can follow this instruction to install our RCAEval package. In addition, users who familiar with Continuous Integration (CI) can take a look at our CI configuration at [.circleci](.circleci) and [.github/workflows](.github/workflows)  to see how we install, test, and reproduce our RCAEval on different CI platforms including GitHub Action and CircleCI.
 
 **Table of contents**
 
@@ -16,11 +16,11 @@ We assume the users are on Ubuntu machine and ready to have Python 3.10 installe
 ## Install Python and required packages
 
 ```bash
-# install Python 3.8 and Python3.10
+# install Python 3.8 and Python3.12
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt update -y
 sudo apt-get install -y python3.8 python3.8-dev python3.8-venv
-sudo apt-get install -y python3.10 python3.10-dev python3.10-venv
+sudo apt-get install -y python3.12 python3.12-dev python3.12-venv
 
 # install required packages
 sudo apt install -y build-essential \
@@ -45,7 +45,7 @@ We maintain two difference modes: `default`, `rcd` for RCAEval due to the depend
 
 ```bash
 # create a virtual environment
-python3.10 -m venv env
+python3.12 -m venv env
 
 # activate the environment
 . env/bin/activate
@@ -73,7 +73,7 @@ pytest tests/test.py
 ```bash
 $ pytest tests/test.py 
 ============================== test session starts ===============================
-platform linux -- Python 3.10.12, pytest-7.3.1, pluggy-1.0.0
+platform linux -- Python 3.12.12, pytest-7.3.1, pluggy-1.0.0
 rootdir: /home/ubuntu/RCAEval
 plugins: dvc-2.57.3, hydra-core-1.3.2
 collected 11 items                                                               
