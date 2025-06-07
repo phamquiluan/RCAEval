@@ -38,7 +38,7 @@ jobs:
           name: "Install packages"
           command: | 
               sudo apt update -y 
-              sudo apt install -y build-essential libxml2 libxml2-dev zlib1g-dev python3-tk graphviz
+              sudo apt install -y build-essential libxml2 libxml2-dev zlib1g-dev python3-tk graphviz libjpeg-dev zlib1g-dev
       - run:
           name: "Build "
           command: pip install -e .[default]
