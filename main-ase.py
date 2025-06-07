@@ -21,6 +21,7 @@ from RCAEval.classes.graph import Node
 from RCAEval.io.time_series import drop_constant, drop_time, preprocess
 from RCAEval.utility import (
     dump_json,
+    is_py312,
     is_py310,
     is_py38,
     load_json,
@@ -34,7 +35,7 @@ from RCAEval.utility import (
 )
 
 
-if is_py310():
+if is_py312():
     from RCAEval.e2e import (
         baro,
         causalrca,
@@ -67,7 +68,7 @@ if is_py310():
 elif is_py38():
     from RCAEval.e2e import dummy, e_diagnosis, ht, rcd, mmrcd
 else:
-    print(f"Please use Python 3.8 or 3.10 to run this script.")
+    print(f"Please use Python 3.8 or 3.12 to run this script.")
     exit(1)
 
 try:
