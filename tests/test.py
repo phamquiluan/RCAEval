@@ -22,7 +22,7 @@ def test_rq2_script():
 
 def test_basic():
     # You can put the code here to a file named test.py
-    from RCAEval.e2e import baro
+    from RCAEval.e2e.baro import baro
     from RCAEval.utility import download_data, read_data
 
     # download a sample data to data.csv
