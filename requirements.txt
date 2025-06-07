@@ -75,7 +75,7 @@ kiwisolver==1.4.4
 kombu==5.2.4
 lazy_loader==0.2
 littleutils==0.2.2
-numpy>=1.22.0
+numpy<2
 llvmlite
 markdown-it-py==2.2.0
 mdurl==0.1.2
