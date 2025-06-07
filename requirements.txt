@@ -44,14 +44,6 @@ distlib==0.3.6
 distro==1.8.0
 dpath==2.1.5
 dulwich==0.21.5
-dvc==2.57.3
-dvc-data==0.51.0
-dvc-http==2.30.2
-dvc-objects==0.22.0
-dvc-render==0.5.3
-dvc-s3==2.22.0
-dvc-studio-client==0.9.2
-dvc-task==0.2.1
 et-xmlfile==1.1.0
 exceptiongroup==1.1.1
 executing==1.2.0
@@ -118,7 +110,6 @@ pyagrum
 pycparser==2.21
 pydot==1.4.2
 pydotplus==2.0.2
-pygit2>=1.12.1
 Pygments==2.15.1
 pygtrie==2.5.0
 pyparsing==3.0.9
@@ -137,7 +128,6 @@ s3transfer==0.6.1
 scikit-learn
 scikit-network>=0.31.0
 scipy>=1.10.1
-scmrepo==1.0.3
 seaborn==0.12.2
 shortuuid==1.0.11
 shtab==1.6.1
