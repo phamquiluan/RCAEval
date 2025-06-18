@@ -25,6 +25,7 @@ from RCAEval.utility import (
     is_py312,
     load_json,
     download_online_boutique_dataset,
+    prepare_llm_ref_stack_dataset,
     download_sock_shop_1_dataset,
     download_sock_shop_2_dataset,
     download_train_ticket_dataset,
@@ -95,70 +96,70 @@ def parse_args():
 
     return args
 
+def prepare_data(args):
+    # download dataset
+    if "llm-ref-stack" in args.dataset:
+        prepare_llm_ref_stack_dataset(args.dataset_root)
+    elif "online-boutique" in args.dataset or "re1-ob" in args.dataset:
+        download_online_boutique_dataset()
+    elif "sock-shop-1" in args.dataset:
+        download_sock_shop_1_dataset()
+    elif "sock-shop-2" in args.dataset or "re1-ss" in args.dataset:
+        download_sock_shop_2_dataset()
+    elif "train-ticket" in args.dataset or "re1-tt" in args.dataset:
+        download_train_ticket_dataset()
+    elif "re2" in args.dataset:
+        download_re2_dataset()
+    elif "re3" in args.dataset:
+        download_re3_dataset()
+    else:
+        raise Exception(f"{args.dataset} is not defined!")
 
-args = parse_args()
+    DATASET_MAP = {
+        "llm-ref-stack": "data/llm-ref-stack",
+        "online-boutique": "data/online-boutique",
+        "sock-shop-1": "data/sock-shop-1",
+        "sock-shop-2": "data/sock-shop-2",
+        "train-ticket": "data/train-ticket",
+        "re1-ob": "data/online-boutique",
+        "re1-ss": "data/sock-shop-2",
+        "re1-tt": "data/train-ticket",
+        "re2-ob": "data/RE2/RE2-OB",
+        "re2-ss": "data/RE2/RE2-SS",
+        "re2-tt": "data/RE2/RE2-TT",
+        "re3-ob": "data/RE3/RE3-OB",
+        "re3-ss": "data/RE3/RE3-SS",
+        "re3-tt": "data/RE3/RE3-TT"
+    }
+    dataset = DATASET_MAP[args.dataset]
 
-# download dataset
-if "online-boutique" in args.dataset or "re1-ob" in args.dataset:
-    download_online_boutique_dataset()
-elif "sock-shop-1" in args.dataset:
-    download_sock_shop_1_dataset()
-elif "sock-shop-2" in args.dataset or "re1-ss" in args.dataset:
-    download_sock_shop_2_dataset()
-elif "train-ticket" in args.dataset or "re1-tt" in args.dataset:
-    download_train_ticket_dataset()
-elif "re2" in args.dataset:
-    download_re2_dataset()
-elif "re3" in args.dataset:
-    download_re3_dataset()
-else:
-    raise Exception(f"{args.dataset} is not defined!")
+    # prepare input paths
+    data_paths = list(glob.glob(os.path.join(dataset, "**/data.csv"), recursive=True))
+    if not data_paths: 
+        data_paths = list(glob.glob(os.path.join(dataset, "**/simple_metrics.csv"), recursive=True))
+    # new_data_paths = []
+    # for p in data_paths: 
+    #     if os.path.exists(p.replace("data.csv", "simple_data.csv")):
+    #         new_data_paths.append(p.replace("data.csv", "simple_data.csv"))
+    #     elif os.path.exists(p.replace("data.csv", "simple_metrics.csv")):
+    #         new_data_paths.append(p.replace("data.csv", "simple_metrics.csv"))
+    #     else:
+    #         new_data_paths.append(p)
+    # data_paths = new_data_paths
+    if args.test is True:
+        data_paths = data_paths[:2]
 
-DATASET_MAP = {
-    "online-boutique": "data/online-boutique",
-    "sock-shop-1": "data/sock-shop-1",
-    "sock-shop-2": "data/sock-shop-2",
-    "train-ticket": "data/train-ticket",
-    "re1-ob": "data/online-boutique",
-    "re1-ss": "data/sock-shop-2",
-    "re1-tt": "data/train-ticket",
-    "re2-ob": "data/RE2/RE2-OB",
-    "re2-ss": "data/RE2/RE2-SS",
-    "re2-tt": "data/RE2/RE2-TT",
-    "re3-ob": "data/RE3/RE3-OB",
-    "re3-ss": "data/RE3/RE3-SS",
-    "re3-tt": "data/RE3/RE3-TT"
-}
-dataset = DATASET_MAP[args.dataset]
-
-
-# prepare input paths
-data_paths = list(glob.glob(os.path.join(dataset, "**/data.csv"), recursive=True))
-if not data_paths: 
-    data_paths = list(glob.glob(os.path.join(dataset, "**/simple_metrics.csv"), recursive=True))
-# new_data_paths = []
-# for p in data_paths: 
-#     if os.path.exists(p.replace("data.csv", "simple_data.csv")):
-#         new_data_paths.append(p.replace("data.csv", "simple_data.csv"))
-#     elif os.path.exists(p.replace("data.csv", "simple_metrics.csv")):
-#         new_data_paths.append(p.replace("data.csv", "simple_metrics.csv"))
-#     else:
-#         new_data_paths.append(p)
-# data_paths = new_data_paths
-if args.test is True:
-    data_paths = data_paths[:2]
+    # prepare output paths
+    from tempfile import TemporaryDirectory
+    # output_path = TemporaryDirectory().name
+    output_path = "output"
+    report_path = join(output_path, f"report.xlsx")
+    result_path = join(output_path, "results")
+    os.makedirs(result_path, exist_ok=True)
+    return data_paths, result_path
 
 
-# prepare output paths
-from tempfile import TemporaryDirectory
-# output_path = TemporaryDirectory().name
-output_path = "output"
-report_path = join(output_path, f"report.xlsx")
-result_path = join(output_path, "results")
-os.makedirs(result_path, exist_ok=True)
-
-
-def process(data_path):
+def process(data_path, args, result_path):
     run_args = argparse.Namespace()
     run_args.root_path = os.getcwd()
     run_args.data_path = data_path
@@ -173,7 +174,7 @@ def process(data_path):
     service, metric = basename(dirname(dirname(data_path))).split("_")
     case = basename(dirname(data_path))
 
-    rp = join(result_path, f"{service}_{metric}_{case}.json")
+    rp = join(result_path, args.method, f"{service}_{metric}_{case}.json")
 
     # == Load and Preprocess data ==
     data = pd.read_csv(data_path)
@@ -215,24 +216,14 @@ def process(data_path):
     
     # == Get SLI ===
     sli = None
-    if "my-sock-shop" in data_path or "fse-ss" in data_path:
-        sli = "front-end_cpu"
+    if "llm-ref-stack" in data_path:
+        data = data.drop(columns=[col for col in data.columns if col.endswith('_ctn_gpu')])
+        sli = "nginx-proxy"
         if f"{service}_latency" in data:
             sli = f"{service}_latency"
-    elif "sock-shop" in data_path:
-        sli = "front-end_cpu"
         if f"{service}_lat_90" in data:
             sli = f"{service}_lat_90"
-    elif "train-ticket" in data_path or "fse-tt" in data_path or "RE2-TT" in data_path:
-        sli = "ts-ui-dashboard_latency"
-        if f"{service}_latency" in data:
-            sli = f"{service}_latency"
-    elif "online-boutique" in data_path or "fse-ob" in data_path or "RE2-OB" in data_path or "RE2-SS" in data_path:
-        sli = "frontend_latency"
-        if f"{service}_latency" in data:
-            sli = f"{service}_latency"
-        elif "frontend_1" in data:
-            sli = "frontend_1"
+
     else:
         raise ValueError("SLI not implemented")
 
@@ -266,126 +257,117 @@ def process(data_path):
         with open(rp, "w") as f:
             json.dump({"error": str(e)}, f)
 
+def run_evaluation(data_paths, args, result_path):
+    start_time = datetime.now()
 
-start_time = datetime.now()
+    for data_path in tqdm(sorted(data_paths)):
+        process(data_path, args, result_path)
 
-for data_path in tqdm(sorted(data_paths)):
-    process(data_path)
-
-end_time = datetime.now()
-time_taken = end_time - start_time
-avg_speed = round(time_taken.total_seconds() / len(data_paths), 2)
-
-
-# ======== EVALUTION ===========
-rps = glob.glob(join(result_path, "*.json"))
-services = sorted(list(set([basename(x).split("_")[0] for x in rps])))
-faults = sorted(list(set([basename(x).split("_")[1] for x in rps])))
-
-eval_data = {
-    "service-fault": [],
-    "top_1_service": [],
-    "top_3_service": [],
-    "top_5_service": [],
-    "avg@5_service": [],
-    "top_1_metric": [],
-    "top_3_metric": [],
-    "top_5_metric": [],
-    "avg@5_metric": [],
-}
-
-s_evaluator_all = Evaluator()
-f_evaluator_all = Evaluator()
-s_evaluator_cpu = Evaluator()
-f_evaluator_cpu = Evaluator()
-s_evaluator_mem = Evaluator()
-f_evaluator_mem = Evaluator()
-s_evaluator_lat = Evaluator()
-f_evaluator_lat = Evaluator()
-s_evaluator_loss = Evaluator()
-f_evaluator_loss = Evaluator()
-s_evaluator_io = Evaluator()
-f_evaluator_io = Evaluator()
-s_evaluator_socket = Evaluator()
-f_evaluator_socket = Evaluator()
-
-for service in services:
-    for fault in faults:
-        s_evaluator = Evaluator()
-        f_evaluator = Evaluator()
-
-        for rp in rps:
-            s, m = basename(rp).split("_")[:2]
-            if s != service or m != fault:
-                continue  # ignore
-
-            data = load_json(rp)
-            if "error" in data:
-                continue  # ignore
-
-            for i, ranks in data.items():
-                s_ranks = [Node(x.split("_")[0].replace("-db", ""), "unknown") for x in ranks]
-                # remove duplication
-                old_s_ranks = s_ranks.copy()
-                s_ranks = (
-                    [old_s_ranks[0]]
-                    + [
-                        old_s_ranks[i]
-                        for i in range(1, len(old_s_ranks))
-                        if old_s_ranks[i] not in old_s_ranks[:i]
-                    ]
-                    if old_s_ranks
-                    else []
-                )
-
-                f_ranks = [Node(x.split("_")[0], x.split("_")[1]) for x in ranks]
-
-                s_evaluator.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                f_evaluator.add_case(ranks=f_ranks, answer=Node(service, fault))
-
-                if fault == "cpu":
-                    s_evaluator_cpu.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_cpu.add_case(ranks=f_ranks, answer=Node(service, fault))
-
-                    s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, fault))
-
-                elif fault == "mem":
-                    s_evaluator_mem.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_mem.add_case(ranks=f_ranks, answer=Node(service, fault))
-
-                    s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, fault))
-
-                elif fault == "delay":
-                    s_evaluator_lat.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_lat.add_case(ranks=f_ranks, answer=Node(service, "latency"))
-
-                    s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, "latency"))
-
-                elif fault == "loss":
-                    s_evaluator_loss.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_loss.add_case(ranks=f_ranks, answer=Node(service, "latency"))
-
-                    s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, "latency"))
-
-                elif fault == "disk":
-                    s_evaluator_io.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_io.add_case(ranks=f_ranks, answer=Node(service, "diskio"))
-
-                    s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, "diskio"))
-                elif fault == "socket":
-                    s_evaluator_socket.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_socket.add_case(ranks=f_ranks, answer=Node(service, "socket"))
-
-                    s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, "socket"))
+    end_time = datetime.now()
+    time_taken = end_time - start_time
+    avg_speed = round(time_taken.total_seconds() / len(data_paths), 2)
 
 
-        eval_data["service-fault"].append(f"{service}_{fault}")
+    # ======== EVALUTION ===========
+    rps = glob.glob(join(result_path, args.method, "*.json"))
+    services = sorted(list(set([basename(x).split("_")[0] for x in rps])))
+    faults = sorted(list(set([basename(x).split("_")[1] for x in rps])))
+
+    eval_data = {
+        "service-fault": [],
+        "top_1_service": [],
+        "top_3_service": [],
+        "top_5_service": [],
+        "avg@5_service": [],
+        "top_1_metric": [],
+        "top_3_metric": [],
+        "top_5_metric": [],
+        "avg@5_metric": [],
+    }
+
+    s_evaluator_all = Evaluator()
+    f_evaluator_all = Evaluator()
+    s_evaluator_cpu = Evaluator()
+    f_evaluator_cpu = Evaluator()
+    s_evaluator_mem = Evaluator()
+    f_evaluator_mem = Evaluator()
+    s_evaluator_lat = Evaluator()
+    f_evaluator_lat = Evaluator()
+
+    for service in services:
+        for fault in faults:
+            s_evaluator = Evaluator()
+            f_evaluator = Evaluator()
+
+            for rp in rps:
+                s, m = basename(rp).split("_")[:2]
+                if s != service or m != fault:
+                    continue  # ignore
+
+                data = load_json(rp)
+                if "error" in data:
+                    continue  # ignore
+
+                for i, ranks in data.items():
+                    s_ranks = [Node(x.split("_")[0].replace("-db", ""), "unknown") for x in ranks]
+                    # remove duplication
+                    old_s_ranks = s_ranks.copy()
+                    s_ranks = (
+                        [old_s_ranks[0]]
+                        + [
+                            old_s_ranks[i]
+                            for i in range(1, len(old_s_ranks))
+                            if old_s_ranks[i] not in old_s_ranks[:i]
+                        ]
+                        if old_s_ranks
+                        else []
+                    )
+
+                    f_ranks = [Node(x.split("_")[0], x.split("_")[1]) for x in ranks]
+
+                    s_evaluator.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
+                    f_evaluator.add_case(ranks=f_ranks, answer=Node(service, fault))
+
+                    if fault == "cpu":
+                        s_evaluator_cpu.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
+                        f_evaluator_cpu.add_case(ranks=f_ranks, answer=Node(service, fault))
+
+                        s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
+                        f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, fault))
+
+                    elif fault == "mem":
+                        s_evaluator_mem.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
+                        f_evaluator_mem.add_case(ranks=f_ranks, answer=Node(service, fault))
+
+                        s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
+                        f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, fault))
+
+                    elif fault == "delay":
+                        s_evaluator_lat.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
+                        f_evaluator_lat.add_case(ranks=f_ranks, answer=Node(service, "latency"))
+
+                        s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
+                        f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, "latency"))
+
+
+            eval_data["service-fault"].append(f"{service}_{fault}")
+            eval_data["top_1_service"].append(s_evaluator.accuracy(1))
+            eval_data["top_3_service"].append(s_evaluator.accuracy(3))
+            eval_data["top_5_service"].append(s_evaluator.accuracy(5))
+            eval_data["avg@5_service"].append(s_evaluator.average(5))
+            eval_data["top_1_metric"].append(f_evaluator.accuracy(1))
+            eval_data["top_3_metric"].append(f_evaluator.accuracy(3))
+            eval_data["top_5_metric"].append(f_evaluator.accuracy(5))
+            eval_data["avg@5_metric"].append(f_evaluator.average(5))
+
+
+    print(f"--- Evaluation results for '{args.method}' ---")
+    for name, s_evaluator, f_evaluator in [
+        ("cpu", s_evaluator_cpu, f_evaluator_cpu),
+        ("mem", s_evaluator_mem, f_evaluator_mem),
+        ("delay", s_evaluator_lat, f_evaluator_lat),
+    ]:
+        eval_data["service-fault"].append(f"overall_{name}")
         eval_data["top_1_service"].append(s_evaluator.accuracy(1))
         eval_data["top_3_service"].append(s_evaluator.accuracy(3))
         eval_data["top_5_service"].append(s_evaluator.accuracy(5))
@@ -395,33 +377,17 @@ for service in services:
         eval_data["top_5_metric"].append(f_evaluator.accuracy(5))
         eval_data["avg@5_metric"].append(f_evaluator.average(5))
 
-
-print("--- Evaluation results ---")
-for name, s_evaluator, f_evaluator in [
-    ("cpu", s_evaluator_cpu, f_evaluator_cpu),
-    ("mem", s_evaluator_mem, f_evaluator_mem),
-    ("io", s_evaluator_io, f_evaluator_io),
-    ("socket", s_evaluator_socket, f_evaluator_socket),
-    ("delay", s_evaluator_lat, f_evaluator_lat),
-    ("loss", s_evaluator_loss, f_evaluator_loss),
-]:
-    eval_data["service-fault"].append(f"overall_{name}")
-    eval_data["top_1_service"].append(s_evaluator.accuracy(1))
-    eval_data["top_3_service"].append(s_evaluator.accuracy(3))
-    eval_data["top_5_service"].append(s_evaluator.accuracy(5))
-    eval_data["avg@5_service"].append(s_evaluator.average(5))
-    eval_data["top_1_metric"].append(f_evaluator.accuracy(1))
-    eval_data["top_3_metric"].append(f_evaluator.accuracy(3))
-    eval_data["top_5_metric"].append(f_evaluator.accuracy(5))
-    eval_data["avg@5_metric"].append(f_evaluator.average(5))
-
-    if name == "io":
-        name = "disk"
-
-    if s_evaluator.average(5) is not None:
-        print( f"Avg@5-{name.upper()}:".ljust(12), round(s_evaluator.average(5), 2))
+        if s_evaluator.average(5) is not None:
+            print( f"Avg@5-{name.upper()}:".ljust(12), round(s_evaluator.average(5), 2))
 
 
-print("---")
-print("Avg speed:", avg_speed)
+    print("---")
+    print("Avg speed:", avg_speed)
+
+def main(args):
+    data_paths, result_path = prepare_data(args)
+    run_evaluation(data_paths, args, result_path)
+
+if __name__ == "__main__":
+    main(parse_args())
 

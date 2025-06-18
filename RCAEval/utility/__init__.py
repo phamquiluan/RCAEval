@@ -1,4 +1,7 @@
+from datetime import datetime
 import json
+import pathlib
+import shutil
 import sys
 import os
 from os.path import join
@@ -130,8 +133,72 @@ def download_online_boutique_dataset(local_path=None):
     with zipfile.ZipFile("online-boutique.zip", 'r') as file:
         file.extractall(local_path)
     os.remove("online-boutique.zip")
+
+###################################################
+# LLM Ref Stack
+def prepare_llm_ref_stack_dataset(local_root_path, local_path=None):
+    def extract_anomaly_type(folder_name):
+        if 'cpu-stress' in folder_name:
+            return 'cpu-stress', 'stress-chaos-cpu', "cpu"
+        elif 'memory-stress' in folder_name:
+            return 'memory-stress', 'stress-chaos-memory', "mem"
+        elif 'network-stress' in folder_name:
+            return 'network-stress', 'network-chaos-delay', "delay"
+        return None, None, None
+
+    """Prepare the LLM Ref Stack dataset from the local root path."""
+    if local_path == None:
+        local_path = "data"
+    if not os.path.exists(local_path):
+        os.makedirs(local_path)
+    if os.path.exists(join(local_path, "llm-ref-stack")):
+        return
+    else:
+        os.makedirs(join(local_path, "llm-ref-stack"))
     
-    
+    for item in os.listdir(local_root_path):
+        item_path = os.path.join(local_root_path, item)
+        if not os.path.isdir(item_path) or item.startswith('.'):
+            continue
+
+        anomaly_type, fault_name, fault_name_short = extract_anomaly_type(item)
+        if not anomaly_type:
+            continue
+
+        target = item.split(f'-{anomaly_type}-')[-1]
+
+        for cand in os.listdir(os.path.join(item_path, 'results')):
+            cand_path = os.path.join(item_path, 'results', cand)
+            if not os.path.isdir(cand_path) or cand.startswith('.'):
+                continue
+
+            iteration = cand.split('-iteration-')[-1]
+
+            new_iter_path = pathlib.Path(f"{local_path}/llm-ref-stack/{target}_{fault_name_short}/{iteration}")
+            new_iter_path.mkdir(parents=True, exist_ok=True)
+            ### prepare metric data
+            exp_dir_path = pathlib.Path(f"{cand_path}/rca-collector-results")
+            data_df = pd.read_csv(exp_dir_path.joinpath('data.csv'))
+            latency_df = pd.read_csv(exp_dir_path.joinpath('latency_aggregated_90.csv'))
+            latency_df = latency_df.rename(columns={col: f"{col}_latency-90" for col in latency_df.columns if col != "time"})
+            new_data_df = pd.merge(data_df, latency_df, on="time")
+            new_data_df["time"] = pd.to_datetime(new_data_df["time"]).astype("int64") // 10**9
+            new_data_df = new_data_df.loc[:, ~new_data_df.columns.str.contains('^Unnamed')]
+            new_data_df.to_csv(new_iter_path.joinpath('data.csv'), index=False)
+            ### prepare injection time
+            # Load JSON data from file
+            with open(exp_dir_path.parent.joinpath('apply_result_chaos_anomaly_injection.json'), 'r') as f:
+                data = json.load(f)
+            # Extract creationTimestamp
+            timestamp_str = data["result"]["metadata"]["creationTimestamp"]
+            # Convert to epoch time (UTC)
+            dt = datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%SZ")
+            # Write to file
+            with open(new_iter_path.joinpath('inject_time.txt'), "w") as f:
+                f.write(str(int(dt.timestamp())) + "\n")
+
+###################################################
+
 def download_sock_shop_1_dataset(local_path=None):
     """Download the Sock Shop 1 dataset from Zenodo."""
     if local_path == None:
