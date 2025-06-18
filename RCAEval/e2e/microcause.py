@@ -2305,18 +2305,15 @@ def microcause(
     pcmci, pcmci_res = run_pcmci(np_data, pc_alpha=0.1, verbosity=0)
 
     def get_links(pcmci, results, alpha_level=0.01):
-        pcmci_links = pcmci.return_significant_links(
-            results["p_matrix"],
-            results["val_matrix"],
-            alpha_level=alpha_level,
-            include_lagzero_links=False,
-        )
+        sig_links = (results["graph"] != "") * (results["graph"] != "<--")
         g = nx.DiGraph()
         for i in range(len(node_names)):
             g.add_node(i)
-        for n, links in pcmci_links["link_dict"].items():
+        for i in range(len(node_names)):
+            links = {(p[0], -p[1]): np.abs(results["val_matrix"][p[0], i, abs(p[1])])
+                     for p in zip(*np.where(sig_links[:, i, :]))}
             for l in links:
-                g.add_edge(n, l[0])
+                g.add_edge(i, l[0])
         return g
 
     g = get_links(pcmci, pcmci_res, alpha_level=0.001)
