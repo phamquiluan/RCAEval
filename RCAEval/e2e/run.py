@@ -576,7 +576,7 @@ def Run(datafile, args):
         pass
     columns = list(df_data)
 
-    for c in columns: 
+    for c in columns:
         idx = df_data.columns.get_loc(c)
         edge = GraphConstruct(c, cuda=args.cuda, epochs=args.epochs, 
         lr=args.learning_rate, optimizername=args.optimizer, file=datafile, args=args)

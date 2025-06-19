@@ -63,6 +63,7 @@ if is_py312():
         pc_randomwalk,
         run,
         tracerca,
+        causalai,
     )
 
 elif is_py38():
@@ -153,10 +154,10 @@ def prepare_data(args):
     from tempfile import TemporaryDirectory
     # output_path = TemporaryDirectory().name
     output_path = "output"
-    report_path = join(output_path, f"report.xlsx")
-    result_path = join(output_path, "results")
+    report_path = join(output_path, args.method, f"report.csv")
+    result_path = join(output_path, args.method, "results")
     os.makedirs(result_path, exist_ok=True)
-    return data_paths, result_path
+    return data_paths, result_path, report_path
 
 
 def process(data_path, args, result_path):
@@ -174,7 +175,7 @@ def process(data_path, args, result_path):
     service, metric = basename(dirname(dirname(data_path))).split("_")
     case = basename(dirname(data_path))
 
-    rp = join(result_path, args.method, f"{service}_{metric}_{case}.json")
+    rp = join(result_path, f"{service}_{metric}_{case}.json")
 
     # == Load and Preprocess data ==
     data = pd.read_csv(data_path)
@@ -218,6 +219,7 @@ def process(data_path, args, result_path):
     sli = None
     if "llm-ref-stack" in data_path:
         data = data.drop(columns=[col for col in data.columns if col.endswith('_ctn_gpu')])
+        data = data.drop(columns=[col for col in data.columns if "_node_" in col])
         sli = "nginx-proxy"
         if f"{service}_latency" in data:
             sli = f"{service}_latency"
@@ -257,7 +259,7 @@ def process(data_path, args, result_path):
         with open(rp, "w") as f:
             json.dump({"error": str(e)}, f)
 
-def run_evaluation(data_paths, args, result_path):
+def run_evaluation(data_paths, args, result_path, report_path):
     start_time = datetime.now()
 
     for data_path in tqdm(sorted(data_paths)):
@@ -269,7 +271,7 @@ def run_evaluation(data_paths, args, result_path):
 
 
     # ======== EVALUTION ===========
-    rps = glob.glob(join(result_path, args.method, "*.json"))
+    rps = glob.glob(join(result_path, "*.json"))
     services = sorted(list(set([basename(x).split("_")[0] for x in rps])))
     faults = sorted(list(set([basename(x).split("_")[1] for x in rps])))
 
@@ -279,20 +281,12 @@ def run_evaluation(data_paths, args, result_path):
         "top_3_service": [],
         "top_5_service": [],
         "avg@5_service": [],
-        "top_1_metric": [],
-        "top_3_metric": [],
-        "top_5_metric": [],
-        "avg@5_metric": [],
     }
 
     s_evaluator_all = Evaluator()
-    f_evaluator_all = Evaluator()
     s_evaluator_cpu = Evaluator()
-    f_evaluator_cpu = Evaluator()
     s_evaluator_mem = Evaluator()
-    f_evaluator_mem = Evaluator()
     s_evaluator_lat = Evaluator()
-    f_evaluator_lat = Evaluator()
 
     for service in services:
         for fault in faults:
@@ -330,24 +324,15 @@ def run_evaluation(data_paths, args, result_path):
 
                     if fault == "cpu":
                         s_evaluator_cpu.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                        f_evaluator_cpu.add_case(ranks=f_ranks, answer=Node(service, fault))
-
                         s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                        f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, fault))
 
                     elif fault == "mem":
                         s_evaluator_mem.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                        f_evaluator_mem.add_case(ranks=f_ranks, answer=Node(service, fault))
-
                         s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                        f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, fault))
 
                     elif fault == "delay":
                         s_evaluator_lat.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                        f_evaluator_lat.add_case(ranks=f_ranks, answer=Node(service, "latency"))
-
                         s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                        f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, "latency"))
 
 
             eval_data["service-fault"].append(f"{service}_{fault}")
@@ -355,38 +340,34 @@ def run_evaluation(data_paths, args, result_path):
             eval_data["top_3_service"].append(s_evaluator.accuracy(3))
             eval_data["top_5_service"].append(s_evaluator.accuracy(5))
             eval_data["avg@5_service"].append(s_evaluator.average(5))
-            eval_data["top_1_metric"].append(f_evaluator.accuracy(1))
-            eval_data["top_3_metric"].append(f_evaluator.accuracy(3))
-            eval_data["top_5_metric"].append(f_evaluator.accuracy(5))
-            eval_data["avg@5_metric"].append(f_evaluator.average(5))
 
 
     print(f"--- Evaluation results for '{args.method}' ---")
     for name, s_evaluator, f_evaluator in [
-        ("cpu", s_evaluator_cpu, f_evaluator_cpu),
-        ("mem", s_evaluator_mem, f_evaluator_mem),
-        ("delay", s_evaluator_lat, f_evaluator_lat),
+        ("cpu", s_evaluator_cpu),
+        ("mem", s_evaluator_mem),
+        ("delay", s_evaluator_lat),
     ]:
         eval_data["service-fault"].append(f"overall_{name}")
         eval_data["top_1_service"].append(s_evaluator.accuracy(1))
         eval_data["top_3_service"].append(s_evaluator.accuracy(3))
         eval_data["top_5_service"].append(s_evaluator.accuracy(5))
         eval_data["avg@5_service"].append(s_evaluator.average(5))
-        eval_data["top_1_metric"].append(f_evaluator.accuracy(1))
-        eval_data["top_3_metric"].append(f_evaluator.accuracy(3))
-        eval_data["top_5_metric"].append(f_evaluator.accuracy(5))
-        eval_data["avg@5_metric"].append(f_evaluator.average(5))
 
         if s_evaluator.average(5) is not None:
+            print( f"AC@1-{name.upper()}:".ljust(12), round(s_evaluator.accuracy(1), 2))
+            print( f"AC@3-{name.upper()}:".ljust(12), round(s_evaluator.accuracy(3), 2))
+            print( f"AC@5-{name.upper()}:".ljust(12), round(s_evaluator.accuracy(5), 2))
             print( f"Avg@5-{name.upper()}:".ljust(12), round(s_evaluator.average(5), 2))
-
 
     print("---")
     print("Avg speed:", avg_speed)
+    pd.DataFrame(eval_data).to_csv(report_path, index=False)
 
 def main(args):
-    data_paths, result_path = prepare_data(args)
-    run_evaluation(data_paths, args, result_path)
+    data_paths, result_path, report_path = prepare_data(args)
+    if not (any(os.path.isfile(os.path.join(result_path, f)) for f in os.listdir(result_path))):
+        run_evaluation(data_paths, args, result_path, report_path)
 
 if __name__ == "__main__":
     main(parse_args())

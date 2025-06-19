@@ -86,7 +86,11 @@ def page_rank(adj, node_names=None, damping_factor=0.85, solver="piteration", n_
     # pr = PageRank()
 
     # transpose before fit
-    scores = pr.fit_transform(pr_input)
+    # since v0.32 of scikit-network, fit_transform is deprecated, use fit_predict instead
+    if hasattr(pr, "fit_transform"):
+        scores = pr.fit_transform(pr_input)
+    else:
+        scores = pr.fit_predict(pr_input)
 
     # merge scores and node names, sort by scores
     output = list(zip(node_names, scores))

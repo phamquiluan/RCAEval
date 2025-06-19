@@ -12,6 +12,7 @@ def ges_pagerank(data, inject_time=None, dataset=None, **kwargs):
     record = ges(data)
     G = record["G"]
     ranks = page_rank(G.graph, node_names=data.columns.to_list())
+    ranks = [x[0] for x in ranks]
     return {
         "adj": G.graph,
         "node_names": data.columns.to_list(),

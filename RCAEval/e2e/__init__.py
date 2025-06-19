@@ -34,7 +34,7 @@ if is_py310() or is_py312():
     try:
         from .causalai import causalai
     except Exception as e:
-        pass
+        print(f"Error importing causalai: {e}")
     from .baro import baro, mmbaro, mmnsigma
     from .causalrca import causalrca
     from .circa import circa
