@@ -103,7 +103,7 @@ def parse_args():
 def prepare_data(args):
     # download dataset
     if "llm-ref-stack" in args.dataset:
-        prepare_llm_ref_stack_dataset(args.dataset_root)
+        prepare_llm_ref_stack_dataset(args.dataset_root, args.dataset)
     elif "online-boutique" in args.dataset or "re1-ob" in args.dataset:
         download_online_boutique_dataset()
     elif "sock-shop-1" in args.dataset:
@@ -120,7 +120,7 @@ def prepare_data(args):
         raise Exception(f"{args.dataset} is not defined!")
 
     DATASET_MAP = {
-        "llm-ref-stack": "data/llm-ref-stack",
+        "llm-ref-stack-dp": "data/llm-ref-stack-dp",
         "online-boutique": "data/online-boutique",
         "sock-shop-1": "data/sock-shop-1",
         "sock-shop-2": "data/sock-shop-2",
@@ -157,8 +157,8 @@ def prepare_data(args):
     from tempfile import TemporaryDirectory
     # output_path = TemporaryDirectory().name
     output_path = "output"
-    report_path = join(output_path, args.method, f"report.csv")
-    result_path = join(output_path, args.method, "results")
+    report_path = join(output_path, args.dataset, args.method, f"report.csv")
+    result_path = join(output_path, args.dataset, args.method, "results")
     os.makedirs(result_path, exist_ok=True)
     return data_paths, result_path, report_path
 

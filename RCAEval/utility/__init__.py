@@ -136,7 +136,7 @@ def download_online_boutique_dataset(local_path=None):
 
 ###################################################
 # LLM Ref Stack
-def prepare_llm_ref_stack_dataset(local_root_path, local_path=None):
+def prepare_llm_ref_stack_dataset(local_root_path, dataset_name):
     def extract_anomaly_type(folder_name):
         if 'cpu-stress' in folder_name:
             return 'cpu-stress', 'stress-chaos-cpu', "cpu"
@@ -147,17 +147,16 @@ def prepare_llm_ref_stack_dataset(local_root_path, local_path=None):
         return None, None, None
 
     """Prepare the LLM Ref Stack dataset from the local root path."""
-    if local_path == None:
-        local_path = "data"
+    local_path = "data"
     if not os.path.exists(local_path):
         os.makedirs(local_path)
-    if os.path.exists(join(local_path, "llm-ref-stack")):
+    if os.path.exists(join(local_path, dataset_name)):
         return
     else:
-        os.makedirs(join(local_path, "llm-ref-stack"))
+        os.makedirs(join(local_path, dataset_name))
     
-    for item in os.listdir(local_root_path):
-        item_path = os.path.join(local_root_path, item)
+    for item in os.listdir(os.path.join(local_root_path, dataset_name)):
+        item_path = os.path.join(local_root_path, dataset_name, item)
         if not os.path.isdir(item_path) or item.startswith('.'):
             continue
 
@@ -174,7 +173,7 @@ def prepare_llm_ref_stack_dataset(local_root_path, local_path=None):
 
             iteration = cand.split('-iteration-')[-1]
 
-            new_iter_path = pathlib.Path(f"{local_path}/llm-ref-stack/{target}_{fault_name_short}/{iteration}")
+            new_iter_path = pathlib.Path(f"{local_path}/{dataset_name}/{target}_{fault_name_short}/{iteration}")
             new_iter_path.mkdir(parents=True, exist_ok=True)
             ### prepare metric data
             exp_dir_path = pathlib.Path(f"{cand_path}/rca-collector-results")
