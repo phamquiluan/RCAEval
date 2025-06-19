@@ -343,7 +343,7 @@ def run_evaluation(data_paths, args, result_path, report_path):
 
 
     print(f"--- Evaluation results for '{args.method}' ---")
-    for name, s_evaluator, f_evaluator in [
+    for name, s_evaluator in [
         ("cpu", s_evaluator_cpu),
         ("mem", s_evaluator_mem),
         ("delay", s_evaluator_lat),

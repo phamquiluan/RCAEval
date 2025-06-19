@@ -6,9 +6,9 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 from causallearn.utils.cit import chisq
-from causallearn.utils.PCUtils import SkeletonDiscovery
 from sklearn.preprocessing import KBinsDiscretizer
 
+from RCAEval.utility.SkeletonDiscovery import local_skeleton_discovery, skeleton_discovery
 from RCAEval.io.time_series import drop_extra
 
 warnings.filterwarnings("ignore")
@@ -77,7 +77,7 @@ def run_pc(data, alpha, localized=False, labels={}, mi=[], verbose=VERBOSE):
     if localized:
         f_node = np_data.shape[1] - 1
         # Localized PC
-        cg = SkeletonDiscovery.local_skeleton_discovery(
+        cg = local_skeleton_discovery(
             np_data,
             f_node,
             alpha,
@@ -87,7 +87,7 @@ def run_pc(data, alpha, localized=False, labels={}, mi=[], verbose=VERBOSE):
             verbose=verbose,
         )
     else:
-        cg = SkeletonDiscovery.skeleton_discovery(
+        cg = skeleton_discovery(
             np_data,
             alpha,
             indep_test=CI_TEST,

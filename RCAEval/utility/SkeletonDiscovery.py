@@ -1,10 +1,10 @@
 from itertools import combinations
 
 import numpy as np
-from causallearn.graph.GraphClass import CausalGraph
 from causallearn.utils.cit import chisq, gsq
 from causallearn.utils.PCUtils.Helper import append_value
 from tqdm.auto import tqdm
+from RCAEval.utility.GraphClass import CausalGraph
 
 
 def skeleton_discovery(
