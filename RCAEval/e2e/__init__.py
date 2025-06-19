@@ -57,6 +57,7 @@ if is_py310() or is_py312():
     from .run import run
     from .mscred import mscred
     from .tracerca import tracerca
+    from .extra_methods import microrca, microscope, monitorrank
 else:
     from .rcd import rcd
     from .mmrcd import mmrcd

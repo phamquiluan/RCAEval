@@ -64,6 +64,9 @@ if is_py312():
         run,
         tracerca,
         causalai,
+        microrca,
+        microscope,
+        monitorrank,
     )
 
 elif is_py38():
@@ -278,7 +281,9 @@ def run_evaluation(data_paths, args, result_path, report_path):
     eval_data = {
         "service-fault": [],
         "top_1_service": [],
+        "top_2_service": [],
         "top_3_service": [],
+        "top_4_service": [],
         "top_5_service": [],
         "avg@5_service": [],
     }
@@ -291,7 +296,6 @@ def run_evaluation(data_paths, args, result_path, report_path):
     for service in services:
         for fault in faults:
             s_evaluator = Evaluator()
-            f_evaluator = Evaluator()
 
             for rp in rps:
                 s, m = basename(rp).split("_")[:2]
@@ -317,10 +321,7 @@ def run_evaluation(data_paths, args, result_path, report_path):
                         else []
                     )
 
-                    f_ranks = [Node(x.split("_")[0], x.split("_")[1]) for x in ranks]
-
                     s_evaluator.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator.add_case(ranks=f_ranks, answer=Node(service, fault))
 
                     if fault == "cpu":
                         s_evaluator_cpu.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
@@ -337,7 +338,9 @@ def run_evaluation(data_paths, args, result_path, report_path):
 
             eval_data["service-fault"].append(f"{service}_{fault}")
             eval_data["top_1_service"].append(s_evaluator.accuracy(1))
+            eval_data["top_2_service"].append(s_evaluator.accuracy(2))
             eval_data["top_3_service"].append(s_evaluator.accuracy(3))
+            eval_data["top_4_service"].append(s_evaluator.accuracy(4))
             eval_data["top_5_service"].append(s_evaluator.accuracy(5))
             eval_data["avg@5_service"].append(s_evaluator.average(5))
 
@@ -350,13 +353,17 @@ def run_evaluation(data_paths, args, result_path, report_path):
     ]:
         eval_data["service-fault"].append(f"overall_{name}")
         eval_data["top_1_service"].append(s_evaluator.accuracy(1))
+        eval_data["top_2_service"].append(s_evaluator.accuracy(2))
         eval_data["top_3_service"].append(s_evaluator.accuracy(3))
+        eval_data["top_4_service"].append(s_evaluator.accuracy(4))
         eval_data["top_5_service"].append(s_evaluator.accuracy(5))
         eval_data["avg@5_service"].append(s_evaluator.average(5))
 
         if s_evaluator.average(5) is not None:
             print( f"AC@1-{name.upper()}:".ljust(12), round(s_evaluator.accuracy(1), 2))
+            print( f"AC@2-{name.upper()}:".ljust(12), round(s_evaluator.accuracy(2), 2))
             print( f"AC@3-{name.upper()}:".ljust(12), round(s_evaluator.accuracy(3), 2))
+            print( f"AC@4-{name.upper()}:".ljust(12), round(s_evaluator.accuracy(4), 2))
             print( f"AC@5-{name.upper()}:".ljust(12), round(s_evaluator.accuracy(5), 2))
             print( f"Avg@5-{name.upper()}:".ljust(12), round(s_evaluator.average(5), 2))
 

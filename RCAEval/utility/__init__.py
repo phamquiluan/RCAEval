@@ -185,6 +185,10 @@ def prepare_llm_ref_stack_dataset(local_root_path, local_path=None):
             new_data_df["time"] = pd.to_datetime(new_data_df["time"]).astype("int64") // 10**9
             new_data_df = new_data_df.loc[:, ~new_data_df.columns.str.contains('^Unnamed')]
             new_data_df.to_csv(new_iter_path.joinpath('data.csv'), index=False)
+            ### Copy mpg data
+            shutil.copy(exp_dir_path.joinpath('mpg.csv'), new_iter_path.joinpath('mpg.csv'))
+            ### Copy detailed latency data
+            shutil.copy(exp_dir_path.joinpath('latency_merged_90.csv'), new_iter_path.joinpath('latency_merged_90.csv'))
             ### prepare injection time
             # Load JSON data from file
             with open(exp_dir_path.parent.joinpath('apply_result_chaos_anomaly_injection.json'), 'r') as f:
