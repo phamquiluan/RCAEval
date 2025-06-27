@@ -137,7 +137,37 @@ def download_online_boutique_dataset(local_path=None):
 ###################################################
 # LLM Ref Stack
 def prepare_llm_ref_stack_dataset(local_root_path, dataset_name):
-    def extract_anomaly_type(folder_name):
+    def _transform_traces(data_df, traces_df):
+        pod_ip_map_dict = {}
+        pod_ip_cols = [c for c in list(data_df.columns) if c.endswith("pod_ip")]
+        for col in pod_ip_cols:
+            pod_ips = data_df[col].dropna().unique()
+            assert len(pod_ips) == 1, f"Only one pod IP is allowed for each column, but got {len(pod_ips)} for {col}"
+            pod_ip_map_dict[pod_ips[0]] = col.split("_pod_ip")[0]
+
+        target_columns = {
+            "Start Time": "time",
+            "Trace ID": "traceID",
+            "Span ID": "spanID",
+            "Server IP": "serviceName",
+            "Endpoint": "methodName",
+            "Request Resource": "operationName",
+            "Response Delay": "duration",
+            "Response Code": "statusCode",
+            "Parent Span ID": "parentSpanID",
+        }
+        traces_df = traces_df.rename(columns=target_columns)
+        traces_df = traces_df.drop(columns=[c for c in list(traces_df.columns) if c not in list(target_columns.values())])
+        epoch_ns = pd.to_datetime(traces_df["time"], format="mixed").view("int64") # int64 → nanoseconds
+        traces_df["startTimeMillis"] = epoch_ns // 1_000_000 # milliseconds
+        traces_df["startTime"] = epoch_ns // 1_000 # microseconds
+        traces_df["serviceName"] = traces_df["serviceName"].map(lambda x: pod_ip_map_dict.get(x, np.nan))
+        traces_df = traces_df[traces_df["traceID"].notna()]
+        traces_df = traces_df[traces_df["serviceName"].notna()]
+        assert traces_df["serviceName"].isin(list(pod_ip_map_dict.values())).all()
+        return traces_df
+    
+    def _extract_anomaly_type(folder_name):
         if 'cpu-stress' in folder_name:
             return 'cpu-stress', 'stress-chaos-cpu', "cpu"
         elif 'memory-stress' in folder_name:
@@ -160,7 +190,7 @@ def prepare_llm_ref_stack_dataset(local_root_path, dataset_name):
         if not os.path.isdir(item_path) or item.startswith('.'):
             continue
 
-        anomaly_type, fault_name, fault_name_short = extract_anomaly_type(item)
+        anomaly_type, fault_name, fault_name_short = _extract_anomaly_type(item)
         if not anomaly_type:
             continue
 
@@ -184,6 +214,10 @@ def prepare_llm_ref_stack_dataset(local_root_path, dataset_name):
             new_data_df["time"] = pd.to_datetime(new_data_df["time"]).astype("int64") // 10**9
             new_data_df = new_data_df.loc[:, ~new_data_df.columns.str.contains('^Unnamed')]
             new_data_df.to_csv(new_iter_path.joinpath('data.csv'), index=False)
+            ### prepare trace data
+            traces_df = pd.read_csv(exp_dir_path.parent.joinpath('deepflow-traces-request-list.csv'))
+            traces_df = _transform_traces(data_df, traces_df)
+            traces_df.to_csv(new_iter_path.joinpath('traces.csv'), index=False)
             ### Copy mpg data
             shutil.copy(exp_dir_path.joinpath('mpg.csv'), new_iter_path.joinpath('mpg.csv'))
             ### Copy detailed latency data
@@ -199,7 +233,6 @@ def prepare_llm_ref_stack_dataset(local_root_path, dataset_name):
             # Write to file
             with open(new_iter_path.joinpath('inject_time.txt'), "w") as f:
                 f.write(str(int(dt.timestamp())) + "\n")
-
 ###################################################
 
 def download_sock_shop_1_dataset(local_path=None):

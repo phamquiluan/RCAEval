@@ -1,5 +1,6 @@
 # refactor from https://github.com/IntelligentDDS/MicroRank
 import os
+import pathlib
 import sys
 import csv
 import json
@@ -643,13 +644,12 @@ def get_pagerank_graph(df):
     return operation_operation, operation_trace, trace_operation, pr_trace
 
 
-def microrank(data, inject_time=None, dataset=None, **kwargs):
-    # span_df = pd.read_csv("./data/mm-ob/checkoutservice_delay/1/traces.csv")
-    span_df = data
+def microrank(data, inject_time=None, dataset=None, args=None, **kwargs):
+    span_df = pd.read_csv(pathlib.Path(args.data_path).parent.joinpath("traces.csv"))
     span_df["methodName"] = span_df["methodName"].fillna(span_df["operationName"])
     span_df["operation"] = span_df["serviceName"] + "_" + span_df["methodName"]
 
-    # inject_time = int(inject_time) * 1_000_000  # convert from seconds to microseconds
+    inject_time = int(inject_time) * 1_000_000  # convert from seconds to microseconds
 
     normal_df  = span_df[span_df["startTime"] + span_df["duration"] < inject_time]
     normal_slo = get_operation_slo(normal_df)
@@ -706,7 +706,5 @@ def microrank(data, inject_time=None, dataset=None, **kwargs):
         "ranks": top_list,
     }
   
-
-
 if __name__ == "__main__":
     main()

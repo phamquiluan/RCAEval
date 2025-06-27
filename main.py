@@ -120,7 +120,6 @@ def prepare_data(args):
         raise Exception(f"{args.dataset} is not defined!")
 
     DATASET_MAP = {
-        "llm-ref-stack-dp": "data/llm-ref-stack-dp",
         "online-boutique": "data/online-boutique",
         "sock-shop-1": "data/sock-shop-1",
         "sock-shop-2": "data/sock-shop-2",
@@ -135,7 +134,7 @@ def prepare_data(args):
         "re3-ss": "data/RE3/RE3-SS",
         "re3-tt": "data/RE3/RE3-TT"
     }
-    dataset = DATASET_MAP[args.dataset]
+    dataset = DATASET_MAP.get(args.dataset, f"data/{args.dataset}")
 
     # prepare input paths
     data_paths = list(glob.glob(os.path.join(dataset, "**/data.csv"), recursive=True))
@@ -222,7 +221,9 @@ def process(data_path, args, result_path):
     sli = None
     if "llm-ref-stack" in data_path:
         data = data.drop(columns=[col for col in data.columns if col.endswith('_ctn_gpu')])
+        data = data.drop(columns=[col for col in data.columns if "_pod_" in col])
         data = data.drop(columns=[col for col in data.columns if "_node_" in col])
+        data = data.drop(columns=[col for col in data.columns if "unknown" in col])
         sli = "nginx-proxy"
         if f"{service}_latency" in data:
             sli = f"{service}_latency"
@@ -281,10 +282,7 @@ def run_evaluation(data_paths, args, result_path, report_path):
     eval_data = {
         "service-fault": [],
         "top_1_service": [],
-        "top_2_service": [],
         "top_3_service": [],
-        "top_4_service": [],
-        "top_5_service": [],
         "avg@5_service": [],
     }
 
@@ -338,10 +336,7 @@ def run_evaluation(data_paths, args, result_path, report_path):
 
             eval_data["service-fault"].append(f"{service}_{fault}")
             eval_data["top_1_service"].append(s_evaluator.accuracy(1))
-            eval_data["top_2_service"].append(s_evaluator.accuracy(2))
             eval_data["top_3_service"].append(s_evaluator.accuracy(3))
-            eval_data["top_4_service"].append(s_evaluator.accuracy(4))
-            eval_data["top_5_service"].append(s_evaluator.accuracy(5))
             eval_data["avg@5_service"].append(s_evaluator.average(5))
 
 
@@ -353,18 +348,12 @@ def run_evaluation(data_paths, args, result_path, report_path):
     ]:
         eval_data["service-fault"].append(f"overall_{name}")
         eval_data["top_1_service"].append(s_evaluator.accuracy(1))
-        eval_data["top_2_service"].append(s_evaluator.accuracy(2))
         eval_data["top_3_service"].append(s_evaluator.accuracy(3))
-        eval_data["top_4_service"].append(s_evaluator.accuracy(4))
-        eval_data["top_5_service"].append(s_evaluator.accuracy(5))
         eval_data["avg@5_service"].append(s_evaluator.average(5))
 
         if s_evaluator.average(5) is not None:
             print( f"AC@1-{name.upper()}:".ljust(12), round(s_evaluator.accuracy(1), 2))
-            print( f"AC@2-{name.upper()}:".ljust(12), round(s_evaluator.accuracy(2), 2))
             print( f"AC@3-{name.upper()}:".ljust(12), round(s_evaluator.accuracy(3), 2))
-            print( f"AC@4-{name.upper()}:".ljust(12), round(s_evaluator.accuracy(4), 2))
-            print( f"AC@5-{name.upper()}:".ljust(12), round(s_evaluator.accuracy(5), 2))
             print( f"Avg@5-{name.upper()}:".ljust(12), round(s_evaluator.average(5), 2))
 
     print("---")

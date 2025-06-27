@@ -44,8 +44,7 @@ docker run -it --rm \
     -v $(pwd)/ctn_data/data_raw:/app/data_raw \
     -v $(pwd)/ctn_data/data_prepared:/app/data \
     -v $(pwd)/ctn_data/output:/app/output \
-    --cpus=4 \
-    --memory=4g \
-    --memory-swap=4g \
-    --cpuset-cpus="0,1,2,3" \
+    --cpus=8 \
+    --memory=8g \
+    --memory-swap=8g \
     rca-eval-experiments-${PYTHON_VERSION}
