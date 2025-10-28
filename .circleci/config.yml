@@ -29,6 +29,7 @@ jobs:
       - run: 
           name: "Reproduce BARO performance on the RE2 dataset, Train Ticket system"
           command: python main.py --method baro --dataset re2-tt
+          no_output_timeout: 3h
 
   test-download-datasets:
     executor: my-executor
