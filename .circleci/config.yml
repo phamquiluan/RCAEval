@@ -16,7 +16,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - rcaeval-data-v1-{{ .Branch }}
+            - rcaeval-data-v1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+            - rcaeval-data-v1-{{ .Branch }}-
             - rcaeval-data-v1-
       - run: 
           name: "Install packages"
@@ -45,7 +46,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - rcaeval-data-v1-{{ .Branch }}
+            - rcaeval-data-v1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+            - rcaeval-data-v1-{{ .Branch }}-
             - rcaeval-data-v1-
       - run: 
           name: "Install packages"
