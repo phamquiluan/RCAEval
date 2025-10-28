@@ -14,6 +14,10 @@ jobs:
     executor: my-executor
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - rcaeval-data-v1-{{ .Branch }}
+            - rcaeval-data-v1-
       - run: 
           name: "Install packages"
           command: | 
@@ -30,11 +34,19 @@ jobs:
           name: "Reproduce BARO performance on the RE2 dataset, Train Ticket system"
           command: python main.py --method baro --dataset re2-tt
           no_output_timeout: 3h
+      - save_cache:
+          key: rcaeval-data-v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - data
 
   test-download-datasets:
     executor: my-executor
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - rcaeval-data-v1-{{ .Branch }}
+            - rcaeval-data-v1-
       - run: 
           name: "Install packages"
           command: | 
@@ -47,6 +59,10 @@ jobs:
           name: "Run test"
           command: pytest tests/test_datasets.py
           no_output_timeout: 3h
+      - save_cache:
+          key: rcaeval-data-v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - data
 
 workflows:
   main-flow:
