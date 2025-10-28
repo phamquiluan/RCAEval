@@ -35,7 +35,7 @@ jobs:
           command: python main.py --method baro --dataset re2-tt
           no_output_timeout: 3h
       - save_cache:
-          key: rcaeval-data-v1-{{ .Branch }}-{{ epoch }}
+          key: rcaeval-data-v1-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - data
 
@@ -60,7 +60,7 @@ jobs:
           command: pytest tests/test_datasets.py
           no_output_timeout: 3h
       - save_cache:
-          key: rcaeval-data-v1-{{ .Branch }}-{{ epoch }}
+          key: rcaeval-data-v1-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - data
 
