@@ -29,8 +29,11 @@ from RCAEval.utility import (
     download_sock_shop_2_dataset,
     download_train_ticket_dataset,
     download_re1_dataset,
-    download_re2_dataset,
+    download_re2ob_dataset,
+    download_re2ss_dataset,
+    download_re2tt_dataset,
     download_re3_dataset, 
+
 )
 
 
@@ -107,8 +110,12 @@ elif "sock-shop-2" in args.dataset or "re1-ss" in args.dataset:
     download_sock_shop_2_dataset()
 elif "train-ticket" in args.dataset or "re1-tt" in args.dataset:
     download_train_ticket_dataset()
-elif "re2" in args.dataset:
-    download_re2_dataset()
+elif "re2-ob" in args.dataset.lower():
+    download_re2ob_dataset()
+elif "re2-ss" in args.dataset.lower():
+    download_re2ss_dataset()
+elif "re2-tt" in args.dataset.lower():
+    download_re2tt_dataset()
 elif "re3" in args.dataset:
     download_re3_dataset()
 else:
