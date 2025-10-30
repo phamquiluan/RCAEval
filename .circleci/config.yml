@@ -30,8 +30,8 @@ jobs:
           command: pytest tests/test.py
           no_output_timeout: 3h
       - run: 
-          name: "Reproduce BARO performance on the RE2 dataset, Train Ticket system"
-          command: python main.py --method baro --dataset re2-tt
+          name: "Reproduce BARO performance on the RE2 dataset, Sock Shop system"
+          command: python main.py --method baro --dataset re2-ss
           no_output_timeout: 3h
       - save_cache:
           key: rcaeval-data-v1-{{ .Branch }}-{{ checksum "requirements.txt" }}
