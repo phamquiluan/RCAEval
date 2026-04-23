@@ -57,7 +57,7 @@ jobs:
         # install for ht
         sudo apt install openjdk-11-jre-headless
         git clone https://github.com/salesforce/PyRCA.git
-        cd PyRCA; pip install -e .; cd ..
+        cd PyRCA; python -m pip install "JPype1<1.5"; python -m pip install -e .; cd ..
         
         bash script/link.sh
 
