@@ -32,7 +32,7 @@ from RCAEval.utility import (
     download_re2ob_dataset,
     download_re2ss_dataset,
     download_re2tt_dataset,
-    download_re3_dataset, 
+    download_re3_dataset,
 
 )
 
@@ -66,6 +66,7 @@ if is_py312():
         run,
         torai,
         tracerca,
+        eventadl,
     )
 
 elif is_py38():
@@ -89,6 +90,7 @@ def parse_args():
         "online-boutique", "sock-shop-1", "sock-shop-2", "train-ticket",
         "re1-ob", "re1-ss", "re1-tt", "re2-ob", "re2-ss", "re2-tt", "re3-ob", "re3-ss", "re3-tt",
         "torai-ob", "torai-ss", "torai-tt",
+        "eventadl-falcon", "eventadl-flask", "eventadl-live",
     ])
     parser.add_argument("--length", type=int, default=20, help="Time series length (RQ4)")
     parser.add_argument("--tdelta", type=int, default=0, help="Specify $t_delta$ to simulate delay in anomaly detection")
@@ -122,6 +124,8 @@ elif "re3" in args.dataset:
     download_re3_dataset()
 elif "torai" in args.dataset:
     pass  # torai data is expected to be local
+elif "eventadl" in args.dataset:
+    pass  # eventadl data is expected to be local
 else:
     raise Exception(f"{args.dataset} is not defined!")
 
@@ -142,16 +146,24 @@ DATASET_MAP = {
     "torai-ob": "data/torai-OB",
     "torai-ss": "data/torai-SS",
     "torai-tt": "data/torai-TT",
+    "eventadl-falcon": "data/eventadl-falcon",
+    "eventadl-flask": "data/eventadl-flask",
+    "eventadl-live": "data/eventadl-live",
 }
 dataset = DATASET_MAP[args.dataset]
 
 
 # prepare input paths
-data_paths = list(glob.glob(os.path.join(dataset, "**/data.csv"), recursive=True))
-if not data_paths: 
-    data_paths = list(glob.glob(os.path.join(dataset, "**/simple_metrics.csv"), recursive=True))
+if "eventadl" in args.dataset:
+    # EventADL test cases are event-log based (rca.json + events/{id}.json),
+    # not the metrics.csv-per-case layout the other datasets use.
+    data_paths = load_json(os.path.join(dataset, "rca.json"))["test_cases"]
+else:
+    data_paths = list(glob.glob(os.path.join(dataset, "**/data.csv"), recursive=True))
+    if not data_paths:
+        data_paths = list(glob.glob(os.path.join(dataset, "**/simple_metrics.csv"), recursive=True))
 # new_data_paths = []
-# for p in data_paths: 
+# for p in data_paths:
 #     if os.path.exists(p.replace("data.csv", "simple_data.csv")):
 #         new_data_paths.append(p.replace("data.csv", "simple_data.csv"))
 #     elif os.path.exists(p.replace("data.csv", "simple_metrics.csv")):
@@ -172,7 +184,36 @@ result_path = join(output_path, "results")
 os.makedirs(result_path, exist_ok=True)
 
 
+def _eventadl_short_name(entity):
+    """Turn a CloudTrail actor/resource identifier (ARN or similar) into a
+    short label, so it fits the "{service}_{fault}_{case}.json" result
+    filename convention shared with every other dataset."""
+    return entity.rstrip("/").rsplit("/", 1)[-1].rsplit(":", 1)[-1]
+
+
+def process_eventadl(test_case):
+    case_id = test_case["id"]
+    ground_truth = test_case["ground_truth"]
+    service = _eventadl_short_name(ground_truth)
+
+    rp = join(result_path, f"{service}_event_{case_id}.json")
+
+    with open(join(dataset, "events", f"{case_id}.json")) as f:
+        events = json.load(f)
+
+    func = globals()[args.method]
+    try:
+        out = func({"events": events}, inject_time=None, dataset=args.dataset)
+        root_causes = out.get("ranks")
+        dump_json(filename=rp, data={0: root_causes})
+    except Exception as e:
+        raise e
+
+
 def process(data_path):
+    if "eventadl" in args.dataset:
+        return process_eventadl(data_path)
+
     run_args = argparse.Namespace()
     run_args.root_path = os.getcwd()
     run_args.data_path = data_path
@@ -322,7 +363,8 @@ def process(data_path):
 
 start_time = datetime.now()
 
-for data_path in tqdm(sorted(data_paths)):
+sort_key = (lambda x: x["id"]) if "eventadl" in args.dataset else None
+for data_path in tqdm(sorted(data_paths, key=sort_key)):
     process(data_path)
 
 end_time = datetime.now()
