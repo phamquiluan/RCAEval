@@ -114,6 +114,17 @@ def _build_graph(events):
     return G
 
 
+def _has_outgoing_action(G, node):
+    """Only nodes that act as an actor toward some resource (an outgoing
+    edge carrying an `action`) are valid root-cause candidates — resource
+    nodes only ever receive edges and must be excluded from the ranking."""
+    for neighbor in G.neighbors(node):
+        for _, edge_data in G[node][neighbor].items():
+            if "action" in edge_data:
+                return True
+    return False
+
+
 def eventadl(data, inject_time=None, dataset=None, sli=None, anomalies=None, num_walk=100, **kwargs):
     """EventADL root cause localization over CloudTrail-style events.
 
@@ -127,9 +138,12 @@ def eventadl(data, inject_time=None, dataset=None, sli=None, anomalies=None, num
     events = data["events"] if isinstance(data, dict) else data
 
     G = _build_graph(events)
-    ranked = [(node, score) for node, score in _temporal_aware_random_walk_rca(G, num_walks=num_walk)]
-    if not ranked:
+    ranked = _temporal_aware_random_walk_rca(G, num_walks=num_walk)
+    ranks = [node for node, _ in ranked if _has_outgoing_action(G, node)]
+    if not ranks:
+        # The from-anomalies walk can surface only resource nodes (no
+        # outgoing "action" edges), leaving nothing after filtering; retry
+        # without anchoring to anomaly nodes, same as the reference impl.
         ranked = _temporal_aware_random_walk_rca(G, num_walks=num_walk, from_anomalies=False)
-
-    ranks = [node for node, _ in ranked]
+        ranks = [node for node, _ in ranked if _has_outgoing_action(G, node)]
     return {"node_names": list(G.nodes()), "ranks": ranks}

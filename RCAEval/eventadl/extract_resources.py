@@ -181,6 +181,28 @@ def extract_iam_resources(event: Dict[str, Any], event_name: str) -> List[Dict[s
                 "type": "AWS::IAM::Role",
                 "arn": arn
             })
+
+    elif event_name == "UpdateAccessKey":
+        if request_params:
+            account_id = event.get("recipientAccountId", "")
+
+            # The IAM user whose access key is being updated
+            if "userName" in request_params and account_id:
+                user_name = request_params["userName"]
+                resources.append({
+                    "type": "AWS::IAM::User",
+                    "arn": f"arn:aws:iam::{account_id}:user/{user_name}"
+                })
+
+            # The access key being updated
+            if "accessKeyId" in request_params and "userName" in request_params and account_id:
+                access_key_id = request_params["accessKeyId"]
+                user_name = request_params["userName"]
+                resources.append({
+                    "type": "AWS::IAM::AccessKey",
+                    "arn": f"arn:aws:iam::{account_id}:access-key/{access_key_id}"
+                })
+
     return resources
 
 
