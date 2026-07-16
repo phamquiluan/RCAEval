@@ -58,6 +58,7 @@ if is_py310() or is_py312():
     from .mscred import mscred
     from .tracerca import tracerca
     from .torai import torai
+    from .eventadl import eventadl
 else:
     from .rcd import rcd
     from .mmrcd import mmrcd
