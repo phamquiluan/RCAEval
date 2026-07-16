@@ -205,7 +205,7 @@ def process_eventadl(test_case):
     try:
         out = func({"events": events}, inject_time=None, dataset=args.dataset)
         root_causes = out.get("ranks")
-        dump_json(filename=rp, data={0: root_causes})
+        dump_json(filename=rp, data={"0": root_causes, "ground_truth": ground_truth})
     except Exception as e:
         raise e
 
@@ -374,6 +374,41 @@ avg_speed = round(time_taken.total_seconds() / len(data_paths), 2)
 
 # ======== EVALUTION ===========
 rps = glob.glob(join(result_path, "*.json"))
+
+if "eventadl" in args.dataset:
+    # EventADL result files only, keyed on the literal "event" fault token
+    # written by process_eventadl(); the physical cpu/mem/io/socket/delay/loss
+    # evaluation below doesn't apply and is skipped entirely.
+    rps = [rp for rp in rps if basename(rp).split("_")[1] == "event"]
+
+    s_evaluator_event = Evaluator()
+    f_evaluator_event = Evaluator()
+
+    for rp in rps:
+        data = load_json(rp)
+        if "error" in data:
+            continue  # ignore
+
+        ground_truth = data["ground_truth"]
+        ranks = data["0"]
+        answer = Node(ground_truth, "unknown")
+        event_ranks = [Node(x, "unknown") for x in ranks]
+        s_evaluator_event.add_case(ranks=event_ranks, answer=answer)
+        f_evaluator_event.add_case(ranks=event_ranks, answer=answer)
+
+    print("--- Evaluation results ---")
+    if s_evaluator_event.average(5) is not None:
+        print("AC1:".ljust(12), round(s_evaluator_event.accuracy(1), 2))
+        print("AC3:".ljust(12), round(s_evaluator_event.accuracy(3), 2))
+        print("AC5:".ljust(12), round(s_evaluator_event.accuracy(5), 2))
+        print("Avg@5:".ljust(12), round(s_evaluator_event.average(5), 2))
+    print("---")
+    print("Avg speed:", avg_speed)
+    exit(0)
+
+# non-eventadl result files only; stale eventadl result files from a
+# previous run must not leak into this generic per-service/fault evaluation
+rps = [rp for rp in rps if basename(rp).split("_")[1] != "event"]
 services = sorted(list(set([basename(x).split("_")[0] for x in rps])))
 faults = sorted(list(set([basename(x).split("_")[1] for x in rps])))
 
@@ -515,7 +550,6 @@ for name, s_evaluator, f_evaluator in [
 
     if s_evaluator.average(5) is not None:
         print( f"Avg@5-{name.upper()}:".ljust(12), round(s_evaluator.average(5), 2))
-
 
 print("---")
 print("Avg speed:", avg_speed)
