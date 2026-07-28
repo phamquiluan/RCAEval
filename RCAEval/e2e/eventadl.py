@@ -100,6 +100,8 @@ def _build_graph(events):
     anomalies = [e for e in events if e.get("errorCode")]
     for event in anomalies:
         event_id = event.get("eventID")
+        if not event_id:
+            continue
         event_time = event.get("eventTime")
 
         try:
@@ -109,8 +111,7 @@ def _build_graph(events):
 
         for resource in resources or []:
             res = resource["arn"]
-            G.add_edge(res, f"anom-{event_id[-4:]}", event_time=[event_time])
-
+            G.add_edge(res, f"anom-{event_id}", event_time=[event_time])
     return G
 
 
