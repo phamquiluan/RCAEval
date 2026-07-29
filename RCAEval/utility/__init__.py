@@ -346,7 +346,56 @@ def download_re3_dataset(local_path=None):
     download_re3ob_dataset(local_path=RE3_local_path)
     download_re3ss_dataset(local_path=RE3_local_path)
     download_re3tt_dataset(local_path=RE3_local_path)
-    
+
+
+def download_eventadl_dataset(name=None, local_path=None):
+    """Download the EventADL datasets (falcon, flask, live) from Zenodo.
+
+    The Zenodo artifact (https://zenodo.org/records/19433493) ships a single
+    EventADL.zip bundling both code and data. Only the files RCAEval needs are
+    extracted — per-case event logs (events/{id}.json) and ground truth
+    (rca.json) — into data/eventadl-<name>/; the code and the
+    anomaly-detection-side files (log.csv, events.json, monitors.json) are
+    discarded along with the archive.
+    """
+    import shutil
+    import tempfile
+
+    names = [name] if name else ["falcon", "flask", "live"]
+    if local_path is None:
+        local_path = "data"
+    if not os.path.exists(local_path):
+        os.makedirs(local_path)
+
+    names = [n for n in names if not os.path.exists(join(local_path, f"eventadl-{n}"))]
+    if not names:
+        return
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        zip_path = join(tmpdir, "EventADL.zip")
+        download_data(
+            "https://zenodo.org/records/19433493/files/EventADL.zip?download=1",
+            zip_path,
+        )
+        with zipfile.ZipFile(zip_path) as zf:
+            for n in names:
+                prefix = f"EventADL/data/{n}/"
+                members = [
+                    m for m in zf.namelist()
+                    if m == prefix + "rca.json"
+                    or (m.startswith(prefix + "events/") and m.endswith(".json"))
+                ]
+                staging = join(tmpdir, f"eventadl-{n}")
+                for member in members:
+                    target = join(staging, os.path.relpath(member, prefix))
+                    os.makedirs(os.path.dirname(target), exist_ok=True)
+                    with zf.open(member) as src, open(target, "wb") as dst:
+                        shutil.copyfileobj(src, dst)
+                # move into place only once fully extracted, so an interrupted
+                # run doesn't leave a partial dataset that later calls skip
+                shutil.move(staging, join(local_path, f"eventadl-{n}"))
+
+
 def read_data(data_path, strip=True):
     """Read CSV data for root cause analysis."""
     data = pd.read_csv(data_path)

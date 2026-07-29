@@ -28,7 +28,14 @@ pip install -e .[eventadl]
 
 ## Dataset
 
-EventADL ships three datasets: `falcon`, `flask`, `live`. Like TORAI, the data is expected to already be present locally -- place each dataset under `data/eventadl-<name>/` (e.g. `data/eventadl-falcon/`) before running `main.py`, matching the layout described in [Data Format](#data-format) below.
+EventADL ships three datasets: `falcon`, `flask`, `live`, published on [Zenodo](https://zenodo.org/records/19433493). `main.py` downloads the requested dataset automatically on first use, extracting only the event logs and ground truth into `data/eventadl-<name>/` (e.g. `data/eventadl-falcon/`), matching the layout described in [Data Format](#data-format) below. To download manually instead:
+
+```python
+from RCAEval.utility import download_eventadl_dataset
+
+download_eventadl_dataset()          # all three datasets
+download_eventadl_dataset("falcon")  # a single dataset
+```
 
 ## Basic Usage
 

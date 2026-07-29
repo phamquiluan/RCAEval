@@ -33,7 +33,7 @@ from RCAEval.utility import (
     download_re2ss_dataset,
     download_re2tt_dataset,
     download_re3_dataset,
-
+    download_eventadl_dataset,
 )
 
 
@@ -125,7 +125,7 @@ elif "re3" in args.dataset:
 elif "torai" in args.dataset:
     pass  # torai data is expected to be local
 elif "eventadl" in args.dataset:
-    pass  # eventadl data is expected to be local
+    download_eventadl_dataset(name=args.dataset.replace("eventadl-", ""))
 else:
     raise Exception(f"{args.dataset} is not defined!")
 
