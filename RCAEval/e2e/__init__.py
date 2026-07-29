@@ -31,33 +31,46 @@ def rca(func):
     return wrapper
 
 if is_py310() or is_py312():
-    try:
-        from .causalai import causalai
-    except Exception as e:
-        pass
-    from .baro import baro, mmbaro, mmnsigma
-    from .causalrca import causalrca
-    from .circa import circa
-    from .cloudranger import cloudranger
-    from .fci_pagerank import fci_pagerank
-    from .ges_pagerank import ges_pagerank
-    from .granger_pagerank import granger_pagerank
-    from .lingam_pagerank import lingam_pagerank, micro_diag
-    from .microcause import microcause
-    from .microrank import microrank
-    from .easyrca import easyrca
-    from .pc_pagerank import cmlp_pagerank, ntlr_pagerank, pc_pagerank
-    from .pc_randomwalk import (
-        fci_randomwalk,
-        granger_randomwalk,
-        lingam_randomwalk,
-        ntlr_randomwalk,
-        pc_randomwalk,
-    )
-    from .run import run
-    from .mscred import mscred
-    from .tracerca import tracerca
-    from .torai import torai
+    import importlib
+
+    # A method whose dependencies are not installed (e.g. torch or causallearn
+    # in the minimal EventADL environment, see docs/EVENTADL.md) is skipped
+    # instead of breaking the whole package; main.py reports a clear error if
+    # an unavailable method is requested.
+    _METHOD_MODULES = {
+        "causalai": ["causalai"],
+        "baro": ["baro", "mmbaro", "mmnsigma"],
+        "causalrca": ["causalrca"],
+        "circa": ["circa"],
+        "cloudranger": ["cloudranger"],
+        "fci_pagerank": ["fci_pagerank"],
+        "ges_pagerank": ["ges_pagerank"],
+        "granger_pagerank": ["granger_pagerank"],
+        "lingam_pagerank": ["lingam_pagerank", "micro_diag"],
+        "microcause": ["microcause"],
+        "microrank": ["microrank"],
+        "easyrca": ["easyrca"],
+        "pc_pagerank": ["cmlp_pagerank", "ntlr_pagerank", "pc_pagerank"],
+        "pc_randomwalk": [
+            "fci_randomwalk",
+            "granger_randomwalk",
+            "lingam_randomwalk",
+            "ntlr_randomwalk",
+            "pc_randomwalk",
+        ],
+        "run": ["run"],
+        "mscred": ["mscred"],
+        "tracerca": ["tracerca"],
+        "torai": ["torai"],
+        "eventadl": ["eventadl"],
+    }
+    for _module, _names in _METHOD_MODULES.items():
+        try:
+            _mod = importlib.import_module(f".{_module}", __name__)
+        except Exception:
+            continue
+        for _name in _names:
+            globals()[_name] = getattr(_mod, _name)
 else:
     from .rcd import rcd
     from .mmrcd import mmrcd

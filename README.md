@@ -30,6 +30,7 @@ RCAEval is an open-source benchmark that offers nine datasets with 735 real fail
   * [Available Baselines](#available-baselines)
   * [Benchmark](#benchmark)
   * [For TORAI Paper](#for-torai-paper)
+  * [For EventADL Paper](#for-eventadl-paper)
   * [Licensing](#licensing)
   * [Acknowledgments](#acknowledgments)
   * [Change Logs](#change-logs)
@@ -208,7 +209,7 @@ Downloading RE3.zip..: 100%|█████████████████�
 
 ## Available Baselines 
 
-RCAEval stores all the RCA methods in the `e2e` module (implemented in `RCAEval.e2e`). There are many RCA baselines available: RUN, CausalRCA, CIRCA, RCD, MicroCause, EasyRCA, MSCRED, BARO, 𝜖-Diagnosis, TraceRCA, MicroRank, PDiagnose, Multi-source BARO, Multi-source RCD, Multi-source CIRCA, TORAI.
+RCAEval stores all the RCA methods in the `e2e` module (implemented in `RCAEval.e2e`). There are many RCA baselines available: RUN, CausalRCA, CIRCA, RCD, MicroCause, EasyRCA, MSCRED, BARO, 𝜖-Diagnosis, TraceRCA, MicroRank, PDiagnose, Multi-source BARO, Multi-source RCD, Multi-source CIRCA, TORAI, EventADL.
 
 ## Benchmark 
 
@@ -278,6 +279,14 @@ Avg@5-LOSS:  0.84
 </details>
 
 
+## For EventADL Paper
+
+EventADL localizes root-cause actors/resources over CloudTrail-style API-call event logs, rather than the metrics/traces/logs used by other RCAEval methods. It requires a separate Python 3.12 environment. For full instructions, see [docs/EVENTADL.md](docs/EVENTADL.md) for installation and usage instructions.
+
+```bash
+python main.py --method eventadl --dataset eventadl-falcon
+```
+
 ## Licensing
 
 This repository includes code from various sources with different licenses. We have included their corresponding LICENSE into the [LICENSES](LICENSES) directory:
@@ -297,12 +306,23 @@ This repository includes code from various sources with different licenses. We h
 We would like to express our sincere gratitude to the researchers and developers who created the baselines used in our study. Their work has been instrumental in making this project possible. We deeply appreciate the time, effort, and expertise that have gone into developing and maintaining these resources. This project would not have been feasible without their contributions.
 
 ## Change Logs
+- [Jul 2026] Added EventADL, an event-log root cause localization method accepted at FSE'26.
 - [Jun 2026] The version of RCAEval with TORAI used in our FSE'26 paper is available in the [fse26 branch](https://github.com/phamquiluan/RCAEval/tree/fse26).
 - [Apr 2026] Added TORAI, a multi-source RCA method accepted at FSE'26.
 - [Mar 2025] The version of RCAEval used in our WWW'25 paper are available in the [www25 branch](https://github.com/phamquiluan/RCAEval/tree/www25).
 - [Dec 2024] The prior version of RCAEval used in our ASE'24 paper are available in the [ase24 branch](https://github.com/phamquiluan/RCAEval/tree/ase24).
 
 ## Citation
+
+```bibtex
+@inproceedings{pham2026eventadl,
+  title={EventADL: Open-Box Anomaly Detection and Localization Framework for Events in Cloud-Based Service Systems},
+  author={Luan Pham},
+  year={2026},
+  journal={Proceedings of the ACM on Software Engineering},
+  number={FSE}
+}
+```
 
 ```bibtex
 @inproceedings{pham2026torai,

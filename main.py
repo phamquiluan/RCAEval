@@ -32,41 +32,49 @@ from RCAEval.utility import (
     download_re2ob_dataset,
     download_re2ss_dataset,
     download_re2tt_dataset,
-    download_re3_dataset, 
-
+    download_re3_dataset,
+    download_eventadl_dataset,
 )
 
 
 if is_py312():
-    from RCAEval.e2e import (
-        baro,
-        causalrca,
-        circa,
-        cloudranger,
-        cmlp_pagerank,
-        dummy,
-        e_diagnosis,
-        easyrca,
-        fci_pagerank,
-        fci_randomwalk,
-        ges_pagerank,
-        granger_pagerank,
-        granger_randomwalk,
-        lingam_pagerank,
-        lingam_randomwalk,
-        micro_diag,
-        microcause,
-        microrank,
-        mscred,
-        nsigma,
-        ntlr_pagerank,
-        ntlr_randomwalk,
-        pc_pagerank,
-        pc_randomwalk,
-        run,
-        torai,
-        tracerca,
-    )
+    import RCAEval.e2e as e2e
+
+    # bind every method that could be imported; one whose dependencies are
+    # not installed (e.g. torch in the minimal EventADL environment) is
+    # simply unavailable and rejected by parse_args with a clear error
+    for _method in [
+        "baro",
+        "causalrca",
+        "circa",
+        "cloudranger",
+        "cmlp_pagerank",
+        "dummy",
+        "e_diagnosis",
+        "easyrca",
+        "fci_pagerank",
+        "fci_randomwalk",
+        "ges_pagerank",
+        "granger_pagerank",
+        "granger_randomwalk",
+        "lingam_pagerank",
+        "lingam_randomwalk",
+        "micro_diag",
+        "microcause",
+        "microrank",
+        "mscred",
+        "nsigma",
+        "ntlr_pagerank",
+        "ntlr_randomwalk",
+        "pc_pagerank",
+        "pc_randomwalk",
+        "run",
+        "torai",
+        "tracerca",
+        "eventadl",
+    ]:
+        if hasattr(e2e, _method):
+            globals()[_method] = getattr(e2e, _method)
 
 elif is_py38():
     from RCAEval.e2e import dummy, e_diagnosis, ht, rcd, mmrcd, torai
@@ -89,6 +97,7 @@ def parse_args():
         "online-boutique", "sock-shop-1", "sock-shop-2", "train-ticket",
         "re1-ob", "re1-ss", "re1-tt", "re2-ob", "re2-ss", "re2-tt", "re3-ob", "re3-ss", "re3-tt",
         "torai-ob", "torai-ss", "torai-tt",
+        "eventadl-falcon", "eventadl-flask", "eventadl-live",
     ])
     parser.add_argument("--length", type=int, default=20, help="Time series length (RQ4)")
     parser.add_argument("--tdelta", type=int, default=0, help="Specify $t_delta$ to simulate delay in anomaly detection")
@@ -122,6 +131,8 @@ elif "re3" in args.dataset:
     download_re3_dataset()
 elif "torai" in args.dataset:
     pass  # torai data is expected to be local
+elif "eventadl" in args.dataset:
+    download_eventadl_dataset(name=args.dataset.replace("eventadl-", ""))
 else:
     raise Exception(f"{args.dataset} is not defined!")
 
@@ -142,16 +153,24 @@ DATASET_MAP = {
     "torai-ob": "data/torai-OB",
     "torai-ss": "data/torai-SS",
     "torai-tt": "data/torai-TT",
+    "eventadl-falcon": "data/eventadl-falcon",
+    "eventadl-flask": "data/eventadl-flask",
+    "eventadl-live": "data/eventadl-live",
 }
 dataset = DATASET_MAP[args.dataset]
 
 
 # prepare input paths
-data_paths = list(glob.glob(os.path.join(dataset, "**/data.csv"), recursive=True))
-if not data_paths: 
-    data_paths = list(glob.glob(os.path.join(dataset, "**/simple_metrics.csv"), recursive=True))
+if "eventadl" in args.dataset:
+    # EventADL test cases are event-log based (rca.json + events/{id}.json),
+    # not the metrics.csv-per-case layout the other datasets use.
+    data_paths = load_json(os.path.join(dataset, "rca.json"))["test_cases"]
+else:
+    data_paths = list(glob.glob(os.path.join(dataset, "**/data.csv"), recursive=True))
+    if not data_paths:
+        data_paths = list(glob.glob(os.path.join(dataset, "**/simple_metrics.csv"), recursive=True))
 # new_data_paths = []
-# for p in data_paths: 
+# for p in data_paths:
 #     if os.path.exists(p.replace("data.csv", "simple_data.csv")):
 #         new_data_paths.append(p.replace("data.csv", "simple_data.csv"))
 #     elif os.path.exists(p.replace("data.csv", "simple_metrics.csv")):
@@ -171,8 +190,44 @@ report_path = join(output_path, f"report.xlsx")
 result_path = join(output_path, "results")
 os.makedirs(result_path, exist_ok=True)
 
+if "eventadl" in args.dataset:
+    # the eventadl datasets share service names and case ids, so stale result
+    # files from a previous run on another eventadl dataset would collide with
+    # (and leak into) this run's evaluation
+    for _rp in glob.glob(join(result_path, "*_event_*.json")):
+        os.remove(_rp)
+
+
+def _eventadl_short_name(entity):
+    """Turn a CloudTrail actor/resource identifier (ARN or similar) into a
+    short label, so it fits the "{service}_{fault}_{case}.json" result
+    filename convention shared with every other dataset."""
+    return entity.rstrip("/").rsplit("/", 1)[-1].rsplit(":", 1)[-1]
+
+
+def process_eventadl(test_case):
+    case_id = test_case["id"]
+    ground_truth = test_case["ground_truth"]
+    service = _eventadl_short_name(ground_truth)
+
+    rp = join(result_path, f"{service}_event_{case_id}.json")
+
+    with open(join(dataset, "events", f"{case_id}.json")) as f:
+        events = json.load(f)
+
+    func = globals()[args.method]
+    try:
+        out = func({"events": events}, inject_time=None, dataset=args.dataset)
+        root_causes = out.get("ranks")
+        dump_json(filename=rp, data={"0": root_causes, "ground_truth": ground_truth})
+    except Exception as e:
+        raise e
+
 
 def process(data_path):
+    if "eventadl" in args.dataset:
+        return process_eventadl(data_path)
+
     run_args = argparse.Namespace()
     run_args.root_path = os.getcwd()
     run_args.data_path = data_path
@@ -322,7 +377,8 @@ def process(data_path):
 
 start_time = datetime.now()
 
-for data_path in tqdm(sorted(data_paths)):
+sort_key = (lambda x: x["id"]) if "eventadl" in args.dataset else None
+for data_path in tqdm(sorted(data_paths, key=sort_key)):
     process(data_path)
 
 end_time = datetime.now()
@@ -332,6 +388,39 @@ avg_speed = round(time_taken.total_seconds() / len(data_paths), 2)
 
 # ======== EVALUTION ===========
 rps = glob.glob(join(result_path, "*.json"))
+
+if "eventadl" in args.dataset:
+    # EventADL result files only, keyed on the literal "event" fault token
+    # written by process_eventadl(); the physical cpu/mem/io/socket/delay/loss
+    # evaluation below doesn't apply and is skipped entirely.
+    rps = [rp for rp in rps if basename(rp).split("_")[1] == "event"]
+
+    s_evaluator_event = Evaluator()
+
+    for rp in rps:
+        data = load_json(rp)
+        if "error" in data:
+            continue  # ignore
+
+        ground_truth = data["ground_truth"]
+        ranks = data["0"]
+        answer = Node(ground_truth, "unknown")
+        event_ranks = [Node(x, "unknown") for x in ranks]
+        s_evaluator_event.add_case(ranks=event_ranks, answer=answer)
+
+    print("--- Evaluation results ---")
+    if s_evaluator_event.average(5) is not None:
+        print("AC1:".ljust(12), round(s_evaluator_event.accuracy(1), 2))
+        print("AC3:".ljust(12), round(s_evaluator_event.accuracy(3), 2))
+        print("AC5:".ljust(12), round(s_evaluator_event.accuracy(5), 2))
+        print("Avg@5:".ljust(12), round(s_evaluator_event.average(5), 2))
+    print("---")
+    print("Avg speed:", avg_speed)
+    exit(0)
+
+# non-eventadl result files only; stale eventadl result files from a
+# previous run must not leak into this generic per-service/fault evaluation
+rps = [rp for rp in rps if basename(rp).split("_")[1] != "event"]
 services = sorted(list(set([basename(x).split("_")[0] for x in rps])))
 faults = sorted(list(set([basename(x).split("_")[1] for x in rps])))
 
@@ -473,7 +562,6 @@ for name, s_evaluator, f_evaluator in [
 
     if s_evaluator.average(5) is not None:
         print( f"Avg@5-{name.upper()}:".ljust(12), round(s_evaluator.average(5), 2))
-
 
 print("---")
 print("Avg speed:", avg_speed)

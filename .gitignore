@@ -224,4 +224,5 @@ output
 logparser/config.json
 logbatcher/config.json
 .venv-torai/
+.venv-eventadl/
 data
