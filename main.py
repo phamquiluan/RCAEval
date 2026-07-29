@@ -38,36 +38,43 @@ from RCAEval.utility import (
 
 
 if is_py312():
-    from RCAEval.e2e import (
-        baro,
-        causalrca,
-        circa,
-        cloudranger,
-        cmlp_pagerank,
-        dummy,
-        e_diagnosis,
-        easyrca,
-        fci_pagerank,
-        fci_randomwalk,
-        ges_pagerank,
-        granger_pagerank,
-        granger_randomwalk,
-        lingam_pagerank,
-        lingam_randomwalk,
-        micro_diag,
-        microcause,
-        microrank,
-        mscred,
-        nsigma,
-        ntlr_pagerank,
-        ntlr_randomwalk,
-        pc_pagerank,
-        pc_randomwalk,
-        run,
-        torai,
-        tracerca,
-        eventadl,
-    )
+    import RCAEval.e2e as e2e
+
+    # bind every method that could be imported; one whose dependencies are
+    # not installed (e.g. torch in the minimal EventADL environment) is
+    # simply unavailable and rejected by parse_args with a clear error
+    for _method in [
+        "baro",
+        "causalrca",
+        "circa",
+        "cloudranger",
+        "cmlp_pagerank",
+        "dummy",
+        "e_diagnosis",
+        "easyrca",
+        "fci_pagerank",
+        "fci_randomwalk",
+        "ges_pagerank",
+        "granger_pagerank",
+        "granger_randomwalk",
+        "lingam_pagerank",
+        "lingam_randomwalk",
+        "micro_diag",
+        "microcause",
+        "microrank",
+        "mscred",
+        "nsigma",
+        "ntlr_pagerank",
+        "ntlr_randomwalk",
+        "pc_pagerank",
+        "pc_randomwalk",
+        "run",
+        "torai",
+        "tracerca",
+        "eventadl",
+    ]:
+        if hasattr(e2e, _method):
+            globals()[_method] = getattr(e2e, _method)
 
 elif is_py38():
     from RCAEval.e2e import dummy, e_diagnosis, ht, rcd, mmrcd, torai
