@@ -315,22 +315,26 @@ We would like to express our sincere gratitude to the researchers and developers
 ## Citation
 
 ```bibtex
-@inproceedings{pham2026eventadl,
+@article{pham2026eventadl,
   title={EventADL: Open-Box Anomaly Detection and Localization Framework for Events in Cloud-Based Service Systems},
-  author={Luan Pham},
-  year={2026},
+  author={Pham, Luan and Nicolet, Victor and Dodds, Joey and Guan, Hui and Kroening, Daniel},
   journal={Proceedings of the ACM on Software Engineering},
-  number={FSE}
+  volume={3},
+  number={FSE},
+  pages={4070--4093},
+  year={2026}
 }
 ```
 
 ```bibtex
-@inproceedings{pham2026torai,
-  title={TORAI: Multi-source Root Cause Analysis for Blind Spots in Microservice Service Call Graph}, 
-  author={Luan Pham and Huong Ha and Xiuzhen Zhang and Hongyu Zhang},
-  year={2026},
+@article{pham2026torai,
+  title={TORAI: Multi-source Root Cause Analysis for Blind Spots in Microservice Service Call Graph},
+  author={Pham, Luan and Ha, Huong and Zhang, Xiuzhen and Zhang, Hongyu},
   journal={Proceedings of the ACM on Software Engineering},
-  number={FSE}
+  volume={3},
+  number={FSE},
+  pages={2928--2951},
+  year={2026}
 }
 ```
 
