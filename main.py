@@ -382,7 +382,6 @@ if "eventadl" in args.dataset:
     rps = [rp for rp in rps if basename(rp).split("_")[1] == "event"]
 
     s_evaluator_event = Evaluator()
-    f_evaluator_event = Evaluator()
 
     for rp in rps:
         data = load_json(rp)
@@ -394,7 +393,6 @@ if "eventadl" in args.dataset:
         answer = Node(ground_truth, "unknown")
         event_ranks = [Node(x, "unknown") for x in ranks]
         s_evaluator_event.add_case(ranks=event_ranks, answer=answer)
-        f_evaluator_event.add_case(ranks=event_ranks, answer=answer)
 
     print("--- Evaluation results ---")
     if s_evaluator_event.average(5) is not None:

@@ -306,7 +306,7 @@ This repository includes code from various sources with different licenses. We h
 We would like to express our sincere gratitude to the researchers and developers who created the baselines used in our study. Their work has been instrumental in making this project possible. We deeply appreciate the time, effort, and expertise that have gone into developing and maintaining these resources. This project would not have been feasible without their contributions.
 
 ## Change Logs
-- [Jul 2026] Added EventADL, an event-log anomaly detection and root cause localization method accepted at FSE'26.
+- [Jul 2026] Added EventADL, an event-log root cause localization method accepted at FSE'26 (only the localization component is ported; the anomaly detection components are not included).
 - [Jun 2026] The version of RCAEval with TORAI used in our FSE'26 paper is available in the [fse26 branch](https://github.com/phamquiluan/RCAEval/tree/fse26).
 - [Apr 2026] Added TORAI, a multi-source RCA method accepted at FSE'26.
 - [Mar 2025] The version of RCAEval used in our WWW'25 paper are available in the [www25 branch](https://github.com/phamquiluan/RCAEval/tree/www25).

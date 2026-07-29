@@ -1,10 +1,4 @@
-from argparse import ArgumentParser
-import json
 import re
-import os
-import pandas as pd 
-from tqdm import tqdm
-from RCAEval.eventadl.extract_resources import extract_resources
 
 
 def get_actor(event):
