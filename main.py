@@ -190,6 +190,13 @@ report_path = join(output_path, f"report.xlsx")
 result_path = join(output_path, "results")
 os.makedirs(result_path, exist_ok=True)
 
+if "eventadl" in args.dataset:
+    # the eventadl datasets share service names and case ids, so stale result
+    # files from a previous run on another eventadl dataset would collide with
+    # (and leak into) this run's evaluation
+    for _rp in glob.glob(join(result_path, "*_event_*.json")):
+        os.remove(_rp)
+
 
 def _eventadl_short_name(entity):
     """Turn a CloudTrail actor/resource identifier (ARN or similar) into a
