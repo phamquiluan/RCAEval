@@ -421,11 +421,9 @@ def mmrcd(
     **kwargs,
 ):
     metric = data["metric"]
-    # logs = data["logs"]
-    logts = data["logts"]
-    # traces = data["traces"]
-    traces_err = data["tracets_err"]
-    traces_lat = data["tracets_lat"]
+    logts = data.get("logts")
+    traces_err = data.get("tracets_err")
+    traces_lat = data.get("tracets_lat")
 
     # === metric ===
     normal_metric = metric[metric["time"] < inject_time]

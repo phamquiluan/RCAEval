@@ -62,8 +62,13 @@ if is_py312():
         "micro_diag",
         "microcause",
         "microrank",
+        "mmbaro",
+        "mmcirca",
+        "mmnsigma",
+        "mmrcd",
         "mscred",
         "nsigma",
+        "rcd",
         "ntlr_pagerank",
         "ntlr_randomwalk",
         "pc_pagerank",
@@ -111,6 +116,10 @@ def parse_args():
 
 
 args = parse_args()
+
+if args.method in ("rcd", "mmrcd") and not is_py38():
+    print(f"{args.method} requires the RCD environment (Python 3.8, `pip install -e .[rcd]`). See docs/SETUP.md.")
+    exit(1)
 
 # download dataset
 if "online-boutique" in args.dataset or "re1-ob" in args.dataset:
@@ -292,11 +301,11 @@ def process(data_path):
         sli = "front-end_cpu"
         if f"{service}_lat_90" in data:
             sli = f"{service}_lat_90"
-    elif "train-ticket" in data_path or "fse-tt" in data_path or "RE2-TT" in data_path:
+    elif "train-ticket" in data_path or "fse-tt" in data_path or "RE2-TT" in data_path or "RE3-TT" in data_path:
         sli = "ts-ui-dashboard_latency"
         if f"{service}_latency" in data:
             sli = f"{service}_latency"
-    elif "online-boutique" in data_path or "fse-ob" in data_path or "RE2-OB" in data_path or "RE2-SS" in data_path:
+    elif "online-boutique" in data_path or "fse-ob" in data_path or "RE2-OB" in data_path or "RE2-SS" in data_path or "RE3-OB" in data_path or "RE3-SS" in data_path:
         sli = "frontend_latency"
         if f"{service}_latency" in data:
             sli = f"{service}_latency"
@@ -309,8 +318,9 @@ def process(data_path):
     else:
         raise ValueError("SLI not implemented")
 
-    # == Multimodal data loading for torai ==
-    if "torai" in args.dataset and args.method == "torai":
+    # == Multi-source data loading (multi-source methods and torai) ==
+    MM_METHODS = ("mmbaro", "mmnsigma", "mmrcd", "mmcirca")
+    if args.method in MM_METHODS or ("torai" in args.dataset and args.method == "torai"):
         logts = pd.read_csv(os.path.join(data_dir, "logts.csv"))
 
         traces_err = pd.DataFrame()
