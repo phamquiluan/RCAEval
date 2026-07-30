@@ -425,9 +425,27 @@ def mmrcd(
     traces_err = data.get("tracets_err")
     traces_lat = data.get("tracets_lat")
 
-    # === metric ===
-    normal_metric = metric[metric["time"] < inject_time]
-    anomal_metric = metric[metric["time"] >= inject_time]
+    # join the log and trace time series (15s sampling) onto the metric
+    # timestamps (1s sampling) so all sources feed the F-node procedure
+    combined = metric.sort_values("time")
+    for name, src in (("logts", logts), ("tracets_err", traces_err), ("tracets_lat", traces_lat)):
+        if src is None or len(src) == 0 or "time" not in src.columns:
+            continue
+        src = src.ffill().fillna(0)
+        src = drop_constant(src)
+        if len(src.columns) < 2:  # only the time column left
+            continue
+        combined = pd.merge_asof(
+            combined,
+            src.sort_values("time"),
+            on="time",
+            direction="backward",
+            suffixes=("", f"_{name}"),
+        )
+    combined = combined.ffill().fillna(0)
+
+    normal_metric = combined[combined["time"] < inject_time]
+    anomal_metric = combined[combined["time"] >= inject_time]
 
     if dk_select_useful is True:
         normal_metric = drop_extra(normal_metric)

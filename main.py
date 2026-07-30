@@ -109,6 +109,12 @@ def parse_args():
     parser.add_argument("--test", action="store_true", help="Perform smoke test on certain methods without fully run on all data")
     args = parser.parse_args()
 
+    # checked before the globals() lookup so the message also appears when the
+    # method could not even be imported (e.g. missing patched causal-learn)
+    if args.method in ("rcd", "mmrcd") and not is_py38():
+        print(f"{args.method} requires the RCD environment (Python 3.8, `pip install -e .[rcd]`). See docs/SETUP.md.")
+        exit(1)
+
     if args.method not in globals():
         raise ValueError(f"{args.method=} not defined. Please check imported methods.")
 
@@ -116,10 +122,6 @@ def parse_args():
 
 
 args = parse_args()
-
-if args.method in ("rcd", "mmrcd") and not is_py38():
-    print(f"{args.method} requires the RCD environment (Python 3.8, `pip install -e .[rcd]`). See docs/SETUP.md.")
-    exit(1)
 
 # download dataset
 if "online-boutique" in args.dataset or "re1-ob" in args.dataset:

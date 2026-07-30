@@ -77,13 +77,16 @@ def mmcirca(data, inject_time=None, dataset=None, **kwargs):
     combined = combined.loc[:, ~combined.columns.duplicated()]
     combined = combined.fillna(0)
 
-    # remove highly correlated columns to keep the causal graph tractable
-    removed_columns = []
-    for idx, col1 in enumerate(combined.columns):
-        for col2 in combined.columns[idx + 1:]:
-            if combined[col1].corr(combined[col2]) > 0.99:
-                removed_columns.append(col2)
-    combined = combined.drop(columns=list(set(removed_columns)))
+    # remove highly correlated columns to keep the causal graph tractable;
+    # the correlation matrix is computed once instead of per column pair
+    corr = combined.corr()
+    removed_columns = set()
+    cols = combined.columns
+    for idx, col1 in enumerate(cols):
+        for col2 in cols[idx + 1:]:
+            if corr.loc[col1, col2] > 0.99:
+                removed_columns.add(col2)
+    combined = combined.drop(columns=list(removed_columns))
 
     if "time" not in combined.columns:
         combined["time"] = pd.Series(time_col.to_numpy()).reindex(combined.index).ffill()
