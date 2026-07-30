@@ -23,6 +23,7 @@ from RCAEval.utility import (
     dump_json,
     is_py38,
     is_py312,
+    is_py314,
     load_json,
     download_online_boutique_dataset,
     download_sock_shop_1_dataset,
@@ -37,7 +38,7 @@ from RCAEval.utility import (
 )
 
 
-if is_py312():
+if is_py312() or is_py314():
     import RCAEval.e2e as e2e
 
     # bind every method that could be imported; one whose dependencies are
@@ -84,7 +85,7 @@ if is_py312():
 elif is_py38():
     from RCAEval.e2e import dummy, e_diagnosis, ht, rcd, mmrcd, torai
 else:
-    print("Please use Python 3.8 or 3.12")
+    print("Please use Python 3.8, 3.12, or 3.14")
     exit(1)
 
 try:

@@ -21,6 +21,10 @@ def is_py310():
     return sys.version_info.major == 3 and sys.version_info.minor == 10
 
 
+def is_py314():
+    return sys.version_info.major == 3 and sys.version_info.minor == 14
+
+
 def is_py38():
     return sys.version_info.major == 3 and sys.version_info.minor == 8
 
