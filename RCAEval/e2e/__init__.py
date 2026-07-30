@@ -15,7 +15,7 @@ from RCAEval.io.time_series import (
     preprocess,
     select_useful_cols,
 )
-from RCAEval.utility import is_py310, is_py312
+from RCAEval.utility import is_py310, is_py312, is_py314
 
 
 def rca(func):
@@ -30,7 +30,7 @@ def rca(func):
             return {"adj": [], "node_names": dummy, "ranks": dummy}
     return wrapper
 
-if is_py310() or is_py312():
+if is_py310() or is_py312() or is_py314():
     import importlib
 
     # A method whose dependencies are not installed (e.g. torch or causallearn
