@@ -253,6 +253,23 @@ Avg speed: 0.51
 
 We can replace the baro method with other methods (e.g., circa) and substitute re2-tt with other datasets to replicate the corresponding results shown in Table 6. This reproduction process is also integrated into our Continuous Integration (CI) setup. For more details, refer to the [.circleci/config.yml](.circleci/config.yml) file.
 
+### Multi-source RCA benchmark
+
+The multi-source methods (Multi-source BARO, Multi-source RCD, and Multi-source CIRCA) consume metrics, logs, and traces together. They run on the RE2/RE3 datasets, which include the required `logts.csv`, `tracets_err.csv`, and `tracets_lat.csv` files in each failure case:
+
+```bash
+# Multi-source BARO (Python 3.12, default environment)
+python main.py --method mmbaro --dataset re2-ob
+
+# Multi-source CIRCA (Python 3.12, default environment)
+python main.py --method mmcirca --dataset re2-ob
+
+# Multi-source RCD (requires the RCD environment: Python 3.8, `pip install -e .[rcd]`, see docs/SETUP.md)
+python main.py --method mmrcd --dataset re2-ob
+```
+
+A function-level tutorial using Multi-source BARO on a single failure case is available in [docs/multi-source-rca-demo.ipynb](docs/multi-source-rca-demo.ipynb).
+
 
 ## For TORAI Paper
 

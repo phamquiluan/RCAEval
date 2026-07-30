@@ -60,17 +60,27 @@ def baro(
     }
     
     
+def _mm_has_traces(dataset):
+    """Trace time series are only usable on the Online Boutique and Train
+    Ticket multi-source datasets (mm-* is the internal name of RE2)."""
+    if dataset is None:
+        return False
+    return dataset.lower() in ("mm-ob", "mm-tt", "re2-ob", "re2-tt", "re3-ob", "re3-tt")
+
+
 def mmnsigma(data, inject_time=None, dataset=None, num_loop=None, sli=None, anomalies=None, **kwargs):
-    scaler_function = kwargs.get("scaler_function", StandardScaler) 
+    scaler_function = kwargs.get("scaler_function", StandardScaler)
 
     metric = data["metric"]
-    logs = data["logs"]
     logts = data["logts"]
-    traces = data["traces"]
-    traces_err = data["tracets_err"]
-    traces_lat = data["tracets_lat"]
-    cluster_info = data["cluster_info"]
-    
+    traces_err = data.get("tracets_err")
+    traces_lat = data.get("tracets_lat")
+    use_traces = (
+        _mm_has_traces(dataset)
+        and traces_err is not None and len(traces_err) > 0
+        and traces_lat is not None and len(traces_lat) > 0
+    )
+
     # ==== PREPARE DATA ====
     # the metric is currently sampled for 1 seconds, resample for 15s by just take 1 point every 15 points
     metric = metric.iloc[::15, :]
@@ -90,16 +100,16 @@ def mmnsigma(data, inject_time=None, dataset=None, num_loop=None, sli=None, anom
     anomal_logts = logts[logts["time"] >= inject_time].drop(columns=["time"])
 
     # == traces_err ==
-    if dataset == "mm-tt" or dataset == "mm-ob":
+    if use_traces:
         traces_err = traces_err.ffill()
         traces_err = traces_err.fillna(0)
         traces_err = drop_constant(traces_err)
 
         normal_traces_err = traces_err[traces_err["time"] < inject_time].drop(columns=["time"])
         anomal_traces_err = traces_err[traces_err["time"] >= inject_time].drop(columns=["time"])
-    
+
      # == traces_lat ==
-    if dataset == "mm-tt" or dataset == "mm-ob":
+    if use_traces:
         traces_lat = traces_lat.ffill()
         traces_lat = traces_lat.fillna(0)
         traces_lat = drop_constant(traces_lat)
@@ -132,7 +142,7 @@ def mmnsigma(data, inject_time=None, dataset=None, num_loop=None, sli=None, anom
         ranks.append((col, score))
 
     # == traces_err ==
-    if dataset == "mm-tt" or dataset == "mm-ob":
+    if use_traces:
         for col in normal_traces_err.columns:
             a = normal_traces_err[col].to_numpy()[:-2]
             b = anomal_traces_err[col].to_numpy()
@@ -143,7 +153,7 @@ def mmnsigma(data, inject_time=None, dataset=None, num_loop=None, sli=None, anom
             ranks.append((col, score))
    
     # == traces_lat ==
-    if dataset == "mm-tt" or dataset == "mm-ob":
+    if use_traces:
         for col in normal_traces_lat.columns:
             a = normal_traces_lat[col].to_numpy()
             b = anomal_traces_lat[col].to_numpy()
