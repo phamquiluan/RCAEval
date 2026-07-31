@@ -1,6 +1,5 @@
 # 🕵️ RCAEval: A Benchmark for Root Cause Analysis
 
-[![DOI](https://zenodo.org/badge/840137303.svg)](https://doi.org/10.5281/zenodo.13294048)
 [![pypi package](https://img.shields.io/pypi/v/RCAEval.svg)](https://pypi.org/project/RCAEval)
 [![Downloads](https://static.pepy.tech/personalized-badge/rcaeval?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/rcaeval)
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/phamquiluan/RCAEval/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/phamquiluan/RCAEval/tree/main)
