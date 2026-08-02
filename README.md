@@ -1,5 +1,6 @@
 # 🕵️ RCAEval: A Benchmark for Root Cause Analysis
 
+[![Hugging Face Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Dataset-yellow)](https://huggingface.co/datasets/phamquiluan/RCAEval)
 [![pypi package](https://img.shields.io/pypi/v/RCAEval.svg)](https://pypi.org/project/RCAEval)
 [![Downloads](https://static.pepy.tech/personalized-badge/rcaeval?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads)](https://pepy.tech/project/rcaeval)
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/phamquiluan/RCAEval/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/phamquiluan/RCAEval/tree/main)
@@ -156,8 +157,8 @@ RCAEval benchmark includes nine datasets organized into three benchmark suites (
 | RE2-SS | Sock Shop | 90 | cpu, mem, disk, delay, loss, socket | 74-82 | Yes | N/A |
 | RE2-TT | Train Ticket | 90 | cpu, mem, disk, delay, loss, socket | 340-376 | Yes | Yes |
 | RE3-OB | Online Boutique | 30 | f1, f2, f3, f4, f5 | 68-101 | Yes | Yes |
-| RE3-SS | Sock Shop | 30 | f1, f2, f3, f4, f5 | 80-107 | Yes | N/A |
-| RE3-TT | Train Ticket | 30 | f1, f2, f3, f4, f5 | 294-322 | Yes | Yes |
+| RE3-SS | Sock Shop | 30 | f1, f2, f3, f4 | 80-107 | Yes | N/A |
+| RE3-TT | Train Ticket | 30 | f1, f2, f3, f4 | 294-322 | Yes | Yes |
 | TORAI-OB | Online Boutique | 90 | cpu, mem, disk, delay, loss, socket | 69-77 | Yes | Yes |
 | TORAI-SS | Sock Shop | 90 | cpu, mem, disk, delay, loss, socket | 74-82 | Yes | N/A |
 | TORAI-TT | Train Ticket | 90 | cpu, mem, disk, delay, loss, socket | 340-376 | Yes | Yes |
@@ -178,8 +179,45 @@ Each dataset directory follows the naming convention: `{benchmark}_{service}_{fa
 - `traces.csv`: Trace data (RE2 and RE3 only)
 
 Our datasets and their description are publicly available with the following information:
+- Hugging Face: [https://huggingface.co/datasets/phamquiluan/RCAEval](https://huggingface.co/datasets/phamquiluan/RCAEval) (Parquet, ~3.4GB instead of ~38GB)
 - Figshare (**recommended**): [https://figshare.com/articles/dataset/RCAEval_A_Benchmark_for_Root_Cause_Analysis_of_Microservice_Systems/31048672](https://figshare.com/articles/dataset/RCAEval_A_Benchmark_for_Root_Cause_Analysis_of_Microservice_Systems/31048672) (more structured format)
 - Zenodo: [https://zenodo.org/records/14590730](https://zenodo.org/records/14590730) (DOI: https://doi.org/10.5281/zenodo.14590730)
+
+The Hugging Face copy stores the same 735 cases as Parquet instead of `metrics.json` /
+`logs.csv` / `traces.csv`, which is around eleven times smaller to download. Use
+`snapshot_download` to fetch one suite or the whole benchmark into `data`:
+
+```python
+from huggingface_hub import snapshot_download
+
+# one suite (use "re2*" or "re3*" for the others, or omit to get all 735 cases)
+snapshot_download(
+    repo_id="phamquiluan/RCAEval",
+    repo_type="dataset",
+    allow_patterns="re1*",
+    local_dir="data",
+)
+```
+
+`cases.parquet` in that repository indexes all 735 cases with their ground-truth root
+cause service, fault type, injection time, and telemetry sizes, so you can select a
+subset before downloading any telemetry:
+
+```python
+import pandas as pd
+
+idx = pd.read_parquet("hf://datasets/phamquiluan/RCAEval/cases.parquet")
+print(idx[idx.dataset == "RE2-TT"][["case", "root_cause_service", "fault", "n_metrics"]])
+```
+
+`RCAEval.utility.read_metrics`, `read_logs` and `read_traces` read either layout, so code
+written against the original files works unchanged with the Parquet copy:
+
+```python
+from RCAEval.utility import read_metrics
+
+df = read_metrics("data/re1ob_adservice_cpu_1")  # metrics.parquet or metrics.json
+```
 
 We also provide utility functions to download our datasets using Python. The downloaded datasets will be available at directory `data`.
 
