@@ -179,9 +179,9 @@ Each dataset directory follows the naming convention: `{benchmark}_{service}_{fa
 - `traces.csv`: Trace data (RE2 and RE3 only)
 
 Our datasets and their description are publicly available with the following information:
-- Hugging Face: [https://huggingface.co/datasets/phamquiluan/RCAEval](https://huggingface.co/datasets/phamquiluan/RCAEval) (Parquet, 3.4GB on disk; per-case downloads)
-- Figshare (**recommended**): [https://figshare.com/articles/dataset/RCAEval_A_Benchmark_for_Root_Cause_Analysis_of_Microservice_Systems/31048672](https://figshare.com/articles/dataset/RCAEval_A_Benchmark_for_Root_Cause_Analysis_of_Microservice_Systems/31048672) (more structured format)
-- Zenodo: [https://zenodo.org/records/14590730](https://zenodo.org/records/14590730) (DOI: https://doi.org/10.5281/zenodo.14590730)
+- Hugging Face (**recommended**): [https://huggingface.co/datasets/phamquiluan/RCAEval](https://huggingface.co/datasets/phamquiluan/RCAEval) (Parquet, 3.4GB on disk, downloadable one suite or one case at a time)
+- Figshare: [https://figshare.com/articles/dataset/RCAEval_A_Benchmark_for_Root_Cause_Analysis_of_Microservice_Systems/31048672](https://figshare.com/articles/dataset/RCAEval_A_Benchmark_for_Root_Cause_Analysis_of_Microservice_Systems/31048672) (more structured format, with additional preprocessed series)
+- Zenodo: [https://zenodo.org/records/14590730](https://zenodo.org/records/14590730) (DOI for citation: https://doi.org/10.5281/zenodo.14590730)
 
 The Hugging Face copy stores the same 735 cases as Parquet instead of `metrics.json` /
 `logs.csv` / `traces.csv`. It is 3.4GB to download against 5.2GB of zip archives on
