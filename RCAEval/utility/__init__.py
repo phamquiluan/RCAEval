@@ -45,6 +45,83 @@ def load_json(filename: str):
         return json.load(obj)
 
 
+# Cases ship in two interchangeable layouts: the original
+# metrics.json / logs.csv / traces.csv, and the Parquet conversion published on
+# Hugging Face (metrics.parquet / logs.parquet / traces.parquet). The readers
+# below accept either and return the same DataFrame.
+_CASE_FILES = {
+    "metrics": ("metrics.parquet", "metrics.json"),
+    "logs": ("logs.parquet", "logs.csv"),
+    "traces": ("traces.parquet", "traces.csv"),
+}
+
+
+def resolve_case_file(case_dir, kind):
+    """Locate `kind` ("metrics", "logs" or "traces") inside a case directory.
+
+    Prefers Parquet when both layouts are present. Returns None when neither
+    exists, which is normal: RE1 cases carry no logs or traces, and Sock Shop
+    is not traced.
+    """
+    if kind not in _CASE_FILES:
+        raise ValueError(f"unknown kind {kind!r}, expected one of {list(_CASE_FILES)}")
+    for name in _CASE_FILES[kind]:
+        path = join(str(case_dir), name)
+        if os.path.exists(path):
+            return path
+    return None
+
+
+def read_metrics(case_dir):
+    """Read a case's metrics as a wide DataFrame.
+
+    Returns a `time` column of unix seconds followed by one float column per
+    metric, sorted by time. Timestamps at which a metric was not observed stay
+    NaN: no forward-fill or resampling happens here, so both the JSON and the
+    Parquet layout produce the same frame. Callers apply their own filling.
+    """
+    path = resolve_case_file(case_dir, "metrics")
+    if path is None:
+        raise FileNotFoundError(f"no metrics.parquet or metrics.json in {case_dir}")
+    if path.endswith(".parquet"):
+        return pd.read_parquet(path)
+
+    raw = {k: v for k, v in load_json(path).items() if v}
+    union = sorted({p[0] for v in raw.values() for p in v})
+    pos = {t: i for i, t in enumerate(union)}
+    cols = list(raw)
+    arr = np.full((len(union), len(cols)), np.nan, dtype=np.float64)
+    for j, k in enumerate(cols):
+        for ts, val in raw[k]:
+            if val is not None:
+                arr[pos[ts], j] = val
+    df = pd.DataFrame(arr, columns=cols)
+    df.insert(0, "time", np.asarray(union, dtype=np.int64))
+    return df
+
+
+def read_logs(case_dir):
+    """Read a case's logs, or None when the case has none."""
+    path = resolve_case_file(case_dir, "logs")
+    if path is None:
+        return None
+    df = pd.read_parquet(path) if path.endswith(".parquet") else pd.read_csv(
+        path, dtype=str, low_memory=False, keep_default_na=False, na_values=[""]
+    )
+    return None if df.empty else df
+
+
+def read_traces(case_dir):
+    """Read a case's traces, or None when the case has none."""
+    path = resolve_case_file(case_dir, "traces")
+    if path is None:
+        return None
+    df = pd.read_parquet(path) if path.endswith(".parquet") else pd.read_csv(
+        path, dtype=str, low_memory=False, keep_default_na=False, na_values=[""]
+    )
+    return None if df.empty else df
+
+
 def convert_adjacency_matrix(adj, node_names):
     """
     convert metrics adj to service adj
