@@ -373,6 +373,17 @@ We would like to express our sincere gratitude to the researchers and developers
 ## Citation
 
 ```bibtex
+@article{luanpham2026thesis,
+  author = "Qui Luan Pham",
+  title = "{Anomaly Detection and Root Cause Analysis for Microservice Systems}",
+  year = "2026",
+  month = "6",
+  url = "https://research-repository.rmit.edu.au/articles/thesis/Anomaly_Detection_and_Root_Cause_Analysis_for_Microservice_Systems/33274566",
+  doi = "10.25439/rmt.33274566"
+}
+```
+
+```bibtex
 @article{pham2026eventadl,
   title={EventADL: Open-Box Anomaly Detection and Localization Framework for Events in Cloud-Based Service Systems},
   author={Pham, Luan and Nicolet, Victor and Dodds, Joey and Guan, Hui and Kroening, Daniel},
