@@ -57,19 +57,37 @@ def test_perfect_ranker_scores_one_with_lift_of_one_minus_chance():
 
 
 def test_constant_ranker_scores_at_or_below_answer_frequency():
-    nodes = _nodes()
+    n_candidates = 10
+    nodes = _nodes()[:n_candidates]
     constant = nodes[0]
     rng = random.Random(1)
-    answers = _answers(rng)
+    answers = [rng.choice(nodes) for _ in range(N_CASES)]
     frequency = sum(a == constant for a in answers) / len(answers)
 
     evaluator = Evaluator()
     for answer in answers:
-        evaluator.add_case(ranks=[constant], answer=answer)
+        evaluator.add_case(ranks=[constant], answer=answer, n_candidates=n_candidates)
 
     assert evaluator.accuracy(1) == pytest.approx(frequency)
     assert evaluator.average(5) <= frequency + 1e-9
-    # A one-item ranking is at chance by construction, so lift is zero when the
-    # constant node is the answer every time and negative otherwise.
-    assert evaluator.chance_average(5) == pytest.approx(1.0)
-    assert evaluator.lift(5) <= 1e-9
+    # The floor comes from the candidate set of 10, not from the one-item ranking.
+    assert evaluator.chance_average(5) == pytest.approx(3 / n_candidates)
+    assert evaluator.lift(5) == pytest.approx(evaluator.average(5) - 3 / n_candidates)
+
+
+def test_short_precise_ranking_keeps_the_candidate_set_floor():
+    n_candidates = 30
+    nodes = [Node(f"svc-{i}", "unknown") for i in range(n_candidates)]
+    rng = random.Random(2)
+    evaluator = Evaluator()
+    for _ in range(N_CASES):
+        answer = rng.choice(nodes)
+        others = [n for n in nodes if n != answer]
+        rng.shuffle(others)
+        # A method that returns only its top three, with the answer first.
+        evaluator.add_case(ranks=[answer] + others[:2], answer=answer, n_candidates=n_candidates)
+
+    assert evaluator.average(5) == pytest.approx(1.0)
+    # The floor stays at the 30-candidate chance level, not near 1.0 for a 3-item list.
+    assert evaluator.chance_average(5) == pytest.approx(3 / n_candidates)
+    assert evaluator.lift(5) == pytest.approx(1.0 - 3 / n_candidates)

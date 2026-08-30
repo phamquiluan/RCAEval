@@ -11,10 +11,18 @@ class Evaluator:
         self._accuracy_service = {k: 0.0 for k in range(1, 6)}
         self._ranks: List[List[Node]] = []
         self._n_candidates: List[int] = []
+        self._answer_in_candidates: List[bool] = []
 
-    def add_case(self, ranks: Sequence[Node], answer: Node):
+    def add_case(self, ranks: Sequence[Node], answer: Node, n_candidates: int = None):
+        """
+        Record one case. n_candidates is the size of the candidate set the method
+        ranked over. It defaults to the length of the submitted ranking, which is
+        only correct for methods that rank every candidate.
+        """
         self._ranks.append(ranks[: 5])
-        self._n_candidates.append(len(ranks))
+        n = n_candidates if n_candidates is not None else len(ranks)
+        self._n_candidates.append(n)
+        self._answer_in_candidates.append(answer in ranks or len(ranks) < n)
 
         service_ranks = [n.entity for n in ranks]
         service_answer = answer.entity
@@ -36,7 +44,7 @@ class Evaluator:
     @property
     def n_candidates(self) -> List[int]:
         """
-        Length of the full ranking submitted for each case, in the order the cases were added.
+        Candidate set size recorded for each case, in the order the cases were added.
         """
         return list(self._n_candidates)
 
@@ -81,11 +89,17 @@ class Evaluator:
         AC@k that a uniformly random ranking over the same candidates would reach.
 
         For a case with n candidates the chance of the answer landing in the top k is min(k, n) / n.
-        The value is the mean of that chance over all cases. A case with no candidates counts as 0.
+        A case whose answer is outside the candidate set counts 0 instead of k / n, since no
+        ranking over those candidates can place it. The answer is treated as outside the set
+        when the submitted ranking already covers the whole candidate set and does not contain
+        it. The value is the mean over all cases, with an empty candidate set counting 0.
         """
         if k not in self._accuracy or not self._ranks:
             return None
-        return sum(min(k, n) / n if n else 0.0 for n in self._n_candidates) / self.num
+        return sum(
+            min(k, n) / n if n and found else 0.0
+            for n, found in zip(self._n_candidates, self._answer_in_candidates)
+        ) / self.num
 
     def chance_average(self, k: int) -> float:
         """

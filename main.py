@@ -218,6 +218,10 @@ def _eventadl_short_name(entity):
     return entity.rstrip("/").rsplit("/", 1)[-1].rsplit(":", 1)[-1]
 
 
+# candidate counts per result file, recorded during preprocessing, for --report-chance
+n_candidates_map = {}
+
+
 def process_eventadl(test_case):
     case_id = test_case["id"]
     ground_truth = test_case["ground_truth"]
@@ -285,6 +289,11 @@ def process(data_path):
 
     # num column, exclude time
     num_node = len(data.columns) - 1
+
+    n_candidates_map[basename(rp)] = {
+        "service": len({c.split("_")[0].replace("-db", "") for c in data.columns if c != "time"}),
+        "metric": num_node,
+    }
 
     # rename latency
     data = data.rename(
@@ -482,6 +491,10 @@ for service in services:
             if "error" in data:
                 continue  # ignore
 
+            case_n = n_candidates_map.get(basename(rp), {})
+            n_service = case_n.get("service")
+            n_metric = case_n.get("metric")
+
             for i, ranks in data.items():
                 s_ranks = [Node(x.split("_")[0].replace("-db", ""), "unknown") for x in ranks]
                 # remove duplication
@@ -499,49 +512,49 @@ for service in services:
 
                 f_ranks = [Node(x.split("_")[0], x.split("_")[1] if "_" in x else "unknown") for x in ranks]
 
-                s_evaluator.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                f_evaluator.add_case(ranks=f_ranks, answer=Node(service, fault))
+                s_evaluator.add_case(ranks=s_ranks, n_candidates=n_service, answer=Node(service, "unknown"))
+                f_evaluator.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, fault))
 
                 if fault == "cpu":
-                    s_evaluator_cpu.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_cpu.add_case(ranks=f_ranks, answer=Node(service, fault))
+                    s_evaluator_cpu.add_case(ranks=s_ranks, n_candidates=n_service, answer=Node(service, "unknown"))
+                    f_evaluator_cpu.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, fault))
 
-                    s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, fault))
+                    s_evaluator_all.add_case(ranks=s_ranks, n_candidates=n_service, answer=Node(service, "unknown"))
+                    f_evaluator_all.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, fault))
 
                 elif fault == "mem":
-                    s_evaluator_mem.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_mem.add_case(ranks=f_ranks, answer=Node(service, fault))
+                    s_evaluator_mem.add_case(ranks=s_ranks, n_candidates=n_service, answer=Node(service, "unknown"))
+                    f_evaluator_mem.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, fault))
 
-                    s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, fault))
+                    s_evaluator_all.add_case(ranks=s_ranks, n_candidates=n_service, answer=Node(service, "unknown"))
+                    f_evaluator_all.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, fault))
 
                 elif fault == "delay":
-                    s_evaluator_lat.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_lat.add_case(ranks=f_ranks, answer=Node(service, "latency"))
+                    s_evaluator_lat.add_case(ranks=s_ranks, n_candidates=n_service, answer=Node(service, "unknown"))
+                    f_evaluator_lat.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, "latency"))
 
-                    s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, "latency"))
+                    s_evaluator_all.add_case(ranks=s_ranks, n_candidates=n_service, answer=Node(service, "unknown"))
+                    f_evaluator_all.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, "latency"))
 
                 elif fault == "loss":
-                    s_evaluator_loss.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_loss.add_case(ranks=f_ranks, answer=Node(service, "latency"))
+                    s_evaluator_loss.add_case(ranks=s_ranks, n_candidates=n_service, answer=Node(service, "unknown"))
+                    f_evaluator_loss.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, "latency"))
 
-                    s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, "latency"))
+                    s_evaluator_all.add_case(ranks=s_ranks, n_candidates=n_service, answer=Node(service, "unknown"))
+                    f_evaluator_all.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, "latency"))
 
                 elif fault == "disk":
-                    s_evaluator_io.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_io.add_case(ranks=f_ranks, answer=Node(service, "diskio"))
+                    s_evaluator_io.add_case(ranks=s_ranks, n_candidates=n_service, answer=Node(service, "unknown"))
+                    f_evaluator_io.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, "diskio"))
 
-                    s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, "diskio"))
+                    s_evaluator_all.add_case(ranks=s_ranks, n_candidates=n_service, answer=Node(service, "unknown"))
+                    f_evaluator_all.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, "diskio"))
                 elif fault == "socket":
-                    s_evaluator_socket.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_socket.add_case(ranks=f_ranks, answer=Node(service, "socket"))
+                    s_evaluator_socket.add_case(ranks=s_ranks, n_candidates=n_service, answer=Node(service, "unknown"))
+                    f_evaluator_socket.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, "socket"))
 
-                    s_evaluator_all.add_case(ranks=s_ranks, answer=Node(service, "unknown"))
-                    f_evaluator_all.add_case(ranks=f_ranks, answer=Node(service, "socket"))
+                    s_evaluator_all.add_case(ranks=s_ranks, n_candidates=n_service, answer=Node(service, "unknown"))
+                    f_evaluator_all.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, "socket"))
 
 
         eval_data["service-fault"].append(f"{service}_{fault}")
