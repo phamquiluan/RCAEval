@@ -108,6 +108,7 @@ def parse_args():
     parser.add_argument("--length", type=int, default=20, help="Time series length (RQ4)")
     parser.add_argument("--tdelta", type=int, default=0, help="Specify $t_delta$ to simulate delay in anomaly detection")
     parser.add_argument("--test", action="store_true", help="Perform smoke test on certain methods without fully run on all data")
+    parser.add_argument("--report-chance", action="store_true", help="Also print the Avg@5 a random ranking would reach, and the lift over it")
     args = parser.parse_args()
 
     # checked before the globals() lookup so the message also appears when the
@@ -427,6 +428,9 @@ if "eventadl" in args.dataset:
         print("AC3:".ljust(12), round(s_evaluator_event.accuracy(3), 2))
         print("AC5:".ljust(12), round(s_evaluator_event.accuracy(5), 2))
         print("Avg@5:".ljust(12), round(s_evaluator_event.average(5), 2))
+        if args.report_chance:
+            print("Chance@5:".ljust(12), round(s_evaluator_event.chance_average(5), 2))
+            print("Lift@5:".ljust(12), round(s_evaluator_event.lift(5), 2))
     print("---")
     print("Avg speed:", avg_speed)
     exit(0)
@@ -575,6 +579,9 @@ for name, s_evaluator, f_evaluator in [
 
     if s_evaluator.average(5) is not None:
         print( f"Avg@5-{name.upper()}:".ljust(12), round(s_evaluator.average(5), 2))
+        if args.report_chance:
+            print(f"Chance@5-{name.upper()}:".ljust(12), round(s_evaluator.chance_average(5), 2))
+            print(f"Lift@5-{name.upper()}:".ljust(12), round(s_evaluator.lift(5), 2))
 
 print("---")
 print("Avg speed:", avg_speed)
