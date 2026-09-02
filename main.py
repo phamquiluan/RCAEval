@@ -290,9 +290,13 @@ def process(data_path):
     # num column, exclude time
     num_node = len(data.columns) - 1
 
+    # candidate counts for --report-chance, taken after the same preprocessing the
+    # methods apply below (drop_time + drop_constant, dk_select_useful stays False),
+    # so the floor is over the set the method actually ranked
+    _pre_cols = preprocess(data.copy(), dataset=args.dataset, dk_select_useful=False).columns
     n_candidates_map[basename(rp)] = {
-        "service": len({c.split("_")[0].replace("-db", "") for c in data.columns if c != "time"}),
-        "metric": num_node,
+        "service": len({c.split("_")[0].replace("-db", "") for c in _pre_cols if c != "time"}),
+        "metric": len([c for c in _pre_cols if c != "time"]),
     }
 
     # rename latency
@@ -410,6 +414,20 @@ avg_speed = round(time_taken.total_seconds() / len(data_paths), 2)
 
 
 # ======== EVALUTION ===========
+def print_chance(evaluator, suffix=""):
+    """Print the chance floor and lift, or a loud n/a when any evaluated case has
+    no recorded candidate count (stale result files from an earlier run, or a site
+    that records no counts), instead of a silently wrong denominator."""
+    chance = evaluator.chance_average(5)
+    if chance is None:
+        miss = evaluator.n_missing_candidates
+        print(f"Chance@5{suffix}:".ljust(12), f"n/a (no candidate count for {miss} of {evaluator.num} cases)")
+        print(f"Lift@5{suffix}:".ljust(12), "n/a")
+    else:
+        print(f"Chance@5{suffix}:".ljust(12), round(chance, 2))
+        print(f"Lift@5{suffix}:".ljust(12), round(evaluator.lift(5), 2))
+
+
 rps = glob.glob(join(result_path, "*.json"))
 
 if "eventadl" in args.dataset:
@@ -438,8 +456,7 @@ if "eventadl" in args.dataset:
         print("AC5:".ljust(12), round(s_evaluator_event.accuracy(5), 2))
         print("Avg@5:".ljust(12), round(s_evaluator_event.average(5), 2))
         if args.report_chance:
-            print("Chance@5:".ljust(12), round(s_evaluator_event.chance_average(5), 2))
-            print("Lift@5:".ljust(12), round(s_evaluator_event.lift(5), 2))
+            print_chance(s_evaluator_event)
     print("---")
     print("Avg speed:", avg_speed)
     exit(0)
@@ -593,8 +610,7 @@ for name, s_evaluator, f_evaluator in [
     if s_evaluator.average(5) is not None:
         print( f"Avg@5-{name.upper()}:".ljust(12), round(s_evaluator.average(5), 2))
         if args.report_chance:
-            print(f"Chance@5-{name.upper()}:".ljust(12), round(s_evaluator.chance_average(5), 2))
-            print(f"Lift@5-{name.upper()}:".ljust(12), round(s_evaluator.lift(5), 2))
+            print_chance(s_evaluator, suffix=f"-{name.upper()}")
 
 print("---")
 print("Avg speed:", avg_speed)
