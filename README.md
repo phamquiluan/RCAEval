@@ -364,6 +364,7 @@ This repository includes code from various sources with different licenses. We h
 We would like to express our sincere gratitude to the researchers and developers who created the baselines used in our study. Their work has been instrumental in making this project possible. We deeply appreciate the time, effort, and expertise that have gone into developing and maintaining these resources. This project would not have been feasible without their contributions.
 
 ## Change Logs
+- [Sep 2026] Added an opt-in chance-level baseline to the evaluator. `main.py --report-chance` prints `Chance@5` and `Lift@5` beneath each `Avg@5`, so an absolute score can be read against the floor a random ranker would reach on the same candidate set. Contributed by [@mateenali66](https://github.com/mateenali66) in [#79](https://github.com/phamquiluan/RCAEval/pull/79).
 - [Aug 2026] Published all nine datasets (735 cases) on [Hugging Face](https://huggingface.co/datasets/phamquiluan/RCAEval) as Parquet, 3.4GB on disk and downloadable one suite or one case at a time, with a `cases.parquet` index of every case and its ground-truth root cause. Added `read_metrics`, `read_logs` and `read_traces`, which read either the original or the Parquet layout.
 - [Jul 2026] Made the multi-source RCA benchmark runnable via `main.py` (Multi-source BARO/RCD/CIRCA) and fixed PyPI packaging so wheels include all subpackages.
 - [Jul 2026] Added EventADL, an event-log root cause localization method accepted at FSE'26.
