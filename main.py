@@ -172,6 +172,13 @@ DATASET_MAP = {
 }
 dataset = DATASET_MAP[args.dataset]
 
+# RE1 telemetry carries no disk metric (only cpu, mem, workload, latency and error per
+# service; blkio was added to the collector after RE1 was recorded), so its disk faults
+# are scored against latency, as in the original evaluation. RE2 onward export
+# `<service>_diskio`.
+RE1_DATASETS = {"online-boutique", "sock-shop-1", "sock-shop-2", "train-ticket", "re1-ob", "re1-ss", "re1-tt"}
+disk_metric = "latency" if args.dataset in RE1_DATASETS else "diskio"
+
 
 # prepare input paths
 if "eventadl" in args.dataset:
@@ -562,10 +569,10 @@ for service in services:
 
                 elif fault == "disk":
                     s_evaluator_io.add_case(ranks=s_ranks, n_candidates=n_service, answer=Node(service, "unknown"))
-                    f_evaluator_io.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, "diskio"))
+                    f_evaluator_io.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, disk_metric))
 
                     s_evaluator_all.add_case(ranks=s_ranks, n_candidates=n_service, answer=Node(service, "unknown"))
-                    f_evaluator_all.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, "diskio"))
+                    f_evaluator_all.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, disk_metric))
                 elif fault == "socket":
                     s_evaluator_socket.add_case(ranks=s_ranks, n_candidates=n_service, answer=Node(service, "unknown"))
                     f_evaluator_socket.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, "socket"))
