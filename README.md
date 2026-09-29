@@ -14,7 +14,7 @@
 [ASE 2024 RCAEval v1](https://dl.acm.org/doi/abs/10.1145/3691620.3695065) |
 [FSE 2024 BARO](https://dl.acm.org/doi/full/10.1145/3660805)
 
-RCAEval is an open-source benchmark that offers nine datasets with 735 real failure cases, and an evaluation framework for root cause analysis (RCA) in microservice systems. It includes 15 reproducible baselines covering metric-based, trace-based, and multi-source RCA methods.
+RCAEval is an open-source benchmark that offers nine datasets with 735 real failure cases, and an evaluation framework for root cause analysis (RCA) in microservice systems. It includes many reproducible baselines covering metric-based, trace-based, and multi-source RCA methods.
 
 
 
