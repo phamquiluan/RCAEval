@@ -36,7 +36,7 @@ RCAEval is an open-source benchmark that offers nine datasets with 735 real fail
   * [Licensing](#licensing)
   * [Acknowledgments](#acknowledgments)
   * [Change Logs](#change-logs)
-  * [Citation](#citation)
+  * [Publications](#publications)
   * [Contact](#contact)
 
 ## Prerequisites
@@ -375,7 +375,13 @@ We would like to express our sincere gratitude to the researchers and developers
 - [Mar 2025] The version of RCAEval used in our WWW'25 paper are available in the [www25 branch](https://github.com/phamquiluan/RCAEval/tree/www25).
 - [Dec 2024] The prior version of RCAEval used in our ASE'24 paper are available in the [ase24 branch](https://github.com/phamquiluan/RCAEval/tree/ase24).
 
-## Citation
+## Publications
+
+**[Anomaly Detection and Root Cause Analysis for Microservice Systems](https://research-repository.rmit.edu.au/articles/thesis/Anomaly_Detection_and_Root_Cause_Analysis_for_Microservice_Systems/33274566)**<br>
+*PhD Thesis, RMIT University, 2026* · Luan Pham
+
+<details>
+<summary>BibTeX</summary>
 
 ```bibtex
 @article{luanpham2026thesis,
@@ -387,6 +393,14 @@ We would like to express our sincere gratitude to the researchers and developers
   doi = "10.25439/rmt.33274566"
 }
 ```
+
+</details>
+
+**[EventADL: Open-Box Anomaly Detection and Localization Framework for Events in Cloud-Based Service Systems](https://arxiv.org/abs/2605.00936)**<br>
+*FSE 2026* · Luan Pham, Victor Nicolet, Joey Dodds, Hui Guan, Daniel Kroening
+
+<details>
+<summary>BibTeX</summary>
 
 ```bibtex
 @article{pham2026eventadl,
@@ -400,6 +414,14 @@ We would like to express our sincere gratitude to the researchers and developers
 }
 ```
 
+</details>
+
+**[TORAI: Multi-source Root Cause Analysis for Blind Spots in Microservice Service Call Graph](https://arxiv.org/abs/2604.13522)**<br>
+*FSE 2026* · Luan Pham, Huong Ha, Xiuzhen Zhang, Hongyu Zhang
+
+<details>
+<summary>BibTeX</summary>
+
 ```bibtex
 @article{pham2026torai,
   title={TORAI: Multi-source Root Cause Analysis for Blind Spots in Microservice Service Call Graph},
@@ -412,6 +434,31 @@ We would like to express our sincere gratitude to the researchers and developers
 }
 ```
 
+</details>
+
+**[Where Root Cause Analysis Fails: A Retrieval-Reranking Decomposition](https://github.com/cruiseresearchgroup/DecompRCA)**<br>
+*NeurIPS 2026 (Evaluations and Datasets Track)* · Hada Melino Muhammad, Luan Pham, Laure Barrière, Sachin Shetty, Leonardo Pulga, Flora D. Salim
+
+<details>
+<summary>BibTeX</summary>
+
+```bibtex
+@inproceedings{muhammad2026where,
+  title={Where Root Cause Analysis Fails: A Retrieval-Reranking Decomposition},
+  author={Muhammad, Hada Melino and Pham, Luan and Barri{\`e}re, Laure and Shetty, Sachin and Pulga, Leonardo and Salim, Flora D.},
+  booktitle={Advances in Neural Information Processing Systems, Evaluations and Datasets Track},
+  year={2026}
+}
+```
+
+</details>
+
+**[RCAEval: A Benchmark for Root Cause Analysis of Microservice Systems with Telemetry Data](https://dl.acm.org/doi/10.1145/3701716.3715290)**<br>
+*WWW 2025 (Companion)* · Luan Pham, Hongyu Zhang, Huong Ha, Flora Salim, Xiuzhen Zhang
+
+<details>
+<summary>BibTeX</summary>
+
 ```bibtex
 @inproceedings{pham2025rcaeval,
   title={RCAEval: A Benchmark for Root Cause Analysis of Microservice Systems with Telemetry Data},
@@ -422,6 +469,14 @@ We would like to express our sincere gratitude to the researchers and developers
 }
 ```
 
+</details>
+
+**[Root Cause Analysis for Microservice System based on Causal Inference: How Far Are We?](https://dl.acm.org/doi/abs/10.1145/3691620.3695065)**<br>
+*ASE 2024* · Luan Pham, Huong Ha, Hongyu Zhang
+
+<details>
+<summary>BibTeX</summary>
+
 ```bibtex
 @inproceedings{pham2024root,
   title={Root Cause Analysis for Microservice System based on Causal Inference: How Far Are We?},
@@ -431,6 +486,14 @@ We would like to express our sincere gratitude to the researchers and developers
   year={2024}
 }
 ```
+
+</details>
+
+**[BARO: Robust Root Cause Analysis for Microservices via Multivariate Bayesian Online Change Point Detection](https://dl.acm.org/doi/full/10.1145/3660805)**<br>
+*FSE 2024* · Luan Pham, Huong Ha, Hongyu Zhang
+
+<details>
+<summary>BibTeX</summary>
 
 ```bibtex
 @inproceedings{pham2024baro,
@@ -443,6 +506,8 @@ We would like to express our sincere gratitude to the researchers and developers
   year={2024},
 }
 ```
+
+</details>
 
 ## Star History
 
