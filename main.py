@@ -270,8 +270,13 @@ def process(data_path):
 
     # == Load and Preprocess data ==
     data = pd.read_csv(data_path)
-    
-    # remove lat-50, only selecte lat-90 
+
+    # some RE1-OB cases repeat the "time" header, which pandas reads as a
+    # "time.1" column; it is a timestamp, not a candidate metric
+    if "time.1" in data:
+        data = data.drop(columns=["time.1"])
+
+    # remove lat-50, only selecte lat-90
     data = data.loc[:, ~data.columns.str.endswith("_latency-50")]
     
     if "mm-tt" in data_path or "torai-TT" in data_path:

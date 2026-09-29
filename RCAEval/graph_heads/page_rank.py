@@ -86,7 +86,7 @@ def page_rank(adj, node_names=None, damping_factor=0.85, solver="piteration", n_
     # pr = PageRank()
 
     # transpose before fit
-    scores = pr.fit_transform(pr_input)
+    scores = pr.fit_predict(pr_input)
 
     # merge scores and node names, sort by scores
     output = list(zip(node_names, scores))

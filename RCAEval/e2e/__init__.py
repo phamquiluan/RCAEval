@@ -1,4 +1,5 @@
 import os
+import sys
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -24,6 +25,9 @@ def rca(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
+            # say so loudly: the fallback ranking is just the column order
+            print(f"{func.__name__} failed ({type(e).__name__}: {e}); "
+                  f"returning the unranked column order", file=sys.stderr)
             from RCAEval.io.time_series import preprocess
             data = preprocess(data=args[0], dataset=kwargs.get("dataset"), dk_select_useful=False)
             dummy = data.columns.to_list()

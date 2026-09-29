@@ -620,7 +620,7 @@ def causalrca(data, inject_time=None, dataset=None, with_bg=False, **kwargs):
     # PageRank
     try:
         pagerank = PageRank()
-        scores = pagerank.fit_transform(np.abs(adj.T))
+        scores = pagerank.fit_predict(np.abs(adj.T))
     except Exception:  # empty graph
         # print("empty graph")
         return {"adj": adj, "node_names": node_names, "ranks": node_names}

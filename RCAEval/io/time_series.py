@@ -10,6 +10,9 @@ def drop_near_constant(df: pd.DataFrame, threshold: float = 0.1):
 
 
 def drop_time(df: pd.DataFrame):
+    # "time.1" is how pandas reads a repeated "time" header
+    if "time.1" in df:
+        df = df.drop(columns=["time.1"])
     if "time" in df:
         df = df.drop(columns=["time"])
     elif "Time" in df:

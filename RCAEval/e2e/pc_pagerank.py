@@ -19,6 +19,8 @@ def pc_pagerank(
     cg = pc(data.to_numpy())
     adj = cg.G.graph
     G = nx.DiGraph()
+    # keep isolated nodes so the scores stay aligned with node_names
+    G.add_nodes_from(range(len(adj)))
     for i in range(len(adj)):
         for j in range(len(adj)):
             if adj[i, j] == -1:
@@ -26,10 +28,10 @@ def pc_pagerank(
             if adj[i, j] == 1:
                 G.add_edge(j, i)
     nodes = sorted(G.nodes())
-    adj = np.asarray(nx.to_numpy_matrix(G, nodelist=nodes))
+    adj = nx.to_numpy_array(G, nodelist=nodes)
 
     pagerank = PageRank()
-    scores = pagerank.fit_transform(adj.T)
+    scores = pagerank.fit_predict(adj.T)
     ranks = list(zip(node_names, scores))
     ranks = sorted(ranks, key=lambda x: x[1], reverse=True)
     ranks = [x[0] for x in ranks]
@@ -52,7 +54,7 @@ def cmlp_pagerank(
     adj = cmlp(data, max_iter=20000)
 
     pagerank = PageRank()
-    scores = pagerank.fit_transform(adj.T)
+    scores = pagerank.fit_predict(adj.T)
     ranks = list(zip(node_names, scores))
     ranks = sorted(ranks, key=lambda x: x[1], reverse=True)
     ranks = [x[0] for x in ranks]
@@ -74,7 +76,7 @@ def ntlr_pagerank(
 
     adj = notears_low_rank(data)
     pagerank = PageRank()
-    scores = pagerank.fit_transform(adj.T)
+    scores = pagerank.fit_predict(adj.T)
     ranks = list(zip(node_names, scores))
     ranks = sorted(ranks, key=lambda x: x[1], reverse=True)
     ranks = [x[0] for x in ranks]
