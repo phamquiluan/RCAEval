@@ -380,134 +380,23 @@ We would like to express our sincere gratitude to the researchers and developers
 **[Anomaly Detection and Root Cause Analysis for Microservice Systems](https://research-repository.rmit.edu.au/articles/thesis/Anomaly_Detection_and_Root_Cause_Analysis_for_Microservice_Systems/33274566)**<br>
 *PhD Thesis, RMIT University, 2026* · Luan Pham
 
-<details>
-<summary>BibTeX</summary>
-
-```bibtex
-@article{luanpham2026thesis,
-  author = "Qui Luan Pham",
-  title = "{Anomaly Detection and Root Cause Analysis for Microservice Systems}",
-  year = "2026",
-  month = "6",
-  url = "https://research-repository.rmit.edu.au/articles/thesis/Anomaly_Detection_and_Root_Cause_Analysis_for_Microservice_Systems/33274566",
-  doi = "10.25439/rmt.33274566"
-}
-```
-
-</details>
-
 **[EventADL: Open-Box Anomaly Detection and Localization Framework for Events in Cloud-Based Service Systems](https://dl.acm.org/doi/10.1145/3808186)**<br>
 *FSE 2026* · Luan Pham, Victor Nicolet, Joey Dodds, Hui Guan, Daniel Kroening
-
-<details>
-<summary>BibTeX</summary>
-
-```bibtex
-@article{pham2026eventadl,
-  title={EventADL: Open-Box Anomaly Detection and Localization Framework for Events in Cloud-Based Service Systems},
-  author={Pham, Luan and Nicolet, Victor and Dodds, Joey and Guan, Hui and Kroening, Daniel},
-  journal={Proceedings of the ACM on Software Engineering},
-  volume={3},
-  number={FSE},
-  pages={4070--4093},
-  year={2026}
-}
-```
-
-</details>
 
 **[TORAI: Multi-source Root Cause Analysis for Blind Spots in Microservice Service Call Graph](https://dl.acm.org/doi/10.1145/3808137)**<br>
 *FSE 2026* · Luan Pham, Huong Ha, Xiuzhen Zhang, Hongyu Zhang
 
-<details>
-<summary>BibTeX</summary>
-
-```bibtex
-@article{pham2026torai,
-  title={TORAI: Multi-source Root Cause Analysis for Blind Spots in Microservice Service Call Graph},
-  author={Pham, Luan and Ha, Huong and Zhang, Xiuzhen and Zhang, Hongyu},
-  journal={Proceedings of the ACM on Software Engineering},
-  volume={3},
-  number={FSE},
-  pages={2928--2951},
-  year={2026}
-}
-```
-
-</details>
-
 **[Where Root Cause Analysis Fails: A Retrieval-Reranking Decomposition](https://github.com/cruiseresearchgroup/DecompRCA)**<br>
 *NeurIPS 2026 (Evaluations and Datasets Track)* · Hada Melino Muhammad, Luan Pham, Laure Barrière, Sachin Shetty, Leonardo Pulga, Flora D. Salim
-
-<details>
-<summary>BibTeX</summary>
-
-```bibtex
-@inproceedings{muhammad2026where,
-  title={Where Root Cause Analysis Fails: A Retrieval-Reranking Decomposition},
-  author={Muhammad, Hada Melino and Pham, Luan and Barri{\`e}re, Laure and Shetty, Sachin and Pulga, Leonardo and Salim, Flora D.},
-  booktitle={Advances in Neural Information Processing Systems, Evaluations and Datasets Track},
-  year={2026}
-}
-```
-
-</details>
 
 **[RCAEval: A Benchmark for Root Cause Analysis of Microservice Systems with Telemetry Data](https://dl.acm.org/doi/10.1145/3701716.3715290)**<br>
 *WWW 2025 (Companion)* · Luan Pham, Hongyu Zhang, Huong Ha, Flora Salim, Xiuzhen Zhang
 
-<details>
-<summary>BibTeX</summary>
-
-```bibtex
-@inproceedings{pham2025rcaeval,
-  title={RCAEval: A Benchmark for Root Cause Analysis of Microservice Systems with Telemetry Data},
-  author={Pham, Luan and Zhang, Hongyu and Ha, Huong and Salim, Flora and Zhang, Xiuzhen},
-  booktitle={Companion Proceedings of the ACM on Web Conference 2025},
-  pages={777--780},
-  year={2025}
-}
-```
-
-</details>
-
 **[Root Cause Analysis for Microservice System based on Causal Inference: How Far Are We?](https://dl.acm.org/doi/abs/10.1145/3691620.3695065)**<br>
 *ASE 2024* · Luan Pham, Huong Ha, Hongyu Zhang
 
-<details>
-<summary>BibTeX</summary>
-
-```bibtex
-@inproceedings{pham2024root,
-  title={Root Cause Analysis for Microservice System based on Causal Inference: How Far Are We?},
-  author={Pham, Luan and Ha, Huong and Zhang, Hongyu},
-  booktitle={Proceedings of the 39th IEEE/ACM International Conference on Automated Software Engineering},
-  pages={706--715},
-  year={2024}
-}
-```
-
-</details>
-
 **[BARO: Robust Root Cause Analysis for Microservices via Multivariate Bayesian Online Change Point Detection](https://dl.acm.org/doi/full/10.1145/3660805)**<br>
 *FSE 2024* · Luan Pham, Huong Ha, Hongyu Zhang
-
-<details>
-<summary>BibTeX</summary>
-
-```bibtex
-@inproceedings{pham2024baro,
-  title={BARO: Robust root cause analysis for microservices via multivariate bayesian online change point detection},
-  author={Pham, Luan and Ha, Huong and Zhang, Hongyu},
-  journal={Proceedings of the ACM on Software Engineering},
-  volume={1},
-  number={FSE},
-  pages={2214--2237},
-  year={2024},
-}
-```
-
-</details>
 
 ## Star History
 
