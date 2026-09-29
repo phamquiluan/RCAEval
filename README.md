@@ -22,23 +22,6 @@ RCAEval is an open-source benchmark that offers nine datasets with 735 real fail
 <img width=1000 src= "./docs/readme.jpg"/>
 </p>
 
-**Table of Contents** 
-  * [Publications](#publications)
-  * [Prerequisites](#prerequisites)
-  * [Installation](#installation)
-  * [How-to-use](#how-to-use)
-    + [Data format](#data-format)
-    + [Basic usage example](#basic-usage-example)
-  * [Available Datasets](#available-datasets)
-  * [Available Baselines](#available-baselines)
-  * [Benchmark](#benchmark)
-  * [For TORAI Paper](#for-torai-paper)
-  * [For EventADL Paper](#for-eventadl-paper)
-  * [Licensing](#licensing)
-  * [Acknowledgments](#acknowledgments)
-  * [Change Logs](#change-logs)
-  * [Contact](#contact)
-
 ## Publications
 
 **[Anomaly Detection and Root Cause Analysis for Microservice Systems](https://research-repository.rmit.edu.au/articles/thesis/Anomaly_Detection_and_Root_Cause_Analysis_for_Microservice_Systems/33274566)**<br>
