@@ -23,6 +23,7 @@ RCAEval is an open-source benchmark that offers nine datasets with 735 real fail
 </p>
 
 **Table of Contents** 
+  * [Publications](#publications)
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
   * [How-to-use](#how-to-use)
@@ -36,8 +37,30 @@ RCAEval is an open-source benchmark that offers nine datasets with 735 real fail
   * [Licensing](#licensing)
   * [Acknowledgments](#acknowledgments)
   * [Change Logs](#change-logs)
-  * [Publications](#publications)
   * [Contact](#contact)
+
+## Publications
+
+**[Anomaly Detection and Root Cause Analysis for Microservice Systems](https://research-repository.rmit.edu.au/articles/thesis/Anomaly_Detection_and_Root_Cause_Analysis_for_Microservice_Systems/33274566)**<br>
+*PhD Thesis, RMIT University, 2026* · Luan Pham
+
+**[EventADL: Open-Box Anomaly Detection and Localization Framework for Events in Cloud-Based Service Systems](https://dl.acm.org/doi/10.1145/3808186)**<br>
+*FSE 2026* · Luan Pham, Victor Nicolet, Joey Dodds, Hui Guan, Daniel Kroening
+
+**[TORAI: Multi-source Root Cause Analysis for Blind Spots in Microservice Service Call Graph](https://dl.acm.org/doi/10.1145/3808137)**<br>
+*FSE 2026* · Luan Pham, Huong Ha, Xiuzhen Zhang, Hongyu Zhang
+
+**[Where Root Cause Analysis Fails: A Retrieval-Reranking Decomposition](https://github.com/cruiseresearchgroup/DecompRCA)**<br>
+*NeurIPS 2026 (Evaluations and Datasets Track)* · Hada Melino Muhammad, Luan Pham, Laure Barrière, Sachin Shetty, Leonardo Pulga, Flora D. Salim
+
+**[RCAEval: A Benchmark for Root Cause Analysis of Microservice Systems with Telemetry Data](https://dl.acm.org/doi/10.1145/3701716.3715290)**<br>
+*WWW 2025 (Companion)* · Luan Pham, Hongyu Zhang, Huong Ha, Flora Salim, Xiuzhen Zhang
+
+**[Root Cause Analysis for Microservice System based on Causal Inference: How Far Are We?](https://dl.acm.org/doi/abs/10.1145/3691620.3695065)**<br>
+*ASE 2024* · Luan Pham, Huong Ha, Hongyu Zhang
+
+**[BARO: Robust Root Cause Analysis for Microservices via Multivariate Bayesian Online Change Point Detection](https://dl.acm.org/doi/full/10.1145/3660805)**<br>
+*FSE 2024* · Luan Pham, Huong Ha, Hongyu Zhang
 
 ## Prerequisites
 
@@ -374,29 +397,6 @@ We would like to express our sincere gratitude to the researchers and developers
 - [Apr 2026] Added TORAI, a multi-source RCA method accepted at FSE'26.
 - [Mar 2025] The version of RCAEval used in our WWW'25 paper are available in the [www25 branch](https://github.com/phamquiluan/RCAEval/tree/www25).
 - [Dec 2024] The prior version of RCAEval used in our ASE'24 paper are available in the [ase24 branch](https://github.com/phamquiluan/RCAEval/tree/ase24).
-
-## Publications
-
-**[Anomaly Detection and Root Cause Analysis for Microservice Systems](https://research-repository.rmit.edu.au/articles/thesis/Anomaly_Detection_and_Root_Cause_Analysis_for_Microservice_Systems/33274566)**<br>
-*PhD Thesis, RMIT University, 2026* · Luan Pham
-
-**[EventADL: Open-Box Anomaly Detection and Localization Framework for Events in Cloud-Based Service Systems](https://dl.acm.org/doi/10.1145/3808186)**<br>
-*FSE 2026* · Luan Pham, Victor Nicolet, Joey Dodds, Hui Guan, Daniel Kroening
-
-**[TORAI: Multi-source Root Cause Analysis for Blind Spots in Microservice Service Call Graph](https://dl.acm.org/doi/10.1145/3808137)**<br>
-*FSE 2026* · Luan Pham, Huong Ha, Xiuzhen Zhang, Hongyu Zhang
-
-**[Where Root Cause Analysis Fails: A Retrieval-Reranking Decomposition](https://github.com/cruiseresearchgroup/DecompRCA)**<br>
-*NeurIPS 2026 (Evaluations and Datasets Track)* · Hada Melino Muhammad, Luan Pham, Laure Barrière, Sachin Shetty, Leonardo Pulga, Flora D. Salim
-
-**[RCAEval: A Benchmark for Root Cause Analysis of Microservice Systems with Telemetry Data](https://dl.acm.org/doi/10.1145/3701716.3715290)**<br>
-*WWW 2025 (Companion)* · Luan Pham, Hongyu Zhang, Huong Ha, Flora Salim, Xiuzhen Zhang
-
-**[Root Cause Analysis for Microservice System based on Causal Inference: How Far Are We?](https://dl.acm.org/doi/abs/10.1145/3691620.3695065)**<br>
-*ASE 2024* · Luan Pham, Huong Ha, Hongyu Zhang
-
-**[BARO: Robust Root Cause Analysis for Microservices via Multivariate Bayesian Online Change Point Detection](https://dl.acm.org/doi/full/10.1145/3660805)**<br>
-*FSE 2024* · Luan Pham, Huong Ha, Hongyu Zhang
 
 ## Star History
 
