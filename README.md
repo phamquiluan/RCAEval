@@ -8,8 +8,8 @@
 [![Upload Python Package](https://github.com/phamquiluan/RCAEval/actions/workflows/python-publish.yml/badge.svg)](https://github.com/phamquiluan/RCAEval/actions/workflows/python-publish.yml)
 
 [PhD Thesis](https://research-repository.rmit.edu.au/articles/thesis/Anomaly_Detection_and_Root_Cause_Analysis_for_Microservice_Systems/33274566?file=67654458) | 
-[FSE 2026 TORAI](https://arxiv.org/abs/2604.13522) |
-[FSE 2026 EventADL](https://arxiv.org/abs/2605.00936) | 
+[FSE 2026 TORAI](https://dl.acm.org/doi/10.1145/3808137) |
+[FSE 2026 EventADL](https://dl.acm.org/doi/10.1145/3808186) | 
 [WWW 2025 RCAEval](https://dl.acm.org/doi/10.1145/3701716.3715290) |
 [ASE 2024 RCAEval v1](https://dl.acm.org/doi/abs/10.1145/3691620.3695065) |
 [FSE 2024 BARO](https://dl.acm.org/doi/full/10.1145/3660805)
@@ -396,7 +396,7 @@ We would like to express our sincere gratitude to the researchers and developers
 
 </details>
 
-**[EventADL: Open-Box Anomaly Detection and Localization Framework for Events in Cloud-Based Service Systems](https://arxiv.org/abs/2605.00936)**<br>
+**[EventADL: Open-Box Anomaly Detection and Localization Framework for Events in Cloud-Based Service Systems](https://dl.acm.org/doi/10.1145/3808186)**<br>
 *FSE 2026* · Luan Pham, Victor Nicolet, Joey Dodds, Hui Guan, Daniel Kroening
 
 <details>
@@ -416,7 +416,7 @@ We would like to express our sincere gratitude to the researchers and developers
 
 </details>
 
-**[TORAI: Multi-source Root Cause Analysis for Blind Spots in Microservice Service Call Graph](https://arxiv.org/abs/2604.13522)**<br>
+**[TORAI: Multi-source Root Cause Analysis for Blind Spots in Microservice Service Call Graph](https://dl.acm.org/doi/10.1145/3808137)**<br>
 *FSE 2026* · Luan Pham, Huong Ha, Xiuzhen Zhang, Hongyu Zhang
 
 <details>
