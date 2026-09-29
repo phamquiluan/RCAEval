@@ -96,6 +96,20 @@ except ImportError:
     pass
 
 
+def decomposition_depth(value):
+    """--report-decomposition takes a positive integer K, or "all" for the whole
+    returned ranking."""
+    if value == "all":
+        return value
+    try:
+        depth = int(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"expected a positive integer or 'all', got {value!r}")
+    if depth < 1:
+        raise argparse.ArgumentTypeError(f"K must be >= 1, got {depth}")
+    return depth
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="RCAEval evaluation")
     parser.add_argument("--method", type=str, help="Choose a method.")
@@ -109,6 +123,9 @@ def parse_args():
     parser.add_argument("--tdelta", type=int, default=0, help="Specify $t_delta$ to simulate delay in anomaly detection")
     parser.add_argument("--test", action="store_true", help="Perform smoke test on certain methods without fully run on all data")
     parser.add_argument("--report-chance", action="store_true", help="Also print the Avg@5 a random ranking would reach, and the lift over it")
+    parser.add_argument("--report-decomposition", type=decomposition_depth, default=None, metavar="K",
+                        help="Also print Retrieval@K (answer within the first K) and Rerank@1 (answer first, given it is within the first K). "
+                             "K=all uses the whole returned ranking, i.e. the method's own candidate set for methods such as RCD that return only some candidates")
     args = parser.parse_args()
 
     # checked before the globals() lookup so the message also appears when the
@@ -440,6 +457,19 @@ def print_chance(evaluator, suffix=""):
         print(f"Lift@5{suffix}:".ljust(12), round(evaluator.lift(5), 2))
 
 
+def print_decomposition(evaluator, depth, suffix=""):
+    """Print Retrieval@K and Rerank@1 on the service-level ranking, where K is a
+    retrieval depth ("all" for the whole returned ranking), not the candidate
+    pool size behind --report-chance."""
+    budget = None if depth == "all" else depth
+    rerank = evaluator.rerank_service(1, budget)
+    print(f"Retrieval@{depth}{suffix}:".ljust(12), round(evaluator.retrieval_service(budget), 2))
+    print(f"Rerank@1{suffix}:".ljust(12), "n/a (no answer within the first K)" if rerank is None else round(rerank, 2))
+
+
+# deep enough for Avg@5 and for Retrieval@K
+max_k = max(5, args.report_decomposition if isinstance(args.report_decomposition, int) else 0)
+
 rps = glob.glob(join(result_path, "*.json"))
 
 if "eventadl" in args.dataset:
@@ -448,7 +478,7 @@ if "eventadl" in args.dataset:
     # evaluation below doesn't apply and is skipped entirely.
     rps = [rp for rp in rps if basename(rp).split("_")[1] == "event"]
 
-    s_evaluator_event = Evaluator()
+    s_evaluator_event = Evaluator(max_k=max_k)
 
     for rp in rps:
         data = load_json(rp)
@@ -469,6 +499,8 @@ if "eventadl" in args.dataset:
         print("Avg@5:".ljust(12), round(s_evaluator_event.average(5), 2))
         if args.report_chance:
             print_chance(s_evaluator_event)
+        if args.report_decomposition:
+            print_decomposition(s_evaluator_event, args.report_decomposition)
     print("---")
     print("Avg speed:", avg_speed)
     exit(0)
@@ -491,25 +523,25 @@ eval_data = {
     "avg@5_metric": [],
 }
 
-s_evaluator_all = Evaluator()
-f_evaluator_all = Evaluator()
-s_evaluator_cpu = Evaluator()
-f_evaluator_cpu = Evaluator()
-s_evaluator_mem = Evaluator()
-f_evaluator_mem = Evaluator()
-s_evaluator_lat = Evaluator()
-f_evaluator_lat = Evaluator()
-s_evaluator_loss = Evaluator()
-f_evaluator_loss = Evaluator()
-s_evaluator_io = Evaluator()
-f_evaluator_io = Evaluator()
-s_evaluator_socket = Evaluator()
-f_evaluator_socket = Evaluator()
+s_evaluator_all = Evaluator(max_k=max_k)
+f_evaluator_all = Evaluator(max_k=max_k)
+s_evaluator_cpu = Evaluator(max_k=max_k)
+f_evaluator_cpu = Evaluator(max_k=max_k)
+s_evaluator_mem = Evaluator(max_k=max_k)
+f_evaluator_mem = Evaluator(max_k=max_k)
+s_evaluator_lat = Evaluator(max_k=max_k)
+f_evaluator_lat = Evaluator(max_k=max_k)
+s_evaluator_loss = Evaluator(max_k=max_k)
+f_evaluator_loss = Evaluator(max_k=max_k)
+s_evaluator_io = Evaluator(max_k=max_k)
+f_evaluator_io = Evaluator(max_k=max_k)
+s_evaluator_socket = Evaluator(max_k=max_k)
+f_evaluator_socket = Evaluator(max_k=max_k)
 
 for service in services:
     for fault in faults:
-        s_evaluator = Evaluator()
-        f_evaluator = Evaluator()
+        s_evaluator = Evaluator(max_k=max_k)
+        f_evaluator = Evaluator(max_k=max_k)
 
         for rp in rps:
             s, m = basename(rp).split("_")[:2]
@@ -623,6 +655,8 @@ for name, s_evaluator, f_evaluator in [
         print( f"Avg@5-{name.upper()}:".ljust(12), round(s_evaluator.average(5), 2))
         if args.report_chance:
             print_chance(s_evaluator, suffix=f"-{name.upper()}")
+        if args.report_decomposition:
+            print_decomposition(s_evaluator, args.report_decomposition, suffix=f"-{name.upper()}")
 
 print("---")
 print("Avg speed:", avg_speed)

@@ -6,9 +6,19 @@ from RCAEval.utility import dump_json, load_json
 class Evaluator:
     """"""
 
-    def __init__(self):
-        self._accuracy = {k: 0.0 for k in range(1, 6)}
-        self._accuracy_service = {k: 0.0 for k in range(1, 6)}
+    def __init__(self, max_k: int = 5):
+        """
+        max_k is the deepest cutoff k that accuracy(k) tracks. Raise it above 5
+        to report retrieval(budget) for a budget deeper than 5.
+        """
+        if max_k < 1:
+            raise ValueError(f"max_k must be >= 1 (got {max_k})")
+        self._max_k = max_k
+        self._accuracy = {k: 0.0 for k in range(1, max_k + 1)}
+        self._accuracy_service = {k: 0.0 for k in range(1, max_k + 1)}
+        # cases whose answer appears anywhere in the ranking, for retrieval(None)
+        self._anywhere = 0
+        self._anywhere_service = 0
         self._ranks: List[List[Node]] = []
         self._n_candidates: List[int] = []
         self._answer_in_candidates: List[bool] = []
@@ -30,19 +40,22 @@ class Evaluator:
         contributes a chance of 0, since no ranking over those candidates can
         place it.
         """
-        self._ranks.append(ranks[: 5])
+        self._ranks.append(ranks[: self._max_k])
         self._n_candidates.append(n_candidates)
         self._answer_in_candidates.append(bool(answer_in_candidates))
 
         service_ranks = [n.entity for n in ranks]
         service_answer = answer.entity
 
-        for k in range(1, 6):
+        for k in range(1, self._max_k + 1):
             # fine-grained accuracy
             self._accuracy[k] += int(answer in ranks[:k])
 
             # coarse-grained
             self._accuracy_service[k] += int(service_answer in service_ranks[:k])
+
+        self._anywhere += int(answer in ranks)
+        self._anywhere_service += int(service_answer in service_ranks)
 
     @property
     def num(self) -> int:
@@ -145,3 +158,53 @@ class Evaluator:
         if chance is None:
             return None
         return self.average(k) - chance
+
+    def retrieval(self, budget: int = None) -> float:
+        """
+        Retrieval@K with K = budget: the fraction of cases whose answer is inside
+        the candidate set, taken as the first `budget` items of each ranking, so
+        it equals accuracy(budget). With budget=None the candidate set is the
+        whole returned ranking, which is the method's own candidate set for a
+        method that returns only some candidates (e.g. RCD). The budget is a
+        retrieval depth, unrelated to the n_candidates pool size passed to
+        add_case. None when budget > max_k.
+        See Muhammad et al., "Where Root Cause Analysis Fails: A
+        Retrieval-Reranking Decomposition" (NeurIPS 2026).
+        """
+        if budget is None:
+            return self._anywhere / self.num if self._ranks else None
+        return self.accuracy(budget)
+
+    def retrieval_service(self, budget: int = None) -> float:
+        """
+        Retrieval@K on the coarse-grained (service-level) ranking.
+        """
+        if budget is None:
+            return self._anywhere_service / self.num if self._ranks else None
+        return self.accuracy_service(budget)
+
+    def rerank(self, k: int, budget: int = None) -> float:
+        """
+        Rerank@k: among cases whose answer is inside the first `budget` items (the
+        whole ranking when budget is None), the fraction in which it is also
+        inside the first k. By construction
+        accuracy(k) = retrieval(budget) * rerank(k, budget). None when no case
+        retrieves its answer, or when budget > max_k.
+        """
+        return self._rerank(k, budget, self.accuracy, self.retrieval)
+
+    def rerank_service(self, k: int, budget: int = None) -> float:
+        """
+        Rerank@k on the coarse-grained (service-level) ranking.
+        """
+        return self._rerank(k, budget, self.accuracy_service, self.retrieval_service)
+
+    @staticmethod
+    def _rerank(k, budget, accuracy, retrieval):
+        if budget is not None and k > budget:
+            raise ValueError(f"k must be <= budget (got k={k}, budget={budget})")
+        retrieved = retrieval(budget)
+        top = accuracy(k)
+        if not retrieved or top is None:
+            return None
+        return top / retrieved

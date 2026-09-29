@@ -138,3 +138,86 @@ def test_answer_declared_absent_counts_zero_chance():
     assert evaluator.average(5) == pytest.approx(0.0)
     assert evaluator.chance_average(5) == pytest.approx(0.0)
     assert evaluator.lift(5) == pytest.approx(0.0)
+
+
+def test_default_max_k_keeps_cutoffs_one_to_five():
+    evaluator = Evaluator()
+    nodes = _nodes()
+    evaluator.add_case(ranks=nodes[:], answer=nodes[0], n_candidates=N_NODES)
+
+    assert evaluator.accuracy(5) == pytest.approx(1.0)
+    assert evaluator.accuracy(6) is None
+    assert evaluator.retrieval(15) is None
+    assert evaluator.rerank(1, 15) is None
+
+
+def test_invalid_max_k_raises():
+    with pytest.raises(ValueError):
+        Evaluator(max_k=0)
+
+
+@pytest.mark.parametrize("seed", range(5))
+@pytest.mark.parametrize("k,budget", [(1, 5), (3, 10), (5, 15), (15, 15)])
+def test_accuracy_equals_retrieval_times_rerank(seed, k, budget):
+    n_nodes = 30
+    nodes = [Node(f"svc-{i}", "unknown") for i in range(n_nodes)]
+    rng = random.Random(seed)
+    evaluator = Evaluator(max_k=15)
+    for _ in range(N_CASES):
+        ranks = nodes[:]
+        rng.shuffle(ranks)
+        evaluator.add_case(ranks=ranks, answer=rng.choice(nodes), n_candidates=n_nodes)
+
+    retrieval = evaluator.retrieval(budget)
+    rerank = evaluator.rerank(k, budget)
+    assert 0.0 < retrieval
+    assert retrieval == evaluator.accuracy(budget)
+    assert evaluator.accuracy(k) == pytest.approx(retrieval * rerank)
+    assert evaluator.retrieval_service(budget) == evaluator.accuracy_service(budget)
+    assert evaluator.accuracy_service(k) == pytest.approx(
+        evaluator.retrieval_service(budget) * evaluator.rerank_service(k, budget))
+
+
+def test_decomposition_matches_readme_example_of_the_paper():
+    # README example of DecompRCA: decompose(y_true, y_pred, cutoff=1, n_candidates=15)
+    # gives top@1 0.5, Retrieval@15 1.0, Rerank@1 0.5.
+    evaluator = Evaluator(max_k=15)
+    evaluator.add_case(ranks=[Node("LIT101", "unknown"), Node("P101", "unknown"), Node("MV101", "unknown")],
+                       answer=Node("P101", "unknown"))
+    evaluator.add_case(ranks=[Node("FIT201", "unknown"), Node("AIT202", "unknown"), Node("P201", "unknown")],
+                       answer=Node("FIT201", "unknown"))
+
+    assert evaluator.accuracy(1) == pytest.approx(0.5)
+    assert evaluator.retrieval(15) == pytest.approx(1.0)
+    assert evaluator.rerank(1, 15) == pytest.approx(0.5)
+
+
+def test_rerank_is_none_when_nothing_is_retrieved():
+    nodes = _nodes()
+    evaluator = Evaluator(max_k=10)
+    evaluator.add_case(ranks=nodes[1:], answer=nodes[0], n_candidates=N_NODES)
+
+    assert evaluator.retrieval(10) == pytest.approx(0.0)
+    assert evaluator.rerank(1, 10) is None
+
+
+def test_rerank_cutoff_above_budget_raises():
+    evaluator = Evaluator(max_k=10)
+    with pytest.raises(ValueError):
+        evaluator.rerank(5, 3)
+
+
+def test_retrieval_over_the_whole_ranking():
+    # A method that returns only its own candidates, like RCD: the answer is
+    # retrieved when it appears anywhere in the returned ranking.
+    nodes = _nodes()
+    evaluator = Evaluator()
+    evaluator.add_case(ranks=nodes[:2], answer=nodes[0])        # first
+    evaluator.add_case(ranks=nodes[:8], answer=nodes[7])        # retrieved, 8th
+    evaluator.add_case(ranks=nodes[:3], answer=nodes[9])        # never returned
+
+    assert evaluator.retrieval() == pytest.approx(2 / 3)
+    assert evaluator.rerank(1) == pytest.approx(1 / 2)
+    assert evaluator.accuracy(1) == pytest.approx(evaluator.retrieval() * evaluator.rerank(1))
+    assert evaluator.retrieval_service() == pytest.approx(2 / 3)
+    assert evaluator.rerank_service(1) == pytest.approx(1 / 2)
