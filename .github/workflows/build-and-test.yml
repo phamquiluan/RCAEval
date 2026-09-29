@@ -27,7 +27,7 @@ jobs:
         python -m pip install .[default]
 
     - name: Test
-      run: python -m pytest tests/test.py tests/test_parser* tests/test_evaluator.py
+      run: python -m pytest tests/test.py tests/test_parser* tests/test_evaluator.py tests/test_graph_methods.py
       
 
   build-and-test-rcd:
