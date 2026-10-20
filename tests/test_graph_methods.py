@@ -1,4 +1,5 @@
 """Regression tests for silent fallbacks in the metric-based methods."""
+import importlib
 import io
 
 import numpy as np
@@ -45,3 +46,25 @@ def test_pc_pagerank_ranks_every_node_without_falling_back(capsys):
     # from the graph used to shift scores onto the wrong names
     assert np.asarray(out["adj"]).shape == (4, 4)
     assert sorted(out["ranks"]) == sorted(data.columns)
+
+
+def test_causalrca_ranks_upstream_cause_first(monkeypatch):
+    torch = pytest.importorskip("torch")
+    pytest.importorskip("sknetwork")
+    m = importlib.import_module("RCAEval.e2e.causalrca")
+
+    known = np.zeros((3, 3))
+    known[0, 1] = known[1, 2] = 1.0
+    init = m.MLPEncoder.__init__
+
+    def frozen(self, *args, **kwargs):
+        init(self, *args, **kwargs)
+        self.adj_A = torch.nn.Parameter(torch.from_numpy(known).double(), requires_grad=False)
+
+    monkeypatch.setattr(m.MLPEncoder, "__init__", frozen)
+    monkeypatch.setattr(m.CONFIG, "epochs", 2)
+    monkeypatch.setattr(m.CONFIG, "k_max_iter", 1)
+
+    rng = np.random.default_rng(0)
+    data = pd.DataFrame(rng.normal(size=(100, 3)) + 5, columns=["cause", "mid", "symptom"])
+    assert m.causalrca(data)["ranks"] == ["cause", "mid", "symptom"]
