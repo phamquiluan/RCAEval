@@ -97,3 +97,20 @@ def test_microcause_ranks_without_crashing(monkeypatch):
     # float(Series), and networkx 3 removed adj_matrix
     out = m.microcause(data, sli="c_cpu")
     assert sorted(out["ranks"]) == sorted(data.columns)
+
+
+def test_e_diagnosis_runs_without_pyrca():
+    from RCAEval.e2e import e_diagnosis
+
+    rng = np.random.default_rng(0)
+    data = pd.DataFrame({
+        "time": np.arange(200),
+        "a_cpu": rng.normal(size=200),
+        "b_cpu": rng.normal(size=200),
+        "c_mem": rng.normal(size=200),
+    })
+    data.loc[100:, "b_cpu"] += np.linspace(0, 20, 100)
+
+    out = e_diagnosis(data, inject_time=100, dataset="online-boutique")
+    assert out["node_names"] == ["a_cpu", "b_cpu", "c_mem"]
+    assert set(out["ranks"]) <= set(out["node_names"])
