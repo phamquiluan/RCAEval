@@ -373,8 +373,6 @@ We would like to express our sincere gratitude to the researchers and developers
 
 ## Change Logs
 
-Highlights are listed below; see [CHANGELOG.md](CHANGELOG.md) for the full history of every release.
-
 - [Sep 2026] Added the retrieval–reranking decomposition of [Where Root Cause Analysis Fails](https://github.com/cruiseresearchgroup/DecompRCA) (NeurIPS'26). `main.py --report-decomposition K` prints `Retrieval@K` and `Rerank@1` beneath each `Avg@5`; `K=all` uses the whole returned ranking.
 - [Sep 2026] Fixed PageRank-based methods and CIRCA silently falling back to column order (scikit-network ≥0.32 and networkx ≥3.0 API removals, and a duplicate `time` column in 50 RE1-OB cases). The fallback now reports its error on stderr.
 - [Sep 2026] Added an opt-in chance-level baseline to the evaluator. `main.py --report-chance` prints `Chance@5` and `Lift@5` beneath each `Avg@5`, so an absolute score can be read against the floor a random ranker would reach on the same candidate set. Contributed by [@mateenali66](https://github.com/mateenali66) in [#79](https://github.com/phamquiluan/RCAEval/pull/79).
