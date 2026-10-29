@@ -51,7 +51,6 @@ if is_py312() or is_py314():
         "cmlp_pagerank",
         "dummy",
         "e_diagnosis",
-        "easyrca",
         "fci_pagerank",
         "fci_randomwalk",
         "ges_pagerank",
@@ -131,6 +130,9 @@ def parse_args():
     # method could not even be imported (e.g. missing patched causal-learn)
     if args.method in ("rcd", "mmrcd") and not is_py38():
         print(f"{args.method} requires the RCD environment (Python 3.8, `pip install -e .[rcd]`). See docs/SETUP.md.")
+        exit(1)
+    if args.method == "torai" and not is_py38():
+        print("torai requires the TORAI environment (Python 3.8). See docs/TORAI.md.")
         exit(1)
 
     if args.method not in globals():
