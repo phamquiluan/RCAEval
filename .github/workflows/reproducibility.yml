@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.12"]
+        python-version: ["3.14"]
 
     steps:
     - uses: actions/checkout@v4
@@ -25,6 +25,7 @@ jobs:
       run: |
         sudo apt update -y
         sudo apt install -y build-essential libxml2 libxml2-dev zlib1g-dev python3-tk graphviz libjpeg-dev zlib1g-dev
+        python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
         python -m pip install .[default]
 
     - name: Reproduce BARO performance on the Online Boutique dataset 
