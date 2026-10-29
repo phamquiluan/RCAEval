@@ -10,9 +10,9 @@ jobs:
   build-and-test-default:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        python-version: ["3.12", "3.14"]
+        python-version: ["3.14", "3.13", "3.12"]
 
     steps:
     - uses: actions/checkout@v4
@@ -24,6 +24,8 @@ jobs:
       run: |
         sudo apt update -y
         sudo apt install -y build-essential libxml2 libxml2-dev zlib1g-dev python3-tk graphviz libjpeg-dev zlib1g-dev
+        # CPU-only torch: skips about 5 GB of CUDA wheels
+        python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
         python -m pip install .[default]
 
     - name: Test
