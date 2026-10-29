@@ -143,3 +143,19 @@ def test_random_walk_transition_matrix_follows_scores():
         matrix = RandomWalkScorer().generate_transition_matrix(MemoryGraph(graph), data=None, scores=scores)
     assert not np.allclose(matrix[b], 1 / 3)
     assert np.allclose(matrix.sum(), 1)
+
+
+def test_ges_pagerank_returns_ranked_names(capsys):
+    pytest.importorskip("causallearn")
+    pytest.importorskip("sknetwork")
+    from RCAEval.e2e import ges_pagerank
+
+    rng = np.random.default_rng(0)
+    a = rng.normal(size=300)
+    b = a + 0.1 * rng.normal(size=300)
+    data = pd.DataFrame({"a_cpu": a, "b_cpu": b, "c_cpu": b + 0.1 * rng.normal(size=300)})
+
+    out = ges_pagerank(data)
+    assert "failed" not in capsys.readouterr().err
+    # main.py splits each rank on "_"; (name, score) tuples crashed it
+    assert sorted(out["ranks"]) == sorted(data.columns)
