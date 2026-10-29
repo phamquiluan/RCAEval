@@ -1,6 +1,6 @@
 # Setup
 
-We assume the users are on Ubuntu machine and ready to have Python 3.12 installed. Then, the users can follow this instruction to install our RCAEval package. In addition, users who familiar with Continuous Integration (CI) can take a look at our CI configuration at [.circleci](.circleci) and [.github/workflows](.github/workflows)  to see how we install, test, and reproduce our RCAEval on different CI platforms including GitHub Action and CircleCI.
+We assume the users are on an Ubuntu 22.04 or 24.04 machine and ready to have Python 3.14 installed. Then, the users can follow this instruction to install our RCAEval package. In addition, users who familiar with Continuous Integration (CI) can take a look at our CI configuration at [.circleci](.circleci) and [.github/workflows](.github/workflows)  to see how we install, test, and reproduce our RCAEval on different CI platforms including GitHub Action and CircleCI.
 
 **Table of contents**
 
@@ -16,11 +16,11 @@ We assume the users are on Ubuntu machine and ready to have Python 3.12 installe
 ## Install Python and required packages
 
 ```bash
-# install Python 3.8 and Python3.12
+# install Python 3.14 (default mode) and Python 3.8 (RCD mode)
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt update -y
+sudo apt-get install -y python3.14 python3.14-dev python3.14-venv
 sudo apt-get install -y python3.8 python3.8-dev python3.8-venv
-sudo apt-get install -y python3.12 python3.12-dev python3.12-venv
 
 # install required packages
 sudo apt install -y build-essential \
@@ -36,7 +36,7 @@ git clone https://github.com/phamquiluan/RCAEval.git && cd RCAEval
 
 ## Install RCAEval
 
-We maintain two difference modes: `default`, `rcd` for RCAEval due to the dependency constraints. Specifically, most methods use the `default` mode. RCD method uses the `rcd` mode. We can easily install RCAEval in different modes as follows.
+We maintain two different modes, `default` and `rcd`, because of dependency constraints. Most methods use the `default` mode (Python 3.14; 3.12 and 3.13 also work). RCD, Multi-source RCD and HT use the `rcd` mode (Python 3.8); TORAI has its own Python 3.8 environment (see [TORAI.md](TORAI.md)). We can easily install RCAEval in different modes as follows.
 
 
 ### Install RCAEval in DEFAULT mode
@@ -45,7 +45,7 @@ We maintain two difference modes: `default`, `rcd` for RCAEval due to the depend
 
 ```bash
 # create a virtual environment
-python3.12 -m venv env
+python3.14 -m venv env
 
 # activate the environment
 . env/bin/activate
@@ -54,9 +54,13 @@ python3.12 -m venv env
 **Install RCAEval using Pip**
 
 ```bash
+pip install --upgrade pip
+
 # build RCAEval from source
-pip install pip==20.0.2
 pip install -e .[default]
+
+# optional, on machines without a GPU: use CPU-only torch instead (skips ~5GB of CUDA packages)
+pip install -e .[default] --extra-index-url https://download.pytorch.org/whl/cpu
 ```
 
 **Test the installation**
@@ -71,23 +75,22 @@ pytest tests/test.py
 <summary>The expected output would look like this</summary>
 
 ```bash
-$ pytest tests/test.py 
-============================== test session starts ===============================
-platform linux -- Python 3.12.12, pytest-7.3.1, pluggy-1.0.0
+$ pytest tests/test.py
+============================= test session starts ==============================
+platform linux -- Python 3.14.9, pytest-9.2.0, pluggy-1.7.0
 rootdir: /home/ubuntu/RCAEval
-plugins: dvc-2.57.3, hydra-core-1.3.2
-collected 11 items                                                               
+collected 3 items
 
-tests/test.py ...........                                                  [100%]
+tests/test.py ...                                                        [100%]
 
-========================= 11 passed in 135.27s (0:02:15) =========================
+============================== 3 passed in 17.24s ==============================
 ```
 </details>
 
 
 ### Install RCAEval in RCD mode
 
-The RCD mode is used to run RCD, HT, and E-Diagnosis methods.
+The RCD mode is used to run the RCD, Multi-source RCD, and HT methods. E-Diagnosis runs in either mode: here it uses PyRCA, and in the default mode a bundled copy of PyRCA's implementation.
 
 **Create and activate a virtual environment**
 
@@ -110,7 +113,7 @@ pip install -e .[rcd]
 bash script/link.sh
 ```
 
-**Install PyRCA for HT and E-Diagnosis**
+**Install PyRCA for HT (and E-Diagnosis)**
 
 ```
 # for ht

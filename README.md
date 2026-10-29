@@ -24,7 +24,7 @@ RCAEval is an open-source benchmark that offers nine datasets with 735 real fail
 
 ## Prerequisites
 
-We recommend using machines equipped with at least 8 cores, 16GB RAM, and ~50GB available disk space with Ubuntu 22.04 or Ubuntu 20.04, and **Python3.12** (Python 3.14 is also supported).
+We recommend using machines equipped with at least 8 cores, 16GB RAM, and ~50GB available disk space with Ubuntu 22.04 or 24.04, and **Python 3.14** (Python 3.12 and 3.13 also work).
 
 ## Installation
 
@@ -46,10 +46,10 @@ Clone RCAEval from GitHub
 git clone https://github.com/phamquiluan/RCAEval.git && cd RCAEval
 ```
 
-Create virtual environment with Python 3.12 (refer [SETUP.md](docs/SETUP.md) to see how to install Python3.12 on Linux)
+Create a virtual environment with Python 3.14 (refer to [SETUP.md](docs/SETUP.md) to see how to install Python 3.14 and its headers, `python3.14-dev`, on Ubuntu)
 
 ```bash
-python3.12 -m venv env
+python3.14 -m venv env
 . env/bin/activate
 ```
 
@@ -57,6 +57,9 @@ Install RCAEval using pip
 
 ```bash
 pip install -e .[default]
+
+# optional, on machines without a GPU: use CPU-only torch instead (skips ~5GB of CUDA packages)
+pip install -e .[default] --extra-index-url https://download.pytorch.org/whl/cpu
 ```
 
 Or, install RCAEval from PyPI
@@ -76,15 +79,14 @@ Expected output after running the above command (it takes less than 1 minute)
 
 ```bash 
 $ pytest tests/test.py::test_basic
-============================== test session starts ===============================
-platform linux -- Python 3.12.12, pytest-7.3.1, pluggy-1.0.0
+============================= test session starts ==============================
+platform linux -- Python 3.14.9, pytest-9.2.0, pluggy-1.7.0
 rootdir: /home/ubuntu/RCAEval
-plugins: dvc-2.57.3, hydra-core-1.3.2
-collected 1 item                                                                 
+collected 1 item
 
-tests/test.py .                                                            [100%]
+tests/test.py .                                                          [100%]
 
-=============================== 1 passed in 3.16s ================================
+============================== 1 passed in 7.16s ===============================
 ```
 
 ## How-to-use
@@ -233,7 +235,7 @@ Downloading RE3.zip..: 100%|█████████████████�
 
 ## Available Baselines 
 
-RCAEval stores all the RCA methods in the `e2e` module (implemented in `RCAEval.e2e`). There are many RCA baselines available: RUN, CausalRCA, CIRCA, RCD, MicroCause, MSCRED, BARO, 𝜖-Diagnosis, TraceRCA, MicroRank, PDiagnose, Multi-source BARO, Multi-source RCD, Multi-source CIRCA, TORAI, EventADL.
+RCAEval stores all the RCA methods in the `e2e` module (implemented in `RCAEval.e2e`). There are many RCA baselines available: RUN, CausalRCA, CIRCA, RCD, MicroCause, MSCRED, BARO, 𝜖-Diagnosis, TraceRCA, MicroRank, Multi-source BARO, Multi-source RCD, Multi-source CIRCA, TORAI, EventADL.
 
 ## Benchmark 
 
@@ -282,10 +284,10 @@ We can replace the baro method with other methods (e.g., circa) and substitute r
 The multi-source methods (Multi-source BARO, Multi-source RCD, and Multi-source CIRCA) consume metrics, logs, and traces together. They run on the RE2/RE3 datasets, which include the required `logts.csv`, `tracets_err.csv`, and `tracets_lat.csv` files in each failure case:
 
 ```bash
-# Multi-source BARO (Python 3.12, default environment)
+# Multi-source BARO (Python 3.14, default environment)
 python main.py --method mmbaro --dataset re2-ob
 
-# Multi-source CIRCA (Python 3.12, default environment)
+# Multi-source CIRCA (Python 3.14, default environment)
 python main.py --method mmcirca --dataset re2-ob
 
 # Multi-source RCD (requires the RCD environment: Python 3.8, `pip install -e .[rcd]`, see docs/SETUP.md)
@@ -322,7 +324,7 @@ Avg@5-LOSS:  0.84
 
 ## For EventADL Paper
 
-EventADL localizes root-cause actors/resources over CloudTrail-style API-call event logs, rather than the metrics/traces/logs used by other RCAEval methods. It requires a separate Python 3.12 environment. For full instructions, see [docs/EVENTADL.md](docs/EVENTADL.md) for installation and usage instructions.
+EventADL localizes root-cause actors/resources over CloudTrail-style API-call event logs, rather than the metrics/traces/logs used by other RCAEval methods. It runs in the default environment. For full instructions, see [docs/EVENTADL.md](docs/EVENTADL.md) for installation and usage instructions.
 
 ```bash
 python main.py --method eventadl --dataset eventadl-falcon
