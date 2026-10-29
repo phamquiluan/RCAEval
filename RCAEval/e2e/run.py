@@ -43,8 +43,13 @@ import torch
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-torch.autograd.set_detect_anomaly(True)
 from RCAEval.io.time_series import drop_constant
+
+
+def _read(path):
+    # the same cleaning main.py applies; every read site must agree, or
+    # drop_constant keeps different columns at each one
+    return pd.read_csv(path).replace([np.inf, -np.inf], np.nan).ffill().fillna(0)
 
 class moving_avg(nn.Module):
     """
@@ -237,8 +242,7 @@ class Dataset_RCA(Dataset):
 
     def __read_data__(self):
         self.scaler = StandardScaler()
-        df_raw = pd.read_csv(os.path.join(self.root_path,
-                                          self.data_path))
+        df_raw = _read(os.path.join(self.root_path, self.data_path))
         df_raw = drop_constant(df_raw)
         try:
             df_raw.drop("time", axis=1, inplace=True) #synthetic don't need this one
@@ -439,7 +443,7 @@ def GraphConstruct(target, cuda, epochs, lr, optimizername,  file, args):
     train_data, train_loader = data_provider(args, flag='train')
     test_data, test_loader = data_provider(args, flag='test')
 
-    df_tmp = pd.read_csv(file)
+    df_tmp = _read(file)
     df_tmp = drop_constant(df_tmp)
     try:
         df_tmp.drop("time", axis=1, inplace=True) #synthetic don't need this one
@@ -566,7 +570,7 @@ def breaktie(pagerank, G, trigger_point):
 
 
 def Run(datafile, args):
-    df_data = pd.read_csv(datafile)
+    df_data = _read(datafile)
     df_data = drop_constant(df_data)
     edges = dict()
     
@@ -635,7 +639,8 @@ def run(data, inject_time=None, dataset=None, with_bg=False, args=None, **kwargs
     args.epochs = 1
     args.learning_rate = 0.001
     args.optimizer = 'Adam'
-    args.num_workers = 8
+    # DataLoader workers break under the forkserver start method (3.14 default)
+    args.num_workers = 0
     args.root_cause = "unknown"
 
     nrepochs = args.epochs
@@ -646,7 +651,7 @@ def run(data, inject_time=None, dataset=None, with_bg=False, args=None, **kwargs
 
     data_path = os.path.join(args.root_path, args.data_path)
     edge_pair, columns = Run(data_path, args) 
-    pruning = pd.read_csv(data_path)   
+    pruning = _read(data_path)
     pruning = drop_constant(pruning)
     try: 
         pruning.drop("time", axis=1, inplace=True) #synthetic don't need this one

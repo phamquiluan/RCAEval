@@ -68,3 +68,11 @@ def test_causalrca_ranks_upstream_cause_first(monkeypatch):
     rng = np.random.default_rng(0)
     data = pd.DataFrame(rng.normal(size=(100, 3)) + 5, columns=["cause", "mid", "symptom"])
     assert m.causalrca(data)["ranks"] == ["cause", "mid", "symptom"]
+
+
+def test_importing_methods_leaves_torch_anomaly_mode_off():
+    torch = pytest.importorskip("torch")
+    importlib.import_module("RCAEval.e2e.run")
+
+    # run.py used to switch anomaly mode on globally, slowing every torch method
+    assert not torch.is_anomaly_enabled()

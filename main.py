@@ -5,7 +5,6 @@ import os
 import shutil
 import warnings
 from datetime import datetime, timedelta
-from multiprocessing import Pool
 from os.path import abspath, basename, dirname, exists, join
 
 # turn off all warnings
