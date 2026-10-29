@@ -514,18 +514,14 @@ def GraphConstruct(target, cuda, epochs, lr, optimizername,  file, args):
 def pearson_correlation(x, y):
     if len(x) != len(y):
         raise ValueError("The lengths of the input variables must be the same.")
-    n = len(x)
-    sum_x = sum(x)
-    sum_y = sum(y)
-    sum_xy = sum(x[i] * y[i] for i in range(n))
-    sum_x_sq = sum(x[i] ** 2 for i in range(n))
-    sum_y_sq = sum(y[i] ** 2 for i in range(n))
-    numerator = n * sum_xy - sum_x * sum_y
-    denominator = ((n * sum_x_sq - sum_x ** 2) * (n * sum_y_sq - sum_y ** 2)) ** 0.5
+    # float, centred sums: squaring int64 memory metrics overflowed (numpy 1
+    # wrapped silently, numpy 2 raises OverflowError)
+    x = np.asarray(x, dtype=float) - np.mean(x)
+    y = np.asarray(y, dtype=float) - np.mean(y)
+    denominator = np.sqrt(np.dot(x, x) * np.dot(y, y))
     if denominator == 0:
         return 0
-    correlation = numerator / denominator
-    return correlation
+    return np.dot(x, y) / denominator
 
 def breaktie(pagerank, G, trigger_point):
     if trigger_point == "None":

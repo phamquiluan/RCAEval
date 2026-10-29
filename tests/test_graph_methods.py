@@ -177,3 +177,15 @@ def test_granger_is_quiet_and_warning_free(capsys):
         adj = granger(data)
     assert adj[1, 0] == 1  # a Granger-causes b
     assert capsys.readouterr().out == ""
+
+
+def test_run_pearson_correlation_handles_large_int_metrics():
+    pytest.importorskip("torch")
+    from RCAEval.e2e.run import pearson_correlation
+
+    # memory metrics are int64 near 1e8; summing their squares overflowed
+    rng = np.random.default_rng(0)
+    x = pd.Series(rng.integers(5 * 10**7, 10**8, size=4000))
+    y = 3 * x + pd.Series(rng.integers(0, 10**7, size=4000))
+    assert np.isclose(pearson_correlation(x, y), np.corrcoef(x, y)[0, 1])
+    assert pearson_correlation(x, pd.Series(np.zeros(4000))) == 0
