@@ -1,15 +1,17 @@
 from os.path import join, dirname, abspath
 from setuptools import setup, find_packages
 
-# parse requirements.txt to requirement list
-with open("requirements.txt") as f:
-    requirements = f.read().splitlines()
 
-with open("requirements_rcd.lock") as f:
-    rcd_requirements = f.read().splitlines()
+def read_requirements(path):
+    with open(path) as f:
+        lines = (line.split("#")[0].strip() for line in f)
+        return [line for line in lines if line]
 
-with open("requirements_eventadl.lock") as f:
-    eventadl_requirements = f.read().splitlines()
+
+requirements = read_requirements("requirements.txt")
+# everything but torch, which only causalrca, run, mscred and cmlp_pagerank need
+core_requirements = [r for r in requirements if not r.startswith("torch")]
+rcd_requirements = read_requirements("requirements_rcd.lock")
 
 with open("README.md", encoding="utf-8") as f:
     long_description = f.read()
@@ -22,11 +24,21 @@ setup(
     description="RCAEval: A Benchmark for Root Cause Analysis of Microservice Systems",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    python_requires=">=3.8",  # 3.8 only for the rcd extra; the default env needs 3.11+
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
+    ],
     install_requires=[],
     extras_require={
         "default": requirements,
+        "core": core_requirements,
         "rcd": rcd_requirements,
-        "eventadl": eventadl_requirements,
+        # EventADL needs nothing beyond the core stack
+        "eventadl": core_requirements,
         # ntlr_pagerank / ntlr_randomwalk (NOTEARS low-rank); slow on CPU
         "ntlr": ["gcastle>=1.0.4"],
     },
