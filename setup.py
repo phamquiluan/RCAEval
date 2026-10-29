@@ -23,5 +23,11 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=[],
-    extras_require={"default": requirements, "rcd": rcd_requirements, "eventadl": eventadl_requirements},
+    extras_require={
+        "default": requirements,
+        "rcd": rcd_requirements,
+        "eventadl": eventadl_requirements,
+        # ntlr_pagerank / ntlr_randomwalk (NOTEARS low-rank); slow on CPU
+        "ntlr": ["gcastle>=1.0.4"],
+    },
 )
