@@ -16,7 +16,7 @@ from RCAEval.io.time_series import (
     preprocess,
     select_useful_cols,
 )
-from RCAEval.utility import is_py310, is_py312, is_py314
+from RCAEval.utility import is_modern_py
 
 
 def rca(func):
@@ -34,13 +34,13 @@ def rca(func):
             return {"adj": [], "node_names": dummy, "ranks": dummy}
     return wrapper
 
-if is_py310() or is_py312() or is_py314():
+if is_modern_py():
     import importlib
 
-    # A method whose dependencies are not installed (e.g. torch or causallearn
-    # in the minimal EventADL environment, see docs/EVENTADL.md) is skipped
-    # instead of breaking the whole package; main.py reports a clear error if
-    # an unavailable method is requested.
+    # A method whose dependencies are not installed (e.g. torch, or gcastle
+    # without the ntlr extra) is skipped instead of breaking the whole
+    # package; main.py reports a clear error if an unavailable method is
+    # requested.
     _METHOD_MODULES = {
         "baro": ["baro", "mmbaro", "mmnsigma"],
         "causalrca": ["causalrca"],

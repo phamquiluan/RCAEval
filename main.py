@@ -20,9 +20,8 @@ from RCAEval.classes.graph import Node
 from RCAEval.io.time_series import drop_constant, drop_time, preprocess
 from RCAEval.utility import (
     dump_json,
+    is_modern_py,
     is_py38,
-    is_py312,
-    is_py314,
     load_json,
     download_online_boutique_dataset,
     download_sock_shop_1_dataset,
@@ -37,12 +36,12 @@ from RCAEval.utility import (
 )
 
 
-if is_py312() or is_py314():
+if is_modern_py():
     import RCAEval.e2e as e2e
 
     # bind every method that could be imported; one whose dependencies are
-    # not installed (e.g. torch in the minimal EventADL environment) is
-    # simply unavailable and rejected by parse_args with a clear error
+    # not installed (e.g. torch) is simply unavailable and rejected by
+    # parse_args with a clear error
     for _method in [
         "baro",
         "causalrca",
@@ -83,7 +82,7 @@ if is_py312() or is_py314():
 elif is_py38():
     from RCAEval.e2e import dummy, e_diagnosis, ht, rcd, mmrcd, torai
 else:
-    print("Please use Python 3.8, 3.12, or 3.14")
+    print("Please use Python 3.14 (default environment) or Python 3.8 (RCD/HT/TORAI environment)")
     exit(1)
 
 try:

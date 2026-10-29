@@ -29,6 +29,11 @@ def is_py38():
     return sys.version_info.major == 3 and sys.version_info.minor == 8
 
 
+def is_modern_py():
+    # the default environment; Python 3.8 is the legacy RCD/HT/TORAI one
+    return sys.version_info >= (3, 10)
+
+
 def dump_json(filename: str, data):
     """
     Dump data into a json file
