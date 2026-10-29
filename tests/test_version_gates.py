@@ -8,11 +8,14 @@ import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# swap in a fake sys.version_info before RCAEval is imported
+# fake the version only where RCAEval reads it: replacing sys.version_info
+# globally sends numpy, torch and friends down code paths for the wrong
+# interpreter (e.g. importing 3.14's annotationlib on 3.12)
 FAKE = """
-import collections, sys
+import collections, types
+import RCAEval.utility
 V = collections.namedtuple("V", "major minor micro releaselevel serial")
-sys.version_info = V({major}, {minor}, 0, "final", 0)
+RCAEval.utility.sys = types.SimpleNamespace(version_info=V({major}, {minor}, 0, "final", 0))
 """
 
 
