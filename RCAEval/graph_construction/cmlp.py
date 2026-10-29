@@ -595,6 +595,8 @@ def cmlp(data: pd.DataFrame, max_iter=None):
     node_names = data.columns.to_list()
     # fill nan by ffill
     data = data.ffill()
+    # metrics reach the thousands; unscaled, training diverges to NaN
+    data = (data - data.mean()) / data.std().replace(0, 1)
     data = data.to_numpy().astype(float)
     device = torch.device("cpu")
 
