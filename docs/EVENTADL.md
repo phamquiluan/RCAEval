@@ -11,20 +11,18 @@ EventADL is a root cause localization method over CloudTrail-style API-call even
 
 ## Installation
 
-EventADL uses Python 3.12 with a dependency set (`numpy==2.2.5`, `networkx==3.4.2`, ...) that conflicts with RCAEval's default environment (`numpy<2`, `networkx==2.5`), so it lives in its own virtual environment.
+EventADL runs in RCAEval's default environment (Python 3.14; see the [README](../README.md#installation)):
 
 ```bash
-# create and activate the virtual environment
-python3.12 -m venv .venv-eventadl
-source .venv-eventadl/bin/activate
+python3.14 -m venv env
+. env/bin/activate
 
-# install dependencies
-pip install --upgrade pip
-pip install -r requirements_eventadl.lock
-
-# install RCAEval
+pip install -e .[default]
+# or, without torch, which EventADL does not need:
 pip install -e .[eventadl]
 ```
+
+`requirements_eventadl.lock` is the historical Python 3.12 environment EventADL used before the default environment moved to numpy 2 and networkx 3. It is no longer needed and is kept for reference only.
 
 ## Dataset
 
@@ -40,8 +38,6 @@ download_eventadl_dataset("falcon")  # a single dataset
 ## Basic Usage
 
 ```bash
-source .venv-eventadl/bin/activate
-
 python main.py --method eventadl --dataset eventadl-falcon
 python main.py --method eventadl --dataset eventadl-flask
 python main.py --method eventadl --dataset eventadl-live
