@@ -42,7 +42,6 @@ if is_py310() or is_py312() or is_py314():
     # instead of breaking the whole package; main.py reports a clear error if
     # an unavailable method is requested.
     _METHOD_MODULES = {
-        "causalai": ["causalai"],
         "baro": ["baro", "mmbaro", "mmnsigma"],
         "causalrca": ["causalrca"],
         "circa": ["circa", "mmcirca"],
@@ -55,7 +54,6 @@ if is_py310() or is_py312() or is_py314():
         "lingam_pagerank": ["lingam_pagerank", "micro_diag"],
         "microcause": ["microcause"],
         "microrank": ["microrank"],
-        "easyrca": ["easyrca"],
         "pc_pagerank": ["cmlp_pagerank", "ntlr_pagerank", "pc_pagerank"],
         "pc_randomwalk": [
             "fci_randomwalk",

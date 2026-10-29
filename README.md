@@ -233,7 +233,7 @@ Downloading RE3.zip..: 100%|█████████████████�
 
 ## Available Baselines 
 
-RCAEval stores all the RCA methods in the `e2e` module (implemented in `RCAEval.e2e`). There are many RCA baselines available: RUN, CausalRCA, CIRCA, RCD, MicroCause, EasyRCA, MSCRED, BARO, 𝜖-Diagnosis, TraceRCA, MicroRank, PDiagnose, Multi-source BARO, Multi-source RCD, Multi-source CIRCA, TORAI, EventADL.
+RCAEval stores all the RCA methods in the `e2e` module (implemented in `RCAEval.e2e`). There are many RCA baselines available: RUN, CausalRCA, CIRCA, RCD, MicroCause, MSCRED, BARO, 𝜖-Diagnosis, TraceRCA, MicroRank, PDiagnose, Multi-source BARO, Multi-source RCD, Multi-source CIRCA, TORAI, EventADL.
 
 ## Benchmark 
 
