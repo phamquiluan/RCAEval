@@ -154,7 +154,11 @@ def nsigma(data, inject_time=None, dataset=None, num_loop=None, sli=None, anomal
 def e_diagnosis(
     data, inject_time=None, dataset=None, num_loop=None, sli=None, anomalies=None, **kwargs
 ):
-    from pyrca.analyzers.epsilon_diagnosis import EpsilonDiagnosis
+    try:
+        from pyrca.analyzers.epsilon_diagnosis import EpsilonDiagnosis
+    except ImportError:
+        # PyRCA only installs in the Python 3.8 environment
+        from RCAEval.e2e.epsilon_diagnosis import EpsilonDiagnosis
 
     alpha = float(os.getenv("E_ALPHA", 0.01))
     # print(f"=========== E alpha: {alpha} ===========")
