@@ -4,6 +4,8 @@ from RCAEval.graph_heads.random_walk import random_walk
 from RCAEval.io.time_series import preprocess
 from RCAEval.e2e import rca
 
+
+@rca
 def ges_pagerank(data, inject_time=None, dataset=None, **kwargs):
     data = preprocess(
         data=data, dataset=dataset, dk_select_useful=kwargs.get("dk_select_useful", False)
@@ -12,6 +14,8 @@ def ges_pagerank(data, inject_time=None, dataset=None, **kwargs):
     record = ges(data)
     G = record["G"]
     ranks = page_rank(G.graph, node_names=data.columns.to_list())
+    ranks = sorted(ranks, key=lambda x: x[1], reverse=True)
+    ranks = [x[0] for x in ranks]
     return {
         "adj": G.graph,
         "node_names": data.columns.to_list(),
