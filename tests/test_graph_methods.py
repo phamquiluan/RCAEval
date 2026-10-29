@@ -2,6 +2,7 @@
 import importlib
 import io
 
+import networkx as nx
 import numpy as np
 import pandas as pd
 import pytest
@@ -114,3 +115,31 @@ def test_e_diagnosis_runs_without_pyrca():
     out = e_diagnosis(data, inject_time=100, dataset="online-boutique")
     assert out["node_names"] == ["a_cpu", "b_cpu", "c_mem"]
     assert set(out["ranks"]) <= set(out["node_names"])
+
+
+def test_random_walk_accepts_fci_circle_marks():
+    from RCAEval.graph_heads.random_walk import random_walk
+
+    # a o-> b, b o-o c: FCI marks circles with 2
+    adj = np.array([[0, 2, 0], [1, 0, 2], [0, 2, 0]])
+    ranks = random_walk(adj, node_names=["a", "b", "c"], num_loop=50)
+    assert sorted(name for name, _ in ranks) == ["a", "b", "c"]
+
+
+def test_random_walk_transition_matrix_follows_scores():
+    import warnings
+
+    from RCAEval.classes.graph import MemoryGraph, Node
+    from RCAEval.graph_heads.random_walk import RandomWalkScorer, Score
+
+    a, b, c = (Node(name, None) for name in "abc")
+    graph = nx.DiGraph([(a, b), (b, c)])
+    scores = {a: Score(0.9), b: Score(0.5), c: Score(0.1)}
+
+    # writing through matrix[col][row] is a silent no-op under pandas 3
+    # copy-on-write, which left every column uniform
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        matrix = RandomWalkScorer().generate_transition_matrix(MemoryGraph(graph), data=None, scores=scores)
+    assert not np.allclose(matrix[b], 1 / 3)
+    assert np.allclose(matrix.sum(), 1)

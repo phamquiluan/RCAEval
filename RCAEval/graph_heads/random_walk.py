@@ -159,20 +159,20 @@ class RandomWalkScorer(Scorer):
         for node in scores:
             for child in graph.children(node):
                 if child in scores:
-                    matrix[node][child] = self._rho * abs(scores[child].score)
+                    matrix.loc[child, node] = self._rho * abs(scores[child].score)
 
             parents = graph.parents(node)
             if self._remove_sli:
                 parents -= {data.sli}
             for parent in parents:
                 if parent in scores:
-                    matrix[node][parent] = abs(scores[parent].score)
+                    matrix.loc[parent, node] = abs(scores[parent].score)
 
-            matrix[node][node] = max(abs(scores[node].score) - matrix[node].max(), 0)
+            matrix.loc[node, node] = max(abs(scores[node].score) - matrix[node].max(), 0)
 
             total_weight = matrix[node].sum()
             if total_weight > 0:
-                matrix[node] /= total_weight
+                matrix[node] = matrix[node] / total_weight
             else:
                 matrix[node] = 1 / size
         return matrix
@@ -246,6 +246,27 @@ class SecondOrderRandomWalkScorer(RandomWalkScorer):
         return counter
 
 
+def _pag_marks_to_cpdag(adj):
+    """Map FCI's circle marks (2) onto the marks the walk understands.
+
+    adj[x, y] is the mark at x on the edge x-y (-1 tail, 1 arrow, 2 circle):
+    o-> becomes -->, o-o becomes <->, and o-- becomes --.
+    """
+    adj = np.array(adj, copy=True)
+    for a in range(len(adj)):
+        for b in range(a + 1, len(adj)):
+            u, v = adj[a, b], adj[b, a]
+            if u == 2 and v == 2:
+                adj[a, b] = adj[b, a] = 1
+            elif u == 2 and v == 1:
+                adj[a, b] = -1
+            elif u == 1 and v == 2:
+                adj[b, a] = -1
+            elif u == 2 or v == 2:
+                adj[a, b] = adj[b, a] = -1
+    return adj
+
+
 def random_walk(
     adj: np.ndarray,
     node_names: List[str] = None,
@@ -259,6 +280,7 @@ def random_walk(
     """
     if node_names is None:
         node_names = [f"X{i}" for i in range(len(adj))]
+    adj = _pag_marks_to_cpdag(adj)
 
     # == build the graph
     nodes = [Node(name, None) for name in node_names]
