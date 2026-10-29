@@ -159,3 +159,21 @@ def test_ges_pagerank_returns_ranked_names(capsys):
     assert "failed" not in capsys.readouterr().err
     # main.py splits each rank on "_"; (name, score) tuples crashed it
     assert sorted(out["ranks"]) == sorted(data.columns)
+
+
+def test_granger_is_quiet_and_warning_free(capsys):
+    import warnings
+
+    pytest.importorskip("statsmodels")
+    from RCAEval.graph_construction.granger import granger
+
+    rng = np.random.default_rng(0)
+    a = rng.normal(size=300)
+    data = pd.DataFrame({"a": a, "b": np.roll(a, 1) + 0.1 * rng.normal(size=300), "c": rng.normal(size=300)})
+
+    # statsmodels 0.15 removed verbose=, which made granger_pagerank fall back
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", FutureWarning)
+        adj = granger(data)
+    assert adj[1, 0] == 1  # a Granger-causes b
+    assert capsys.readouterr().out == ""
