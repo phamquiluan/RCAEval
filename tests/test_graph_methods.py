@@ -76,3 +76,24 @@ def test_importing_methods_leaves_torch_anomaly_mode_off():
 
     # run.py used to switch anomaly mode on globally, slowing every torch method
     assert not torch.is_anomaly_enabled()
+
+
+def test_microcause_ranks_without_crashing(monkeypatch):
+    pytest.importorskip("tigramite")
+    pytest.importorskip("pingouin")
+    m = importlib.import_module("RCAEval.e2e.microcause")
+
+    # the fixed 1000 x 1000-step walk is what makes the method slow, not what breaks
+    walk = m.randomwalk
+    monkeypatch.setattr(m, "randomwalk", lambda Q, num_loop, start, **kw: walk(Q, 20, start, **{**kw, "walk_step": 50}))
+
+    rng = np.random.default_rng(0)
+    a = rng.normal(size=200)
+    b = np.roll(a, 1) + 0.1 * rng.normal(size=200)
+    c = np.roll(b, 1) + 0.1 * rng.normal(size=200)
+    data = pd.DataFrame({"a_cpu": a, "b_cpu": b, "c_cpu": c, "d_cpu": rng.normal(size=200)})
+
+    # tigramite 5 removed return_significant_links, pandas 3 refuses
+    # float(Series), and networkx 3 removed adj_matrix
+    out = m.microcause(data, sli="c_cpu")
+    assert sorted(out["ranks"]) == sorted(data.columns)

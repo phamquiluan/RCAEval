@@ -2126,7 +2126,7 @@ def get_Q_matrix(g, rho=0.2):
         if backward_e not in g.edges():
             Q[e[1], e[0]] = rho * corr[frontend[0] - 1, e[0]]
 
-    adj = nx.adj_matrix(g).todense()
+    adj = nx.adjacency_matrix(g).todense()
     for i in range(len(node_names)):
         P_pc_max = None
         res_l = np.array([corr[frontend[0] - 1, k] for k in adj[:, i]])
@@ -2207,7 +2207,7 @@ def microcause(
                 method="pearson",
             )
             # For a valid transition probability, use absolute correlation values.
-            return abs(float(ret.r))
+            return abs(float(ret["r"].iloc[0]))
 
         # Calculate the parent nodes set.
         pa_set = {}
@@ -2245,7 +2245,7 @@ def microcause(
             if backward_e not in g.edges() and frontend[0] - 1 != e[1]:
                 Q[e[0], e[1]] = rho * get_part_corr(frontend[0] - 1, e[1])
 
-        adj = nx.adj_matrix(g).todense()
+        adj = nx.adjacency_matrix(g).todense()
         for i in range(len(node_names)):
             # Calculate P_pc^max
             P_pc_max = []
@@ -2305,16 +2305,16 @@ def microcause(
     pcmci, pcmci_res = run_pcmci(np_data, pc_alpha=0.1, verbosity=0)
 
     def get_links(pcmci, results, alpha_level=0.01):
-        pcmci_links = pcmci.return_significant_links(
-            results["p_matrix"],
-            results["val_matrix"],
-            alpha_level=alpha_level,
-            include_lagzero_links=False,
+        # tigramite 5 removed return_significant_links; tau_min=1 excludes
+        # lag-zero links as include_lagzero_links=False did
+        graph = pcmci.get_graph_from_pmatrix(
+            p_matrix=results["p_matrix"], alpha_level=alpha_level, tau_min=1, tau_max=10
         )
+        link_dict = pcmci.return_parents_dict(graph=graph, val_matrix=results["val_matrix"])
         g = nx.DiGraph()
         for i in range(len(node_names)):
             g.add_node(i)
-        for n, links in pcmci_links["link_dict"].items():
+        for n, links in link_dict.items():
             for l in links:
                 g.add_edge(n, l[0])
         return g
