@@ -8,6 +8,7 @@ scored as an empty ranking, i.e. a miss at every k.
 import json
 from os.path import exists, join
 
+from RCAEval.agent import trajectory
 from RCAEval.benchmark.evaluation import Evaluator
 from RCAEval.benchmark.scoring import indicator_ranks, service_ranks
 from RCAEval.classes.graph import Node
@@ -77,13 +78,15 @@ def rank_of(answer, ranks):
     return ranks.index(answer) + 1 if answer in ranks else None
 
 
-def evaluate(answers, predictions, max_k=5):
+def evaluate(answers, predictions, max_k=5, predictions_path=None):
     """Score predictions (case_id -> dict) against answers; returns a summary
-    dict and the per-case rows."""
+    dict and the per-case rows. With predictions_path, trajectories referenced
+    by the predictions feed the evidence metric."""
     s_all, f_all = Evaluator(max_k=max_k), Evaluator(max_k=max_k)
     s_by_fault = {}
     rows = []
     usage_totals = {}
+    evidence = []  # (inspected the root-cause service, service rank 1) per case with a trajectory
 
     for a in answers:
         p = predictions.get(a["case_id"])
@@ -109,9 +112,17 @@ def evaluate(answers, predictions, max_k=5):
                 total, count = usage_totals.get(key, (0, 0))
                 usage_totals[key] = (total + value, count + 1)
 
+        inspected = None
+        if predictions_path is not None:
+            calls = trajectory.load_calls(predictions_path, p)
+            if calls is not None:
+                inspected = trajectory.inspected(calls, a["service"])
+                evidence.append((inspected, rank_of(s_answer, s_ranks) == 1))
+
         rows.append({
             "case_id": a["case_id"],
             "predicted": p is not None,
+            "inspected_root": inspected,
             "service": a["service"],
             "fault": a["fault"],
             "indicator": a["indicator"],
@@ -139,8 +150,22 @@ def evaluate(answers, predictions, max_k=5):
         "indicator": scores(f_all),
         "service_by_fault": {f: scores(s_by_fault[f]) for f in faults},
         "usage": {k: {"total": t, "mean": t / c, "n": c} for k, (t, c) in usage_totals.items()},
+        "evidence": evidence_summary(evidence),
     }
     return summary, rows
+
+
+def evidence_summary(evidence):
+    if not evidence:
+        return None
+    hit = [top1 for seen, top1 in evidence if seen]
+    miss = [top1 for seen, top1 in evidence if not seen]
+    return {
+        "n": len(evidence),
+        "inspected_root": len(hit) / len(evidence),
+        "AC@1_inspected": sum(hit) / len(hit) if hit else None,
+        "AC@1_not_inspected": sum(miss) / len(miss) if miss else None,
+    }
 
 
 def fmt(value):
@@ -170,6 +195,14 @@ def print_report(summary, dataset, report_chance=False):
         if report_chance:
             print(f"Chance@5-{fault.upper()}:".ljust(12), fmt(sc["Chance@5"]))
             print(f"Lift@5-{fault.upper()}:".ljust(12), fmt(sc["Lift@5"]))
+
+    ev = summary.get("evidence")
+    if ev:
+        print(f"--- Evidence ({ev['n']} cases with trajectories) ---")
+        print("Inspected@root:".ljust(22), fmt(ev["inspected_root"]),
+              "(a tool call targeted the root-cause service before submit)")
+        print("AC@1 if inspected:".ljust(22), fmt(ev["AC@1_inspected"]))
+        print("AC@1 if not inspected:".ljust(22), fmt(ev["AC@1_not_inspected"]))
 
     if summary["usage"]:
         print("--- Usage ---")
@@ -204,7 +237,7 @@ def run(predictions_path, tasks_dir=None, answers_path=None, report_chance=False
             raise ValueError(f"{answers_path} does not belong to {tasks_dir} (case ids differ)")
 
     predictions = load_predictions(predictions_path, case_ids)
-    summary, rows = evaluate(answers, predictions)
+    summary, rows = evaluate(answers, predictions, predictions_path=predictions_path)
     print_report(summary, dataset, report_chance=report_chance)
 
     if per_case_out:

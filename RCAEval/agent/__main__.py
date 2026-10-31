@@ -1,6 +1,7 @@
-"""rcaeval-agent: export a blind task view, or score a predictions file.
+"""rcaeval-agent: blind task views, LLM agents, and predictions scoring.
 
     rcaeval-agent export --dataset re2-ob --out agent_tasks
+    rcaeval-agent run --tasks agent_tasks/re2-ob --model anthropic/claude-sonnet-5-5 --out preds.jsonl
     rcaeval-agent evaluate --tasks agent_tasks/re2-ob --predictions preds.jsonl
 """
 import argparse
@@ -12,7 +13,7 @@ from RCAEval.agent.predictions import PredictionsError, run
 
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="rcaeval-agent", description="Evaluate LLM agents on RCAEval")
-    sub = parser.add_subparsers(dest="command", required=True)
+    sub = parser.add_subparsers(dest="subcommand", required=True)
 
     p = sub.add_parser("export", help="write a blind task view of a dataset and its answers file")
     p.add_argument("--dataset", required=True, choices=EXPORTABLE)
@@ -31,9 +32,27 @@ def main(argv=None):
     p.add_argument("--per-case-out", default=None, help="write per-case results as JSONL")
     p.add_argument("--json-out", default=None, help="write the summary as JSON")
 
+    p = sub.add_parser("run", help="run the reference LLM agent (LiteLLM) over a task view")
+    p.add_argument("--tasks", required=True, help="the exported task directory")
+    p.add_argument("--model", required=True, help="LiteLLM model name, e.g. anthropic/claude-sonnet-5-5")
+    p.add_argument("--out", required=True, help="predictions file (appended; finished cases are skipped)")
+    p.add_argument("--cases", nargs="*", help="only these case ids (default: all)")
+    p.add_argument("--max-steps", type=int, default=30, help="model turns per case (default 30)")
+    p.add_argument("--max-cost-usd", type=float, default=2.0, help="cost per case before submit is required (default 2.0)")
+    p.add_argument("--temperature", type=float, default=0.0)
+    p.add_argument("--workers", type=int, default=1, help="cases run in parallel (default 1)")
+    p.add_argument("--trajectories", default=None, help="trajectory directory (default: <out>.trajectories)")
+
     args = parser.parse_args(argv)
 
-    if args.command == "export":
+    if args.subcommand == "run":
+        from RCAEval.agent.react import run_tasks
+
+        run_tasks(args.tasks, args.model, args.out, cases=args.cases, trajectories=args.trajectories,
+                  workers=args.workers, max_steps=args.max_steps, max_cost_usd=args.max_cost_usd,
+                  temperature=args.temperature)
+        return 0
+    if args.subcommand == "export":
         task_dir, answers_path = export(args.dataset, out_dir=args.out, copy=args.copy, force=args.force,
                                         data_root=args.data_root)
         print(f"Task view:    {task_dir}  (give this directory, read-only, to the agent)")
