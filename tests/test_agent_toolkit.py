@@ -82,6 +82,17 @@ def test_trace_summary_and_call_graph(toolkit):
     assert edges == {("frontend", "checkoutservice"), ("checkoutservice", "cartservice")}
 
 
+def test_grpc_and_http_status_codes_count_as_errors_correctly(toolkit):
+    import pandas as pd
+
+    traces = toolkit.traces()
+    traces["status"] = traces["status"].map({200: 0, 500: 14})  # gRPC: OK, UNAVAILABLE
+    top = toolkit.call("trace_summary")["rows"][0]
+    assert top["before"]["errors"] == 0 and top["after"]["errors"] == top["after"]["requests"]
+    traces["status"] = pd.Series(302, index=traces.index)
+    assert all(r["after"]["errors"] == 0 for r in toolkit.call("trace_summary")["rows"])
+
+
 def test_submit_validates_against_the_candidates(toolkit):
     assert "not in candidate" in toolkit.call("submit", {"ranks": ["paymentservice"]})["error"]
     assert "empty" in toolkit.call("submit", {"ranks": [" "]})["error"]

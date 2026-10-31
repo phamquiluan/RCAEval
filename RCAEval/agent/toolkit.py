@@ -426,7 +426,9 @@ class CaseToolkit:
                    "p50_ms": round(float(g["ms"].quantile(0.5)), 2),
                    "p90_ms": round(float(g["ms"].quantile(0.9)), 2)}
             if has_status:
-                out["errors"] = int((g["status"] >= 400).sum())
+                # gRPC reports 0 for OK, HTTP 2xx/3xx; anything else is a failure
+                status = g["status"]
+                out["errors"] = int(((status != 0) & ~status.between(200, 399)).sum())
             return out
 
         table = []
