@@ -5,7 +5,10 @@ All notable changes to RCAEval are listed here, newest first. Versions follow th
 release notes live, and the [PyPI releases](https://pypi.org/project/RCAEval/#history).
 A few early versions exist on only one of the two.
 
-## [Unreleased]
+## [1.10.0] - 2026-10-31
+
+LLM agents can now be evaluated on RCAEval through a blind task view and a
+predictions file.
 
 ### Added
 - LLM agent onboarding ([docs/AGENTS.md](docs/AGENTS.md)). `rcaeval-agent export --dataset <name>`
@@ -17,6 +20,7 @@ A few early versions exist on only one of the two.
   cost and time usage.
 - `docs/examples/baro_agent.py`, a reference agent that runs BARO over the task view.
   It ranks every case exactly as `main.py` does.
+- `CHANGELOG.md`, covering every release since 0.0.1.
 
 ### Changed
 - `main.py` takes its dataset paths, downloads and ranking-to-score conversion from the
@@ -291,6 +295,7 @@ based on Causal Inference: How Far Are We?*, also kept in the
 Initial package: data I/O, utilities, graph heads, the PC algorithm and the benchmark
 module.
 
+[1.10.0]: https://github.com/phamquiluan/RCAEval/compare/1.9.0...1.10.0
 [1.9.0]: https://github.com/phamquiluan/RCAEval/compare/1.8.1...1.9.0
 [1.8.1]: https://github.com/phamquiluan/RCAEval/compare/1.8.0...1.8.1
 [1.8.0]: https://github.com/phamquiluan/RCAEval/compare/1.7.0...1.8.0
