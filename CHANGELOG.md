@@ -5,7 +5,11 @@ All notable changes to RCAEval are listed here, newest first. Versions follow th
 release notes live, and the [PyPI releases](https://pypi.org/project/RCAEval/#history).
 A few early versions exist on only one of the two.
 
-## [Unreleased]
+## [1.11.0] - 2026-10-31
+
+RCAEval now ships the agents themselves: tools for investigating a case, a reference
+LLM agent for any LiteLLM model, and an MCP server that lets agent CLIs such as
+Claude Code investigate cases.
 
 ### Added
 - Tools for investigating a case (`RCAEval.agent.toolkit`): `describe_case`, `list_metrics`,
@@ -321,6 +325,7 @@ based on Causal Inference: How Far Are We?*, also kept in the
 Initial package: data I/O, utilities, graph heads, the PC algorithm and the benchmark
 module.
 
+[1.11.0]: https://github.com/phamquiluan/RCAEval/compare/1.10.0...1.11.0
 [1.10.0]: https://github.com/phamquiluan/RCAEval/compare/1.9.0...1.10.0
 [1.9.0]: https://github.com/phamquiluan/RCAEval/compare/1.8.1...1.9.0
 [1.8.1]: https://github.com/phamquiluan/RCAEval/compare/1.8.0...1.8.1
