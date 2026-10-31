@@ -5,6 +5,24 @@ All notable changes to RCAEval are listed here, newest first. Versions follow th
 release notes live, and the [PyPI releases](https://pypi.org/project/RCAEval/#history).
 A few early versions exist on only one of the two.
 
+## [Unreleased]
+
+### Added
+- LLM agent onboarding ([docs/AGENTS.md](docs/AGENTS.md)). `rcaeval-agent export --dataset <name>`
+  writes a blind task view of any RE1–RE3 subset: each case under an anonymised id
+  with its telemetry and a `task.json` (inject time, candidate services and
+  indicators), and the labels in a separate answers file. `rcaeval-agent evaluate`
+  scores a predictions file (`{"case_id", "ranks"}` per line) with the same AC@k and
+  Avg@k as `main.py`, at service and indicator level, and totals any reported token,
+  cost and time usage.
+- `docs/examples/baro_agent.py`, a reference agent that runs BARO over the task view.
+  It ranks every case exactly as `main.py` does.
+
+### Changed
+- `main.py` takes its dataset paths, downloads and ranking-to-score conversion from the
+  new `RCAEval.benchmark.datasets` and `RCAEval.benchmark.scoring` modules, which the
+  agent evaluator shares. Its output is unchanged.
+
 ## [1.9.0] - 2026-10-29
 
 Python 3.14 is now the default environment; 3.12 and 3.13 also work. RCD,

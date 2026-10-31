@@ -130,6 +130,18 @@ A tutorial of using Multi-source BARO to diagnose failure using multi-source tel
 
 A tutorial of using BARO to diagnose code-level faults is presented in [docs/code-level-rca.ipynb](docs/code-level-rca.ipynb).
 
+### Evaluating LLM agents
+
+To evaluate an LLM agent, or any RCA method that does not run inside `main.py`, export a dataset as a blind task view, run your agent over it, and score the predictions file it writes:
+
+```bash
+rcaeval-agent export --dataset re2-ob --out agent_tasks
+python docs/examples/baro_agent.py agent_tasks/re2-ob preds.jsonl   # replace with your agent
+rcaeval-agent evaluate --tasks agent_tasks/re2-ob --predictions preds.jsonl
+```
+
+The task view renames every case to an anonymised id (the raw case directories are named after their root cause) and keeps the labels in a separate answers file. Predictions are scored with the same AC@k and Avg@k as `main.py`. See [docs/AGENTS.md](docs/AGENTS.md) for the task and predictions formats.
+
 
 ## Available Datasets
 
@@ -373,6 +385,7 @@ We would like to express our sincere gratitude to the researchers and developers
 
 ## Change Logs
 
+- [Oct 2026] Added LLM agent onboarding. `rcaeval-agent export` writes a blind task view of a dataset, and `rcaeval-agent evaluate` scores a predictions file from any agent with the same AC@k and Avg@k as `main.py`. See [docs/AGENTS.md](docs/AGENTS.md).
 - [Sep 2026] Added the retrieval–reranking decomposition of [Where Root Cause Analysis Fails](https://github.com/cruiseresearchgroup/DecompRCA) (NeurIPS'26). `main.py --report-decomposition K` prints `Retrieval@K` and `Rerank@1` beneath each `Avg@5`; `K=all` uses the whole returned ranking.
 - [Sep 2026] Fixed PageRank-based methods and CIRCA silently falling back to column order (scikit-network ≥0.32 and networkx ≥3.0 API removals, and a duplicate `time` column in 50 RE1-OB cases). The fallback now reports its error on stderr.
 - [Sep 2026] Added an opt-in chance-level baseline to the evaluator. `main.py --report-chance` prints `Chance@5` and `Lift@5` beneath each `Avg@5`, so an absolute score can be read against the floor a random ranker would reach on the same candidate set. Contributed by [@mateenali66](https://github.com/mateenali66) in [#79](https://github.com/phamquiluan/RCAEval/pull/79).

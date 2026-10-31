@@ -14,7 +14,9 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
+from RCAEval.benchmark.datasets import DATASET_MAP, download_dataset
 from RCAEval.benchmark.evaluation import Evaluator
+from RCAEval.benchmark.scoring import fault_to_indicator, indicator_ranks, service_ranks
 from RCAEval.classes.graph import Node
 
 from RCAEval.io.time_series import drop_constant, drop_time, preprocess
@@ -23,16 +25,6 @@ from RCAEval.utility import (
     is_modern_py,
     is_py38,
     load_json,
-    download_online_boutique_dataset,
-    download_sock_shop_1_dataset,
-    download_sock_shop_2_dataset,
-    download_train_ticket_dataset,
-    download_re1_dataset,
-    download_re2ob_dataset,
-    download_re2ss_dataset,
-    download_re2tt_dataset,
-    download_re3_dataset,
-    download_eventadl_dataset,
 )
 
 
@@ -143,58 +135,13 @@ def parse_args():
 args = parse_args()
 
 # download dataset
-if "online-boutique" in args.dataset or "re1-ob" in args.dataset:
-    download_online_boutique_dataset()
-elif "sock-shop-1" in args.dataset:
-    download_sock_shop_1_dataset()
-elif "sock-shop-2" in args.dataset or "re1-ss" in args.dataset:
-    download_sock_shop_2_dataset()
-elif "train-ticket" in args.dataset or "re1-tt" in args.dataset:
-    download_train_ticket_dataset()
-elif "re2-ob" in args.dataset.lower():
-    download_re2ob_dataset()
-elif "re2-ss" in args.dataset.lower():
-    download_re2ss_dataset()
-elif "re2-tt" in args.dataset.lower():
-    download_re2tt_dataset()
-elif "re3" in args.dataset:
-    download_re3_dataset()
-elif "torai" in args.dataset:
-    pass  # torai data is expected to be local
-elif "eventadl" in args.dataset:
-    download_eventadl_dataset(name=args.dataset.replace("eventadl-", ""))
-else:
-    raise Exception(f"{args.dataset} is not defined!")
+download_dataset(args.dataset)
 
-DATASET_MAP = {
-    "online-boutique": "data/online-boutique",
-    "sock-shop-1": "data/sock-shop-1",
-    "sock-shop-2": "data/sock-shop-2",
-    "train-ticket": "data/train-ticket",
-    "re1-ob": "data/online-boutique",
-    "re1-ss": "data/sock-shop-2",
-    "re1-tt": "data/train-ticket",
-    "re2-ob": "data/RE2/RE2-OB",
-    "re2-ss": "data/RE2/RE2-SS",
-    "re2-tt": "data/RE2/RE2-TT",
-    "re3-ob": "data/RE3/RE3-OB",
-    "re3-ss": "data/RE3/RE3-SS",
-    "re3-tt": "data/RE3/RE3-TT",
-    "torai-ob": "data/torai-OB",
-    "torai-ss": "data/torai-SS",
-    "torai-tt": "data/torai-TT",
-    "eventadl-falcon": "data/eventadl-falcon",
-    "eventadl-flask": "data/eventadl-flask",
-    "eventadl-live": "data/eventadl-live",
-}
 dataset = DATASET_MAP[args.dataset]
 
-# RE1 telemetry carries no disk metric (only cpu, mem, workload, latency and error per
-# service; blkio was added to the collector after RE1 was recorded), so its disk faults
-# are scored against latency, as in the original evaluation. RE2 onward export
-# `<service>_diskio`.
-RE1_DATASETS = {"online-boutique", "sock-shop-1", "sock-shop-2", "train-ticket", "re1-ob", "re1-ss", "re1-tt"}
-disk_metric = "latency" if args.dataset in RE1_DATASETS else "diskio"
+# RE1 has no disk metric, so its disk faults are scored against latency (see
+# RCAEval/benchmark/scoring.py)
+disk_metric = fault_to_indicator("disk", args.dataset)
 
 
 # prepare input paths
@@ -557,21 +504,8 @@ for service in services:
             n_metric = case_n.get("metric")
 
             for i, ranks in data.items():
-                s_ranks = [Node(x.split("_")[0].replace("-db", ""), "unknown") for x in ranks]
-                # remove duplication
-                old_s_ranks = s_ranks.copy()
-                s_ranks = (
-                    [old_s_ranks[0]]
-                    + [
-                        old_s_ranks[i]
-                        for i in range(1, len(old_s_ranks))
-                        if old_s_ranks[i] not in old_s_ranks[:i]
-                    ]
-                    if old_s_ranks
-                    else []
-                )
-
-                f_ranks = [Node(x.split("_")[0], x.split("_")[1] if "_" in x else "unknown") for x in ranks]
+                s_ranks = service_ranks(ranks)
+                f_ranks = indicator_ranks(ranks)
 
                 s_evaluator.add_case(ranks=s_ranks, n_candidates=n_service, answer=Node(service, "unknown"))
                 f_evaluator.add_case(ranks=f_ranks, n_candidates=n_metric, answer=Node(service, fault))

@@ -29,7 +29,7 @@ jobs:
               pip install -e .[default]
       - run:
           name: "Run test"
-          command: pytest tests/test.py tests/test_evaluator.py tests/test_graph_methods.py tests/test_version_gates.py
+          command: pytest tests/test.py tests/test_evaluator.py tests/test_agent.py tests/test_graph_methods.py tests/test_version_gates.py
           no_output_timeout: 3h
       - run: 
           name: "Reproduce BARO performance on the RE2 dataset, Sock Shop system"
