@@ -32,8 +32,8 @@ EXPORTABLE = [
 STANDARD_LENGTH = 20
 
 # exported name -> source name, in addition to the primary metrics file; files
-# not listed here (metrics_postprocess.log, pod-node-*.csv, cluster_info.json,
-# inject_time.txt) are not exported
+# not listed here (metrics_postprocess.log, pod-node-*.csv, inject_time.txt)
+# are not exported. cluster_info.json holds the log templates behind logts.csv.
 EXTRA_FILES = {
     "metrics_raw.csv": "metrics.csv",
     "logs.csv": "logs.csv",
@@ -41,6 +41,7 @@ EXTRA_FILES = {
     "traces.csv": "traces.csv",
     "tracets_err.csv": "tracets_err.csv",
     "tracets_lat.csv": "tracets_lat.csv",
+    "log_templates.json": "cluster_info.json",
 }
 
 ANSWER_FORMAT = (
@@ -148,7 +149,7 @@ def export(dataset, out_dir="agent_tasks", copy=False, force=False, download=Tru
         for name, src_name in EXTRA_FILES.items():
             if exists(join(src_dir, src_name)):
                 place(join(src_dir, src_name), join(case_dir, name), copy)
-                files[name[: -len(".csv")]] = name
+                files[os.path.splitext(name)[0]] = name
 
         indicators = candidate_indicators(metrics_path)
         services = sorted({to_service(c) for c in indicators})

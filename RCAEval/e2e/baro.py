@@ -52,11 +52,13 @@ def baro(
         ranks.append((col, score))
 
     ranks = sorted(ranks, key=lambda x: x[1], reverse=True)
+    scores = {col: float(score) for col, score in ranks}
     ranks = [x[0] for x in ranks]
 
     return {
         "node_names": normal_df.columns.to_list(),
         "ranks": ranks,
+        "scores": scores,
     }
     
     

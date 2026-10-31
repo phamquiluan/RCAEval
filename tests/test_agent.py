@@ -20,7 +20,7 @@ FAULTS = ["cpu", "mem", "delay"]
 HEADER = ["time", "cartservice_cpu", "cartservice_mem", "cartservice_latency-50", "cartservice_latency-90",
           "checkoutservice_cpu", "checkoutservice_mem", "checkoutservice_latency-90",
           "emailservice_cpu", "emailservice_mem", "emailservice_latency-90", "redis-db_cpu", "time.1"]
-DECOYS = ["metrics_postprocess.log", "cluster_info.json", "pod-node-1.csv"]
+DECOYS = ["metrics_postprocess.log", "pod-node-1.csv"]
 
 
 def make_dataset(root, faults=FAULTS, n_cases=2):
@@ -41,6 +41,8 @@ def make_dataset(root, faults=FAULTS, n_cases=2):
                 for decoy in DECOYS:
                     with open(join(d, decoy), "w") as f:
                         f.write(f"{service} {fault}\n")
+                with open(join(d, "cluster_info.json"), "w") as f:
+                    json.dump({"1": {"template": "GET /cart <:NUM:>", "container": ["cartservice"]}}, f)
     return root
 
 
@@ -69,7 +71,7 @@ def test_export_paths_do_not_reveal_the_answer(exported):
             path = join(dirpath, name)
             assert not os.path.islink(path)
             assert not any(token in name for token in SERVICES + FAULTS), path
-            assert name not in DECOYS + ["inject_time.txt", "data.csv"], path
+            assert name not in DECOYS + ["inject_time.txt", "data.csv", "cluster_info.json"], path
 
 
 def test_export_writes_task_json_with_main_py_candidates(exported):
@@ -77,7 +79,7 @@ def test_export_writes_task_json_with_main_py_candidates(exported):
     task = json.load(open(join(task_dir, "cases", answers[0]["case_id"], "task.json")))
     assert task["inject_time"] == 1005
     assert task["standard_window"] == {"start": 405, "end": 1605}
-    assert task["files"] == {"metrics": "metrics.csv", "logs": "logs.csv"}
+    assert task["files"] == {"metrics": "metrics.csv", "logs": "logs.csv", "log_templates": "log_templates.json"}
     # no time columns, p50 latency dropped, p90 latency renamed
     assert task["candidate_indicators"] == [
         "cartservice_cpu", "cartservice_mem", "cartservice_latency",
