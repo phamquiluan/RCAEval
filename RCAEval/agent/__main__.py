@@ -10,6 +10,7 @@ import argparse
 import sys
 
 from RCAEval.agent.export import EXPORTABLE, export
+from RCAEval.agent.prompt import PROMPT_VERSION, SYSTEM_PROMPTS
 from RCAEval.agent.predictions import PredictionsError, run
 
 
@@ -42,6 +43,8 @@ def main(argv=None):
     p.add_argument("--max-steps", type=int, default=30, help="model turns per case (default 30)")
     p.add_argument("--max-cost-usd", type=float, default=2.0, help="cost per case before submit is required (default 2.0)")
     p.add_argument("--temperature", type=float, default=0.0)
+    p.add_argument("--prompt-version", default=PROMPT_VERSION, choices=sorted(SYSTEM_PROMPTS),
+                   help=f"task prompt version (default {PROMPT_VERSION})")
     p.add_argument("--workers", type=int, default=1, help="cases run in parallel (default 1)")
     p.add_argument("--trajectories", default=None, help="trajectory directory (default: <out>.trajectories)")
 
@@ -54,6 +57,8 @@ def main(argv=None):
     p.add_argument("--out", required=True, help="predictions file (appended; finished cases are skipped)")
     p.add_argument("--cases", nargs="*", help="only these case ids (default: all)")
     p.add_argument("--timeout", type=int, default=900, help="seconds per case (default 900)")
+    p.add_argument("--prompt-version", default=PROMPT_VERSION, choices=sorted(SYSTEM_PROMPTS),
+                   help=f"task prompt version (default {PROMPT_VERSION})")
     p.add_argument("--workers", type=int, default=1, help="cases run in parallel (default 1)")
     p.add_argument("--trajectories", default=None, help="trajectory directory (default: <out>.trajectories)")
 
@@ -68,13 +73,14 @@ def main(argv=None):
 
         run_tasks(args.tasks, args.model, args.out, cases=args.cases, trajectories=args.trajectories,
                   workers=args.workers, max_steps=args.max_steps, max_cost_usd=args.max_cost_usd,
-                  temperature=args.temperature)
+                  temperature=args.temperature, prompt_version=args.prompt_version)
         return 0
     if args.subcommand == "run-cli":
         from RCAEval.agent.runner import run_tasks
 
         run_tasks(args.tasks, args.out, agent=args.agent, command=args.command, model=args.model,
-                  timeout=args.timeout, cases=args.cases, trajectories=args.trajectories, workers=args.workers)
+                  timeout=args.timeout, cases=args.cases, trajectories=args.trajectories, workers=args.workers,
+                  prompt_version=args.prompt_version)
         return 0
     if args.subcommand == "mcp":
         from RCAEval.agent.mcp_server import serve

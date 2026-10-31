@@ -58,7 +58,8 @@ def claude_usage(stdout):
     return {k: v for k, v in usage.items() if v is not None}
 
 
-def run_case(case_dir, record_dir, agent="claude-code", command=None, model=None, timeout=900):
+def run_case(case_dir, record_dir, agent="claude-code", command=None, model=None, timeout=900,
+             prompt_version=PROMPT_VERSION):
     """Run the agent CLI on one case; returns (prediction, trajectory records)."""
     with open(join(case_dir, "task.json")) as f:
         task = json.load(f)
@@ -73,7 +74,7 @@ def run_case(case_dir, record_dir, agent="claude-code", command=None, model=None
             "args": ["-m", "RCAEval.agent", "mcp", "--case", abspath(case_dir), "--record", abspath(record_dir)],
         }}}, f)
 
-    cmd = build_command(agent, command, full_prompt(task), mcp_config, workdir, model)
+    cmd = build_command(agent, command, full_prompt(task, prompt_version), mcp_config, workdir, model)
     started = time.time()
     try:
         proc = subprocess.run(cmd, cwd=workdir, capture_output=True, text=True, timeout=timeout)
@@ -111,22 +112,23 @@ def run_case(case_dir, record_dir, agent="claude-code", command=None, model=None
         "ranks": submission["ranks"],
         "reasoning": submission.get("reasoning"),
         "model": agent + (f":{model}" if model else ""),
-        "prompt_version": PROMPT_VERSION,
+        "prompt_version": prompt_version,
         "stop_reason": stop_reason,
         "usage": usage,
     }
     records = ([{"type": "meta", "case_id": task["case_id"], "model": prediction["model"],
-                 "prompt_version": PROMPT_VERSION}] + calls + [{"type": "result", **prediction}])
+                 "prompt_version": prompt_version}] + calls + [{"type": "result", **prediction}])
     return prediction, records
 
 
 def run_tasks(tasks_dir, out, agent="claude-code", command=None, model=None, timeout=900,
-              cases=None, trajectories=None, workers=1):
+              cases=None, trajectories=None, workers=1, prompt_version=PROMPT_VERSION):
     if agent == "claude-code" and shutil.which("claude") is None:
         raise SystemExit("the claude-code preset needs the `claude` CLI on PATH")
     runs = out + ".runs"
 
     def solve(case_id, case_dir):
-        return run_case(case_dir, join(runs, case_id), agent=agent, command=command, model=model, timeout=timeout)
+        return run_case(case_dir, join(runs, case_id), agent=agent, command=command, model=model, timeout=timeout,
+                        prompt_version=prompt_version)
 
     return run_batch(tasks_dir, out, solve, cases=cases, trajectories=trajectories, workers=workers)

@@ -20,6 +20,11 @@ A few early versions exist on only one of the two.
   only RCAEval's) and a custom command template.
 - `rcaeval-agent evaluate` reports `Inspected@root` from trajectories: how often the agent
   queried the root-cause service before submitting.
+- Task prompt version 2, now the default for `run` and `run-cli`: the agent checks each top
+  suspect's own evidence instead of trusting one anomaly ranking. On 10 RE2-OB cases it
+  raised the reference agent's AC@1 (Claude Sonnet 5.5) from 0.60 (version 1) to 1.00, at
+  about twice the cost, and Claude Code's through `run-cli` from 0.10 to 0.30.
+  `--prompt-version 1` keeps the earlier prompt.
 - New `agent` extra (`litellm`, `mcp`).
 
 ### Changed

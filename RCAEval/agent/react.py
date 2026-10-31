@@ -11,7 +11,7 @@ import json
 import time
 
 from RCAEval.agent.batch import run_batch
-from RCAEval.agent.prompt import PROMPT_VERSION, SYSTEM_PROMPT, case_prompt
+from RCAEval.agent.prompt import PROMPT_VERSION, case_prompt, system_prompt
 from RCAEval.agent.toolkit import TOOLS, CaseToolkit
 
 TOOL_SPECS = [{"type": "function", "function": t} for t in TOOLS]
@@ -52,15 +52,15 @@ def with_cache_marks(messages):
 
 
 def run_case(case_dir, model, max_steps=30, max_cost_usd=None, temperature=0.0,
-             completion=None, cost=None):
+             completion=None, cost=None, prompt_version=PROMPT_VERSION):
     """Investigate one case; returns (prediction dict, trajectory records)."""
     completion = completion or litellm_completion()
     cost = cost or litellm_cost
     toolkit = CaseToolkit(case_dir)
-    messages = [{"role": "system", "content": SYSTEM_PROMPT},
+    messages = [{"role": "system", "content": system_prompt(prompt_version)},
                 {"role": "user", "content": case_prompt(toolkit.task)}]
     records = [{"type": "meta", "case_id": toolkit.task["case_id"], "model": model,
-                "prompt_version": PROMPT_VERSION}]
+                "prompt_version": prompt_version}]
     usage = {"input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0, "steps": 0}
     unpriced = False
     stop_reason = None
@@ -133,7 +133,7 @@ def run_case(case_dir, model, max_steps=30, max_cost_usd=None, temperature=0.0,
         "ranks": submission["ranks"],
         "reasoning": submission["reasoning"],
         "model": model,
-        "prompt_version": PROMPT_VERSION,
+        "prompt_version": prompt_version,
         "stop_reason": stop_reason,
         "usage": usage,
     }

@@ -158,7 +158,7 @@ rcaeval-agent evaluate --tasks agent_tasks/re2-ob --predictions preds.jsonl
 ```
 
 The agent is a tool-calling loop over the tools above.
-- **Prompt:** every model gets the same versioned prompt (`RCAEval/agent/prompt.py`). Each prediction records the prompt version.
+- **Prompt:** every model gets the same versioned prompt (`RCAEval/agent/prompt.py`). Each prediction records the prompt version. The default, version 2, asks the agent to check each top suspect's own evidence instead of trusting one anomaly ranking. On 10 RE2-OB cases it raised the reference agent's AC@1 (Claude Sonnet 5.5) from 0.60 to 1.00, at about twice the tool calls and cost (2.6¢ per case). It raised Claude Code's AC@1 through `run-cli` from 0.10 to 0.30. BARO scores 0.00 on these cases. Version 1, which asked the agent to be efficient, is still available with `--prompt-version 1` for comparison; `run-cli` takes the same option.
 - **Models:** `--model` takes any [LiteLLM](https://docs.litellm.ai/docs/providers) model name, e.g. `openai/...`, `gemini/...`, `openrouter/...`, or `ollama/...` for local models.
 - **Limits:** a case ends when the model's `submit` is accepted. `--max-steps` (default 30 model turns) or `--max-cost-usd` (default 2.0 per case) force one last turn that must submit. If it still doesn't, the case counts as a miss.
 - **Output:** predictions are appended as each case finishes. Rerunning the same command skips finished cases, so an interrupted run never pays twice. Each case's full conversation and tool calls go to `<out>.trajectories/<case_id>.jsonl`, and tokens, cost and steps go into `usage`.

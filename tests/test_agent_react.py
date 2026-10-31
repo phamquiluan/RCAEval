@@ -145,3 +145,14 @@ def test_run_tasks_writes_predictions_resumes_and_feeds_evaluate(tmp_path):
     answers = {json.loads(line)["case_id"]: json.loads(line)["service"] for line in open(answers_path)}
     expected = sum(("cartservice" if c.endswith("1") else "checkoutservice") == s for c, s in answers.items()) / 2
     assert summary["service"]["AC@1"] == expected
+
+
+def test_prompt_version_selects_the_system_prompt(case_dir):
+    from RCAEval.agent.prompt import SYSTEM_PROMPTS
+
+    llm = ScriptedLLM(reply(tool_call("submit", {"ranks": ["frontend"]})))
+    prediction, records = run(case_dir, llm, prompt_version="2")
+    assert llm.requests[0]["messages"][0]["content"] == SYSTEM_PROMPTS["2"]
+    assert prediction["prompt_version"] == "2" and records[0]["prompt_version"] == "2"
+    with pytest.raises(ValueError, match="unknown prompt version"):
+        run(case_dir, llm, prompt_version="9")
