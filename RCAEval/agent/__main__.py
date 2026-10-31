@@ -2,6 +2,8 @@
 
     rcaeval-agent export --dataset re2-ob --out agent_tasks
     rcaeval-agent run --tasks agent_tasks/re2-ob --model anthropic/claude-sonnet-5-5 --out preds.jsonl
+    rcaeval-agent run-cli --agent claude-code --tasks agent_tasks/re2-ob --out preds.jsonl
+    rcaeval-agent mcp --case agent_tasks/re2-ob/cases/re2-ob-0001 --record runs/re2-ob-0001
     rcaeval-agent evaluate --tasks agent_tasks/re2-ob --predictions preds.jsonl
 """
 import argparse
@@ -43,6 +45,22 @@ def main(argv=None):
     p.add_argument("--workers", type=int, default=1, help="cases run in parallel (default 1)")
     p.add_argument("--trajectories", default=None, help="trajectory directory (default: <out>.trajectories)")
 
+    p = sub.add_parser("run-cli", help="run an MCP-capable agent CLI over a task view")
+    p.add_argument("--tasks", required=True, help="the exported task directory")
+    p.add_argument("--agent", default="claude-code", choices=["claude-code", "custom"])
+    p.add_argument("--command", default=None,
+                   help="for --agent custom: command template with {prompt}, {mcp_config}, {workdir}, {model}")
+    p.add_argument("--model", default=None, help="model passed to the agent CLI")
+    p.add_argument("--out", required=True, help="predictions file (appended; finished cases are skipped)")
+    p.add_argument("--cases", nargs="*", help="only these case ids (default: all)")
+    p.add_argument("--timeout", type=int, default=900, help="seconds per case (default 900)")
+    p.add_argument("--workers", type=int, default=1, help="cases run in parallel (default 1)")
+    p.add_argument("--trajectories", default=None, help="trajectory directory (default: <out>.trajectories)")
+
+    p = sub.add_parser("mcp", help="serve one case's tools over MCP (stdio)")
+    p.add_argument("--case", required=True, help="a case directory of a task view")
+    p.add_argument("--record", required=True, help="directory for calls.jsonl and submission.json")
+
     args = parser.parse_args(argv)
 
     if args.subcommand == "run":
@@ -52,6 +70,18 @@ def main(argv=None):
                   workers=args.workers, max_steps=args.max_steps, max_cost_usd=args.max_cost_usd,
                   temperature=args.temperature)
         return 0
+    if args.subcommand == "run-cli":
+        from RCAEval.agent.runner import run_tasks
+
+        run_tasks(args.tasks, args.out, agent=args.agent, command=args.command, model=args.model,
+                  timeout=args.timeout, cases=args.cases, trajectories=args.trajectories, workers=args.workers)
+        return 0
+    if args.subcommand == "mcp":
+        from RCAEval.agent.mcp_server import serve
+
+        serve(args.case, args.record)
+        return 0
+
     if args.subcommand == "export":
         task_dir, answers_path = export(args.dataset, out_dir=args.out, copy=args.copy, force=args.force,
                                         data_root=args.data_root)
