@@ -42,5 +42,7 @@ setup(
         "eventadl": core_requirements,
         # ntlr_pagerank / ntlr_randomwalk (NOTEARS low-rank); slow on CPU
         "ntlr": ["gcastle>=1.0.4"],
+        # the reference LLM agent (rcaeval-agent run) and the MCP server (mcp, run-cli)
+        "agent": core_requirements + ["litellm>=1.106", "mcp>=2.3"],
     },
 )

@@ -140,7 +140,9 @@ python docs/examples/baro_agent.py agent_tasks/re2-ob preds.jsonl   # replace wi
 rcaeval-agent evaluate --tasks agent_tasks/re2-ob --predictions preds.jsonl
 ```
 
-The task view renames every case to an anonymised id (the raw case directories are named after their root cause) and keeps the labels in a separate answers file. Predictions are scored with the same AC@k and Avg@k as `main.py`. See [docs/AGENTS.md](docs/AGENTS.md) for the task and predictions formats.
+The task view renames every case to an anonymised id (the raw case directories are named after their root cause) and keeps the labels in a separate answers file. Predictions are scored with the same AC@k and Avg@k as `main.py`.
+
+With `pip install RCAEval[agent]`, RCAEval also ships the agents themselves. `rcaeval-agent run --model <any LiteLLM model>` runs a reference LLM agent over the task view. `rcaeval-agent run-cli --agent claude-code` lets an agent CLI investigate each case through RCAEval's MCP server. Both use the same tools for querying metrics, logs and traces, and both report cost and whether the agent looked at the root-cause service. See [docs/AGENTS.md](docs/AGENTS.md).
 
 
 ## Available Datasets

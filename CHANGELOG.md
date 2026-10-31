@@ -5,6 +5,27 @@ All notable changes to RCAEval are listed here, newest first. Versions follow th
 release notes live, and the [PyPI releases](https://pypi.org/project/RCAEval/#history).
 A few early versions exist on only one of the two.
 
+## [Unreleased]
+
+### Added
+- Tools for investigating a case (`RCAEval.agent.toolkit`): `describe_case`, `list_metrics`,
+  `get_metric`, `rank_anomalies` (BARO's ranking for metrics; also log template counts and
+  trace latency and errors), `search_logs`, `trace_summary`, `call_graph` and `submit`, each
+  returning a compact JSON answer, with every call logged.
+- `rcaeval-agent run`: a reference LLM agent over those tools, for any LiteLLM model, with a
+  shared, versioned prompt, step and cost limits, resume, per-case trajectories, and token and
+  cost accounting.
+- `rcaeval-agent mcp`: the same tools as an MCP server for one case. `rcaeval-agent run-cli`
+  runs an agent CLI over a task view through it, with a Claude Code preset (no built-in tools,
+  only RCAEval's) and a custom command template.
+- `rcaeval-agent evaluate` reports `Inspected@root` from trajectories: how often the agent
+  queried the root-cause service before submitting.
+- New `agent` extra (`litellm`, `mcp`).
+
+### Changed
+- The task view also exports `log_templates.json`, the template behind each `logts.csv` column.
+- `baro()` also returns each metric's score (`scores`); its ranking is unchanged.
+
 ## [1.10.0] - 2026-10-31
 
 LLM agents can now be evaluated on RCAEval through a blind task view and a

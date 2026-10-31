@@ -29,8 +29,14 @@ jobs:
         python -m pip install .[default]
 
     - name: Test
-      run: python -m pytest tests/test.py tests/test_parser* tests/test_evaluator.py tests/test_agent.py tests/test_graph_methods.py tests/test_version_gates.py
-      
+      run: python -m pytest tests/test.py tests/test_parser* tests/test_evaluator.py tests/test_agent.py tests/test_agent_toolkit.py tests/test_agent_react.py tests/test_graph_methods.py tests/test_version_gates.py
+
+    - name: Test the MCP server and agent runner (agent extra)
+      if: matrix.python-version == '3.14'
+      run: |
+        python -m pip install .[agent]
+        python -m pytest tests/test_agent_mcp.py
+
 
   build-and-test-rcd:
 

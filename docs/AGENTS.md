@@ -10,6 +10,8 @@ rcaeval-agent evaluate --tasks agent_tasks/re2-ob --predictions preds.jsonl   # 
 
 `rcaeval-agent` is installed with RCAEval. `python -m RCAEval.agent` does the same.
 
+You don't have to write the agent loop yourself. RCAEval ships [tools for investigating a case](#tools-for-investigating-a-case), a [reference LLM agent](#reference-llm-agent) that works with any LiteLLM provider, and an [MCP server](#mcp-server-and-agent-clis) that lets agent CLIs such as Claude Code investigate cases.
+
 ## Why a blind view
 
 The raw datasets name each case directory after its answer, for example `data/RE2/RE2-OB/checkoutservice_cpu/1/`. An agent that can list files would see the root cause. The export:
@@ -36,6 +38,7 @@ agent_tasks/
       metrics_raw.csv           # raw metrics, when the case has them (RE2/RE3)
       logs.csv  logts.csv       # logs and log time series, RE2/RE3
       traces.csv  tracets_err.csv  tracets_lat.csv   # traces, RE2/RE3 Online Boutique and Train Ticket
+      log_templates.json        # the log template behind each logts.csv column, RE2/RE3
   re2-ob.answers.jsonl          # labels for the evaluator; keep it away from the agent
 ```
 
@@ -114,9 +117,86 @@ wall_time_s:    total 10.738, mean 0.085904 over 125 cases
 - Scoring uses the same functions as `main.py`, so BARO scores the same on the blind view as through `main.py`; the parity test in `tests/test_agent.py` checks this. The one difference is `Chance@5`: here its denominator is the full candidate list in `task.json`, while `main.py` uses the columns left after constant ones are dropped.
 - A case with no line in the predictions file counts as a miss and is reported in the coverage line. Malformed lines, unknown or duplicate case ids, and a `ranks` that is not a list of strings stop the evaluation with every problem listed (exit code 1).
 - `--per-case-out results.jsonl` writes, for each case, the answer, your top 5 and the rank at which the answer appeared. `--json-out summary.json` writes the summary.
+- **Evidence.** When predictions carry a `trajectory` (the built-in agents write one), the report adds `Inspected@root`: the share of cases where a tool call targeted the root-cause service before `submit`, through a `service` argument or a metric of that service. It also shows AC@1 for cases with and without that inspection, which separates answers backed by evidence from lucky guesses.
+
+## Tools for investigating a case
+
+`RCAEval.agent.toolkit.CaseToolkit` opens one case of a task view and answers small questions about it. Each answer is a JSON object of at most about 8,000 characters, so it fits in an LLM context.
+
+| Tool | Returns |
+|---|---|
+| `describe_case()` | system, inject time, standard window, available telemetry, candidate services |
+| `list_metrics(service)` | metric names, per service or for one service |
+| `get_metric(name, start, end, points)` | one metric averaged into at most `points` buckets, with mean and max before and after the inject time |
+| `rank_anomalies(modality, top_k)` | series ranked by how far they move after the inject time (BARO's robust z-score) for `metrics`, `logs` (log template counts, with template text), `trace_latency` or `trace_errors`. For metrics this is exactly BARO's ranking. |
+| `search_logs(service, pattern, start, end, limit)` | log lines matching a regex, grouped by pattern (numbers and ids masked), with counts before and after the inject time |
+| `trace_summary(service, start, end, top_k)` | requests, errors and p50/p90 latency per service and operation, before and after the inject time |
+| `call_graph()` | which service calls which, with call counts |
+| `submit(ranks, reasoning)` | checks the ranking against the candidate lists and records it |
+
+Times are Unix seconds and default to the standard window. A tool that needs telemetry the case lacks (RE1 has no logs or traces; Sock Shop has no traces) returns `{"error": ...}`.
+
+```python
+from RCAEval.agent.toolkit import CaseToolkit
+
+tk = CaseToolkit("agent_tasks/re2-ob/cases/re2-ob-0001")
+tk.call("rank_anomalies", {"modality": "metrics", "top_k": 5})
+tk.call("search_logs", {"pattern": "error|exception"})
+tk.call("submit", {"ranks": ["cartservice_cpu", "cartservice"]})
+tk.calls  # every call: tool, arguments, ok/error, size, milliseconds
+```
+
+`RCAEval.agent.toolkit.TOOLS` describes every tool as a JSON schema, ready for any function-calling API.
+
+## Reference LLM agent
+
+```bash
+pip install RCAEval[agent]
+export ANTHROPIC_API_KEY=...    # or the key for your provider
+rcaeval-agent run --tasks agent_tasks/re2-ob --model anthropic/claude-sonnet-5-5 --out preds.jsonl
+rcaeval-agent evaluate --tasks agent_tasks/re2-ob --predictions preds.jsonl
+```
+
+The agent is a tool-calling loop over the tools above.
+- **Prompt:** every model gets the same versioned prompt (`RCAEval/agent/prompt.py`). Each prediction records the prompt version.
+- **Models:** `--model` takes any [LiteLLM](https://docs.litellm.ai/docs/providers) model name, e.g. `openai/...`, `gemini/...`, `openrouter/...`, or `ollama/...` for local models.
+- **Limits:** a case ends when the model's `submit` is accepted. `--max-steps` (default 30 model turns) or `--max-cost-usd` (default 2.0 per case) force one last turn that must submit. If it still doesn't, the case counts as a miss.
+- **Output:** predictions are appended as each case finishes. Rerunning the same command skips finished cases, so an interrupted run never pays twice. Each case's full conversation and tool calls go to `<out>.trajectories/<case_id>.jsonl`, and tokens, cost and steps go into `usage`.
+- **Other options:** `--cases` limits the run to some case ids, and `--workers` runs cases in parallel.
+
+## MCP server and agent CLIs
+
+`rcaeval-agent mcp --case <case_dir> --record <dir>` serves one case's tools over MCP (stdio). Any MCP client can use it. Each call is logged to `<dir>/calls.jsonl`, and the accepted `submit` is written to `<dir>/submission.json`.
+
+`rcaeval-agent run-cli` runs an agent CLI over a whole task view. For each case it:
+1. starts the MCP server for that case;
+2. runs the CLI with the same prompt as the reference agent, in an empty temporary directory;
+3. records the submission and appends a predictions line.
+
+Resume, `--cases`, `--workers` and trajectories work as in `run`.
+
+```bash
+rcaeval-agent run-cli --agent claude-code --model sonnet --tasks agent_tasks/re2-ob --out preds.jsonl
+```
+
+The `claude-code` preset runs `claude -p` with:
+- `--bare`, which skips your CLAUDE.md, memory and hooks, and authenticates with `ANTHROPIC_API_KEY`;
+- `--tools ""`, which removes every built-in tool, including shell and file access;
+- `--strict-mcp-config`, so only the RCAEval tools are available.
+
+Claude Code therefore reaches the case only through RCAEval's tools. Cost, tokens and turns come from its JSON output.
+
+For other MCP-capable agents, use `--agent custom` with a command template. The runner fills in `{prompt}`, `{mcp_config}` (a JSON file in the standard `mcpServers` format), `{workdir}` and `{model}`:
+
+```bash
+rcaeval-agent run-cli --agent custom --tasks agent_tasks/re2-ob --out preds.jsonl \
+  --command "my-agent --mcp-config {mcp_config} --prompt {prompt}"
+```
+
+Agents that keep MCP servers in their own configuration format, such as Codex or OpenCode, need a small wrapper script that turns `{mcp_config}` into that format. These have not been tested with RCAEval yet. The tool calls the server logs are the trajectory, so `Inspected@root` works for any agent.
 
 ## Keeping the evaluation honest
 
-- Give the agent only the task directory (`agent_tasks/re2-ob/`), read-only, for example as a read-only container mount. Never give it the answers file or `data/`.
+- Give the agent only the task directory (`agent_tasks/re2-ob/`), read-only, for example as a read-only container mount. Never give it the answers file or `data/`. With `run` and the `claude-code` preset of `run-cli`, the agent has no file access at all and sees only the tools' answers.
 - If the agent can browse the web, note that the raw datasets are public. The blind view prevents accidental and agent-side leakage. It does not stop someone deliberately matching telemetry against the published data.
 - Report the model, the agent version, the dataset and the cost (`usage`) with your results. Report a classic baseline such as BARO on the same view.
