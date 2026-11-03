@@ -1,0 +1,56 @@
+name: Bug report
+description: Something crashes, errors out or behaves differently from the docs.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. If your scores differ from the paper but nothing crashes, use the **Results don't match** template instead.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you expected to happen, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: The exact commands or a minimal code snippet.
+      placeholder: |
+        python main.py --method baro --dataset re2-ob
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Output and traceback
+      description: The full error message. It is formatted as code automatically.
+      render: shell
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - default (Python 3.10+, .[default])
+        - rcd (Python 3.8, .[rcd])
+        - torai (Python 3.8)
+        - agent (.[agent])
+        - other / not sure
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: RCAEval version, Python version and OS
+      description: "`pip show RCAEval`, `python --version`, and your OS. Say if you installed from PyPI or from source (and which commit)."
+      placeholder: RCAEval 1.11.0 (from source, ec344b1), Python 3.14.0, Ubuntu 24.04
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Workarounds you tried, related issues, or a guess at the cause.

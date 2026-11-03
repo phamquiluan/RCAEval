@@ -1,0 +1,20 @@
+name: Question
+description: Ask how to use RCAEval, run a method, or interpret results.
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please check the [README](https://github.com/phamquiluan/RCAEval#readme), [docs/SETUP.md](https://github.com/phamquiluan/RCAEval/blob/main/docs/SETUP.md) and [existing issues](https://github.com/phamquiluan/RCAEval/issues?q=is%3Aissue) first. Your question may already be answered.
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      description: What you are trying to do, what you tried, and where you got stuck.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Commands, code, method and dataset, RCAEval version — whatever is relevant.

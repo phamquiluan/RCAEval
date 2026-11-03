@@ -1,0 +1,30 @@
+name: Feature request
+description: Suggest an improvement to the evaluator, metrics, agent tooling, CLI or docs.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: What you are trying to do and why the current RCAEval makes it hard.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What you'd like to see. For a new metric or evaluation mode, say whether it changes existing scores or is opt-in.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: Would you open a pull request for it?
+      options:
+        - Yes
+        - Maybe, with some guidance
+        - No

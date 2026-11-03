@@ -1,0 +1,48 @@
+name: Dataset issue
+description: A problem with a dataset — missing files or metrics, wrong labels, download failures, or a question about its contents.
+labels: ["question"]
+body:
+  - type: dropdown
+    id: dataset
+    attributes:
+      label: Dataset
+      options:
+        - RE1 (re1-ob / re1-ss / re1-tt)
+        - RE2 (re2-ob / re2-ss / re2-tt)
+        - RE3 (re3-ob / re3-ss / re3-tt)
+        - TORAI (torai-ob / torai-ss / torai-tt)
+        - EventADL (falcon / flask / live)
+        - Hugging Face Parquet release
+        - other
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind of issue
+      options:
+        - Missing or incomplete files or metrics
+        - Wrong or questionable ground-truth label
+        - Download or extraction fails
+        - Question about the contents or collection process
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: cases
+    attributes:
+      label: Affected cases
+      description: Paths of the affected case directories, or how many cases are affected.
+      placeholder: data/RE1/RE1-OB/checkoutservice_disk/1, ... (12 cases)
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What you found and how you found it. A short script or command that shows the problem helps a lot.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: How did you get the data?
+      description: e.g. `main.py` auto-download, a `download_*` function, Zenodo, Hugging Face.

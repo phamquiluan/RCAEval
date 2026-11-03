@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/phamquiluan/RCAEval/blob/main/SECURITY.md
+    about: Please don't open a public issue. Follow SECURITY.md to report it privately.
+  - name: Setup and installation guide
+    url: https://github.com/phamquiluan/RCAEval/blob/main/docs/SETUP.md
+    about: How to install the default and RCD environments.
+  - name: Evaluating LLM agents
+    url: https://github.com/phamquiluan/RCAEval/blob/main/docs/AGENTS.md
+    about: Task views, predictions files, the reference agent and the MCP server.

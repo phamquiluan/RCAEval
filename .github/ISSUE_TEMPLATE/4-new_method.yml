@@ -1,0 +1,51 @@
+name: Add an RCA method
+description: Propose adding a root cause analysis method (yours or a published one) to RCAEval.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for proposing a method. See [CONTRIBUTING.md](https://github.com/phamquiluan/RCAEval/blob/main/CONTRIBUTING.md#adding-a-new-rca-method) for how methods are wired into RCAEval.
+  - type: input
+    id: name
+    attributes:
+      label: Method name
+      placeholder: BARO
+    validations:
+      required: true
+  - type: input
+    id: paper
+    attributes:
+      label: Paper
+      description: Title, venue and year, plus a link.
+    validations:
+      required: true
+  - type: input
+    id: code
+    attributes:
+      label: Original implementation and license
+      description: Link to the code, and its license (code without a license can't be included).
+      placeholder: https://github.com/... (MIT)
+  - type: checkboxes
+    id: data
+    attributes:
+      label: Data sources the method uses
+      options:
+        - label: Metrics
+        - label: Logs
+        - label: Traces
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Dependencies, Python version constraints, GPU needs, expected runtime, or results you expect on RCAEval datasets.
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: Would you open a pull request for it?
+      options:
+        - Yes, I'll implement it
+        - Maybe, with some guidance
+        - No, I'm suggesting it for the maintainers
+    validations:
+      required: true
