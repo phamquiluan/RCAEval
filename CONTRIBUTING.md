@@ -12,7 +12,7 @@ Open an issue on [GitHub](https://github.com/phamquiluan/RCAEval/issues). For a 
 - the output you got and the output you expected (for a score, the numbers from the paper or README you compared against)
 - your Python version, OS, which environment you installed (`default`, `rcd`, `agent`, ...) and the RCAEval version (`python setup.py --version` or `pip show RCAEval`)
 
-If you think you have found a security problem, email [phamquiluan@gmail.com](mailto:phamquiluan@gmail.com?subject=RCAEval) instead of opening a public issue.
+If you think you have found a security problem, don't open a public issue; follow [SECURITY.md](SECURITY.md) instead.
 
 ## Development setup
 
