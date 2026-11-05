@@ -44,5 +44,7 @@ setup(
         "ntlr": ["gcastle>=1.0.4"],
         # the reference LLM agent (rcaeval-agent run) and the MCP server (mcp, run-cli)
         "agent": core_requirements + ["litellm>=1.106", "mcp>=2.3"],
+        # rcaeval-convert: Drain3 mines the log templates behind logts.csv
+        "convert": core_requirements + ["drain3>=0.9.11"],
     },
 )

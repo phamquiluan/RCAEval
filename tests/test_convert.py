@@ -1,10 +1,12 @@
 """Converters from exported telemetry to an RCAEval case (RCAEval.convert)."""
 import json
+import os
 
+import numpy as np
 import pandas as pd
 import pytest
 
-from RCAEval.convert import logs, otlp, prometheus
+from RCAEval.convert import derive, logs, otlp, prometheus
 from RCAEval.convert.common import to_unix_ns
 
 
@@ -207,3 +209,100 @@ def test_incomplete_log_records_are_dropped_with_a_warning(tmp_path):
     assert frame["message"].tolist() == ["a"]
     with pytest.raises(ValueError, match="unknown log fields"):
         logs.read_logs(str(path), {"service": "x"})
+
+
+INJECT = 1_700_000_310  # failure start, on a 15 s bin boundary (bins start at ...995)
+
+
+def _traces(seed=0):
+    """cart/GetCart every second for 600 s: ~10 ms before INJECT, 100 ms and
+    some errors after; front-end/GET / (no method) never changes."""
+    rng = np.random.default_rng(seed)
+    rows = []
+    for i, t in enumerate(range(1_700_000_000, 1_700_000_600)):
+        after = t >= INJECT
+        rows.append(("cart", "GetCart", "hipstershop.CartService/GetCart", t,
+                     int(100_000 if after else 10_000 + rng.integers(-500, 500)), 14 if after and i % 3 == 0 else 0))
+        rows.append(("front-end", None, "GET /", t, int(20_000 + rng.integers(-500, 500)), 0))
+    frame = pd.DataFrame(rows, columns=["serviceName", "methodName", "operationName", "time", "duration", "statusCode"])
+    frame["startTime"] = frame["time"] * 1_000_000
+    frame["startTimeMillis"] = frame["time"] * 1_000
+    frame["traceID"] = frame["spanID"] = frame["parentSpanID"] = "x"
+    return frame[otlp.TRACE_COLUMNS]
+
+
+def test_trace_series_counts_slow_and_error_spans_per_15s():
+    err, lat = derive.trace_series(_traces(), INJECT)
+    assert list(err.columns) == ["time", "cart_GetCart", "front-end_GET /"]
+    assert list(lat.columns) == list(err.columns)
+    assert err["time"].tolist() == list(range(1_700_000_000 - 1_700_000_000 % 15, 1_700_000_600, 15))
+    before, after = err["time"] < INJECT, err["time"] >= INJECT
+    # every cart span after the failure is slow; none before; front-end never
+    assert (lat.loc[before, "cart_GetCart"] == 0).all()
+    assert (lat.loc[after, "cart_GetCart"].iloc[:-1] == 15).all()  # the last bin is partial
+    assert lat.loc[after, "cart_GetCart"].sum() == 600 - 310
+    assert (lat["front-end_GET /"] == 0).all()
+    # errors: every third cart span after the failure, counted (not summed codes)
+    assert err.loc[before, "cart_GetCart"].sum() == 0
+    assert err.loc[after, "cart_GetCart"].sum() == len([i for i in range(310, 600) if i % 3 == 0])
+
+
+def test_trace_baseline_uses_only_spans_that_ended_before_the_failure():
+    # with the failure at the very end, the slow spans are part of the baseline
+    # and inflate it, so fewer count as slow
+    _, lat = derive.trace_series(_traces(), 1_700_000_600)
+    assert lat["cart_GetCart"].sum() < 300
+
+
+def _logs():
+    rows = []
+    for t in range(1_700_000_000, 1_700_000_600):
+        rows.append((t * 10**9, "cart", f"GetCart for user {t % 97} took {t % 13}ms"))
+        rows.append((t * 10**9 + 1, "front-end", "request started"))
+    rows.append((1_700_000_030 * 10**9, "front-end", f"failed to call 10.0.0.{7}:8080"))
+    frame = pd.DataFrame(rows, columns=["timestamp", "container_name", "message"])
+    frame["time"] = frame["timestamp"] // 10**9
+    for c in ("level", "req_path", "error"):
+        frame[c] = None
+    return frame[logs.LOG_COLUMNS]
+
+
+def test_log_series_counts_lines_per_template_and_container():
+    pytest.importorskip("drain3")
+    logts, info, out = derive.log_series(_logs())
+    assert len(info) == 3  # numbers and the IP are masked, so 3 templates
+    by_template = {v["template"]: (k, v["container"]) for k, v in info.items()}
+    cart_id, containers = by_template["cart_GetCart for user <NUM> took <*>"]
+    assert containers == ["cart"]
+    assert logts["time"].tolist() == [1_700_000_000 - 1_700_000_000 % 15 + 15 * i for i in range(len(logts))]
+    assert logts[f"cart_{cart_id}"].sum() == 600
+    assert out["cluster_id"].astype(str).isin(info).all()
+    assert out["log_template"].notna().all()
+
+
+def test_derive_case_writes_the_multi_source_files(tmp_path):
+    pytest.importorskip("drain3")
+    _traces().to_csv(tmp_path / "traces.csv", index=False)
+    _logs().to_csv(tmp_path / "logs.csv", index=False)
+    with pytest.raises(FileNotFoundError, match="inject_time.txt"):
+        derive.derive_case(str(tmp_path))
+    (tmp_path / "inject_time.txt").write_text(str(INJECT))
+    written = derive.derive_case(str(tmp_path))
+    assert sorted(written) == ["cluster_info.json", "logs.csv", "logts.csv", "tracets_err.csv", "tracets_lat.csv"]
+    assert {"cluster_id", "log_template"} <= set(pd.read_csv(tmp_path / "logs.csv").columns)
+
+
+def test_mmbaro_runs_on_a_derived_case(tmp_path):
+    pytest.importorskip("drain3")
+    from RCAEval.e2e import mmbaro
+
+    err, lat = derive.trace_series(_traces(), INJECT)
+    logts, _, _ = derive.log_series(_logs())
+    times = np.arange(1_700_000_000, 1_700_000_600)
+    noise = np.random.default_rng(0).normal(1, 0.1, (2, len(times)))
+    metrics = pd.DataFrame({"time": times, "cart_cpu": noise[0] + (times >= INJECT) * 5, "front-end_cpu": noise[1]})
+    data = {"metric": metrics, "logts": logts, "tracets_err": err, "tracets_lat": lat}
+    # multi-source BARO reads traces only for the datasets named in _mm_has_traces
+    ranks = mmbaro(data, INJECT, dataset="re2-ob")["ranks"]
+    assert ranks[0].startswith("cart")
+    assert ranks.count("cart_GetCart") == 2  # its error and latency series
