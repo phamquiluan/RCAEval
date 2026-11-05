@@ -269,6 +269,8 @@ options:
   --method METHOD       Choose a method (`causalrca`, `microcause`, `e_diagnosis`, `baro`, `rcd`, `circa`, etc.)
 ```
 
+MicroCause and CloudRanger start their search from the SLI, which `main.py` sets to the entry service's latency. Their paper numbers were produced by RCAEval 1.11.0 and earlier, which used the root-cause service's latency instead ([#88](https://github.com/phamquiluan/RCAEval/issues/88)), so this version's numbers for these two methods differ from the paper.
+
 For example, in Table 6, BARO achieves Avg@5 of 0.72, 0.99, 1, 0.83, 0.64, and 0.8 for CPU, MEM, DISK, SOCKET, DELAY, LOSS, and AVERAGE on the Train Ticket dataset. To reproduce these results, you can run the following commands:
 
 ```bash
