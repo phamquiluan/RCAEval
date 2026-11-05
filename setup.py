@@ -33,7 +33,10 @@ setup(
         "Programming Language :: Python :: 3.14",
     ],
     install_requires=[],
-    entry_points={"console_scripts": ["rcaeval-agent=RCAEval.agent.__main__:main"]},
+    entry_points={"console_scripts": [
+        "rcaeval-agent=RCAEval.agent.__main__:main",
+        "rcaeval-convert=RCAEval.convert.__main__:main",
+    ]},
     extras_require={
         "default": requirements,
         "core": core_requirements,

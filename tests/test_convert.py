@@ -7,6 +7,7 @@ import pandas as pd
 import pytest
 
 from RCAEval.convert import derive, logs, otlp, prometheus
+from RCAEval.convert.__main__ import main as convert_main
 from RCAEval.convert.common import to_unix_ns
 
 
@@ -306,3 +307,53 @@ def test_mmbaro_runs_on_a_derived_case(tmp_path):
     ranks = mmbaro(data, INJECT, dataset="re2-ob")["ranks"]
     assert ranks[0].startswith("cart")
     assert ranks.count("cart_GetCart") == 2  # its error and latency series
+
+
+def test_cli_builds_a_case_from_exports(tmp_path, monkeypatch, capsys):
+    pytest.importorskip("drain3")
+    import requests
+
+    case = tmp_path / "case"
+    spans = [_span(f"{i:02x}", "GetCart", 1_700_000_000 + i, 10 + 90 * (i >= 300),
+                   attributes=[_attr("rpc.method", stringValue="GetCart")]) for i in range(600)]
+    (tmp_path / "otel.jsonl").write_text(json.dumps(_request("cart", spans)) + "\n")
+    (tmp_path / "loki.jsonl").write_text("\n".join(
+        json.dumps({"labels": {"container": "cart"}, "line": f"GetCart took {i}ms", "timestamp": 1_700_000_000 + i})
+        for i in range(600)))
+
+    class Session(FakePrometheus):
+        headers = {}
+
+    monkeypatch.setattr(requests, "Session", lambda: Session(services=("cart",)))
+    (tmp_path / "q.json").write_text(json.dumps({"cpu": "sum(x) by (container)"}))
+
+    assert convert_main(["metrics", "--prometheus-url", "http://p", "--queries", str(tmp_path / "q.json"),
+                         "--start", "1700000000", "--end", "2023-11-14T22:23:19Z", "--header", "X-Org: 1",
+                         "--out", str(case)]) == 0
+    assert convert_main(["traces", str(tmp_path / "otel.jsonl"), "--out", str(case)]) == 0
+    assert convert_main(["logs", str(tmp_path / "loki.jsonl"), "--field", "container=labels.container",
+                         "--field", "message=line", "--out", str(case)]) == 0
+    assert convert_main(["derive", str(case), "--inject-time", "1700000300"]) == 0
+    assert Session.headers == {"X-Org": "1"}
+    assert sorted(os.listdir(case)) == ["cluster_info.json", "inject_time.txt", "logs.csv", "logts.csv",
+                                        "metrics.csv", "traces.csv", "tracets_err.csv", "tracets_lat.csv"]
+    metrics = pd.read_csv(case / "metrics.csv")
+    assert list(metrics.columns) == ["time", "cart_cpu"] and len(metrics) == 600
+    lat = pd.read_csv(case / "tracets_lat.csv")
+    assert lat.loc[lat["time"] >= 1_700_000_310, "cart_GetCart"].sum() == 290
+    assert "wrote" in capsys.readouterr().out
+
+
+def test_cli_refuses_to_overwrite_and_reports_bad_input(tmp_path, capsys):
+    (tmp_path / "otel.json").write_text(json.dumps(_request("cart", [_span("a", "op", 1_700_000_000, 1)])))
+    args = ["traces", str(tmp_path / "otel.json"), "--out", str(tmp_path / "case")]
+    assert convert_main(args) == 0
+    assert convert_main(args) == 1
+    assert "pass --force" in capsys.readouterr().err
+    assert convert_main(args + ["--force"]) == 0
+
+    assert convert_main(["logs", str(tmp_path / "otel.json"), "--field", "container", "--out", str(tmp_path / "c")]) == 1
+    assert "expected FIELD=PATH" in capsys.readouterr().err
+    (tmp_path / "case" / "inject_time.txt").write_text("1700000000")
+    assert convert_main(["derive", str(tmp_path / "case"), "--inject-time", "1700000001"]) == 1
+    assert "says 1700000000" in capsys.readouterr().err
