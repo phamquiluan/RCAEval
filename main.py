@@ -17,7 +17,7 @@ from tqdm import tqdm
 from RCAEval.benchmark.datasets import DATASET_MAP, download_dataset
 from RCAEval.benchmark.evaluation import Evaluator
 from RCAEval.benchmark.scoring import fault_to_indicator, indicator_ranks, service_ranks
-from RCAEval.benchmark.sli import select_sli
+from RCAEval.benchmark.sli import SLI_METHODS, NoSLIError, select_sli
 from RCAEval.classes.graph import Node
 
 from RCAEval.io.time_series import drop_constant, drop_time, preprocess
@@ -286,7 +286,14 @@ def process(data_path):
     )
     
     # == Get SLI ===
-    sli = select_sli(data_path, data.columns, service)
+    # the entry service's latency; it must not depend on the case's label
+    # (issue #88). Only methods that start from the SLI need one.
+    try:
+        sli = select_sli(data_path, data.columns)
+    except NoSLIError:
+        if args.method in SLI_METHODS:
+            raise
+        sli = None
 
     # == Multi-source data loading (multi-source methods and torai) ==
     MM_METHODS = ("mmbaro", "mmnsigma", "mmrcd", "mmcirca")
