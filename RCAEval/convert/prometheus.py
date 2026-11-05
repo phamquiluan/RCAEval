@@ -9,6 +9,8 @@ import json
 
 import pandas as pd
 
+from RCAEval.convert.common import check_service
+
 # Prometheus rejects a range query that would return more points per series
 PROMETHEUS_MAX_POINTS = 11_000
 
@@ -116,10 +118,3 @@ def _service(metric, label, name):
         )
     check_service(service)
     return service
-
-
-def check_service(service):
-    """Methods recover the service from a column as the text before the first
-    "_", so a service name must be non-empty and contain none."""
-    if not service or "_" in service:
-        raise ValueError(f"service name {service!r} must be non-empty and contain no '_'")
