@@ -22,6 +22,12 @@ A few early versions exist on only one of the two.
 - On RE1-SS, `main.py` passed `front-end_cpu`, a column RE1-SS does not have, as the SLI,
   so MicroCause and CloudRanger stopped with an error there. They now start from
   `front-end_istio-latency-90`.
+- CloudRanger's random walk and similarity row now start at the SLI. It converted the SLI
+  to a 0-based column index where its helpers expect a 1-based node number, so it started
+  one node before the SLI (on RE1-OB and RE2-OB, `emailservice_latency` instead of
+  `frontend_latency`), or at the last node when the SLI was the first column
+  ([#89](https://github.com/phamquiluan/RCAEval/issues/89)). This changes CloudRanger's
+  scores.
 
 ## [1.11.0] - 2026-10-31
 
