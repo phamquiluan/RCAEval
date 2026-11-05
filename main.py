@@ -17,6 +17,7 @@ from tqdm import tqdm
 from RCAEval.benchmark.datasets import DATASET_MAP, download_dataset
 from RCAEval.benchmark.evaluation import Evaluator
 from RCAEval.benchmark.scoring import fault_to_indicator, indicator_ranks, service_ranks
+from RCAEval.benchmark.sli import select_sli
 from RCAEval.classes.graph import Node
 
 from RCAEval.io.time_series import drop_constant, drop_time, preprocess
@@ -285,31 +286,7 @@ def process(data_path):
     )
     
     # == Get SLI ===
-    sli = None
-    if "my-sock-shop" in data_path or "fse-ss" in data_path:
-        sli = "front-end_cpu"
-        if f"{service}_latency" in data:
-            sli = f"{service}_latency"
-    elif "sock-shop" in data_path:
-        sli = "front-end_cpu"
-        if f"{service}_lat_90" in data:
-            sli = f"{service}_lat_90"
-    elif "train-ticket" in data_path or "fse-tt" in data_path or "RE2-TT" in data_path or "RE3-TT" in data_path:
-        sli = "ts-ui-dashboard_latency"
-        if f"{service}_latency" in data:
-            sli = f"{service}_latency"
-    elif "online-boutique" in data_path or "fse-ob" in data_path or "RE2-OB" in data_path or "RE2-SS" in data_path or "RE3-OB" in data_path or "RE3-SS" in data_path:
-        sli = "frontend_latency"
-        if f"{service}_latency" in data:
-            sli = f"{service}_latency"
-        elif "frontend_1" in data:
-            sli = "frontend_1"
-    elif "torai-TT" in data_path:
-        sli = "ts-ui-dashboard_latency"
-    elif "torai-OB" in data_path or "torai-SS" in data_path:
-        sli = "frontend_latency"
-    else:
-        raise ValueError("SLI not implemented")
+    sli = select_sli(data_path, data.columns, service)
 
     # == Multi-source data loading (multi-source methods and torai) ==
     MM_METHODS = ("mmbaro", "mmnsigma", "mmrcd", "mmcirca")
