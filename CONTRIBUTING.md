@@ -31,7 +31,7 @@ pip install pytest
 
 Python 3.12, 3.13 and 3.14 are all tested in CI. Ubuntu also needs a few system packages (`build-essential libxml2-dev zlib1g-dev python3-tk graphviz`); see SETUP.md.
 
-The **RCD environment** (Python 3.8, `pip install -e .[rcd]`, then `bash script/link.sh`) is needed only for RCD, Multi-source RCD and HT. TORAI has its own Python 3.8 environment, described in [docs/TORAI.md](docs/TORAI.md). Optional extras: `ntlr` (NOTEARS low-rank methods), `eventadl`, `agent`.
+The **RCD environment** (Python 3.8, `pip install -e .[rcd]`, then `bash script/link.sh`) is needed only for RCD, Multi-source RCD and HT. TORAI has its own Python 3.8 environment, described in [docs/TORAI.md](docs/TORAI.md). Optional extras: `ntlr` (NOTEARS low-rank methods), `eventadl`, `agent`, `convert` (`rcaeval-convert`).
 
 Datasets are downloaded into `data/` on first use and are git-ignored. Don't commit data, outputs or notebooks' large cell outputs.
 
@@ -45,6 +45,7 @@ python -m pytest tests/test.py tests/test_parser* tests/test_evaluator.py \
   tests/test_graph_methods.py tests/test_sli.py tests/test_version_gates.py
 
 python -m pytest tests/test_agent_mcp.py      # needs the agent extra
+python -m pytest tests/test_convert.py        # needs the convert extra
 ```
 
 In the RCD environment, run `python -m pytest tests/test_rcd.py`.

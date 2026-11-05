@@ -1,0 +1,23 @@
+{
+  "cpu": "sum(rate(container_cpu_usage_seconds_total{namespace=\"default\", container=~\".+\", container!~\"istio-proxy|POD\"}[1m])) by (container) * 100",
+  "mem": "sum(container_memory_working_set_bytes{namespace=\"default\", container=~\".+\", container!~\"istio-proxy|POD\"}) by (container)",
+  "container-fs-reads-bytes-total": "sum(rate(container_fs_reads_bytes_total{namespace=\"default\", container=~\".+\", container!~\"istio-proxy|POD\"}[1m])) by (container)",
+  "container-fs-writes-bytes-total": "sum(rate(container_fs_writes_bytes_total{namespace=\"default\", container=~\".+\", container!~\"istio-proxy|POD\"}[1m])) by (container)",
+  "container-sockets": "sum(container_sockets{namespace=\"default\", container=~\".+\", container!~\"istio-proxy|POD\"}) by (container)",
+  "workload": {
+    "query": "sum(rate(istio_requests_total{destination_workload_namespace=\"default\"}[1m])) by (destination_workload)",
+    "label": "destination_workload"
+  },
+  "error": {
+    "query": "sum(rate(istio_requests_total{destination_workload_namespace=\"default\", response_code=~\"5..\"}[1m])) by (destination_workload)",
+    "label": "destination_workload"
+  },
+  "latency-50": {
+    "query": "histogram_quantile(0.50, sum(rate(istio_request_duration_milliseconds_bucket{destination_workload_namespace=\"default\"}[1m])) by (le, destination_workload)) / 1000",
+    "label": "destination_workload"
+  },
+  "latency-90": {
+    "query": "histogram_quantile(0.90, sum(rate(istio_request_duration_milliseconds_bucket{destination_workload_namespace=\"default\"}[1m])) by (le, destination_workload)) / 1000",
+    "label": "destination_workload"
+  }
+}

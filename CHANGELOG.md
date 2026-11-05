@@ -5,6 +5,19 @@ All notable changes to RCAEval are listed here, newest first. Versions follow th
 release notes live, and the [PyPI releases](https://pypi.org/project/RCAEval/#history).
 A few early versions exist on only one of the two.
 
+## [Unreleased]
+
+### Added
+- `rcaeval-convert` and `RCAEval.convert` build an RCAEval case directory from your own
+  telemetry ([#64](https://github.com/phamquiluan/RCAEval/issues/64)): `metrics.csv` from
+  Prometheus range queries, `traces.csv` from OpenTelemetry OTLP/JSON (Jaeger, Zipkin and
+  SkyWalking through the OpenTelemetry Collector), `logs.csv` from a JSON Lines, JSON or CSV
+  log export with a field mapping (ELK, Loki, Fluentd, ...), and the `logts.csv`,
+  `tracets_err.csv` and `tracets_lat.csv` series the multi-source methods read. See
+  `docs/CONVERT.md`; `docs/examples/prometheus_queries.json` has the queries behind the
+  RE2/RE3 metrics.
+- New `convert` extra (Drain3, for log templates).
+
 ## [1.11.1] - 2026-11-05
 
 MicroCause and CloudRanger no longer start from the answer: `main.py` used to pass the

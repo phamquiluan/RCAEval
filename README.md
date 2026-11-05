@@ -95,6 +95,18 @@ tests/test.py .                                                          [100%]
 
 The telemetry data must be presented as `pandas.DataFrame`. We require the data to have a column named `time` that stores the timestep. A sample of valid data could be downloaded using the `download_data()` or `download_multi_source_data()` method that we will demonstrate shortly below.
 
+### Converting your own telemetry
+
+With `pip install RCAEval[convert]`, `rcaeval-convert` builds a case directory in the format above from your own system: metrics from Prometheus, traces from OpenTelemetry (OTLP/JSON, which Jaeger, Zipkin and SkyWalking can export through the OpenTelemetry Collector), and logs from a JSON Lines, JSON or CSV export of any log store (ELK, Loki, Fluentd, ...). It also derives the log and trace time series the multi-source methods read. See [docs/CONVERT.md](docs/CONVERT.md).
+
+```bash
+rcaeval-convert metrics --prometheus-url http://localhost:9090 --queries docs/examples/prometheus_queries.json \
+    --start 2024-01-15T21:12:00Z --end 2024-01-15T21:36:00Z --out case
+rcaeval-convert traces otel-traces.jsonl --out case
+rcaeval-convert logs loki.jsonl --field container=labels.container --field message=line --out case
+rcaeval-convert derive case --inject-time 2024-01-15T21:24:00Z
+```
+
 ### Basic usage example
 
 A basic example to use BARO, a metric-based RCA baseline, to perform RCA are presented as follows,
