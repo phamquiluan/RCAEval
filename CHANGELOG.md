@@ -5,6 +5,24 @@ All notable changes to RCAEval are listed here, newest first. Versions follow th
 release notes live, and the [PyPI releases](https://pypi.org/project/RCAEval/#history).
 A few early versions exist on only one of the two.
 
+## [Unreleased]
+
+### Fixed
+- `main.py` no longer reads the SLI from the case's label. For RE1–RE3 it used to pass the
+  root-cause service's latency (taken from the case directory name) as `sli` whenever that
+  column existed, so methods that start from the SLI started from the answer
+  ([#88](https://github.com/phamquiluan/RCAEval/issues/88)). The SLI is now the entry
+  service's latency (`frontend_latency`, `front-end_latency` for RE2/RE3-SS,
+  `front-end_istio-latency-90` for RE1-SS, `ts-ui-dashboard_latency`). This changes the
+  scores of MicroCause and CloudRanger; the other methods ignore `sli`.
+- A case without an entry-service latency has no SLI, and MicroCause and CloudRanger now
+  stop with `NoSLIError` on it instead of starting from another metric. This applies to
+  sock-shop-1, which records no front-end latency; it used to get `front-end_cpu`, or the
+  root cause's latency. The other methods are unaffected.
+- On RE1-SS, `main.py` passed `front-end_cpu`, a column RE1-SS does not have, as the SLI,
+  so MicroCause and CloudRanger stopped with an error there. They now start from
+  `front-end_istio-latency-90`.
+
 ## [1.11.0] - 2026-10-31
 
 RCAEval now ships the agents themselves: tools for investigating a case, a reference
