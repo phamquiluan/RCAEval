@@ -42,7 +42,7 @@ Run the same suite CI runs on the default environment:
 ```bash
 python -m pytest tests/test.py tests/test_parser* tests/test_evaluator.py \
   tests/test_agent.py tests/test_agent_toolkit.py tests/test_agent_react.py \
-  tests/test_graph_methods.py tests/test_version_gates.py
+  tests/test_graph_methods.py tests/test_sli.py tests/test_version_gates.py
 
 python -m pytest tests/test_agent_mcp.py      # needs the agent extra
 ```
