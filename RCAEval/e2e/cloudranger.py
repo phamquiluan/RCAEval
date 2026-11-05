@@ -160,7 +160,9 @@ def cloudranger(
     np_data = data.to_numpy()
     node_names = data.columns.to_list()
 
-    sli = node_names.index(sli)
+    # relaToRank and secondorder_randomwalk number nodes from 1 (as MicroCause
+    # does), so the walk starts at node_names[sli - 1]
+    sli = node_names.index(sli) + 1
 
     # params
     pc_aggregate = 5
