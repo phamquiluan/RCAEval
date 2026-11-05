@@ -189,3 +189,30 @@ def test_run_pearson_correlation_handles_large_int_metrics():
     y = 3 * x + pd.Series(rng.integers(0, 10**7, size=4000))
     assert np.isclose(pearson_correlation(x, y), np.corrcoef(x, y)[0, 1])
     assert pearson_correlation(x, pd.Series(np.zeros(4000))) == 0
+
+
+@pytest.mark.parametrize("sli_col", [0, 2])
+def test_cloudranger_walk_starts_at_the_sli(monkeypatch, sli_col):
+    pytest.importorskip("causallearn")
+    pytest.importorskip("pingouin")
+    m = importlib.import_module("RCAEval.e2e.cloudranger")
+
+    # cloudranger passed the 0-based column index where relaToRank and the walk
+    # expect a 1-based node number, so the walk started one node before the
+    # SLI, or at the last node when the SLI was the first column (issue #89)
+    starts, walk = [], m.secondorder_randomwalk
+
+    def recording_walk(M, epochs, start_node, label=[], **kw):
+        starts.append(start_node)
+        return walk(M, 1, start_node, label, walk_step=20)
+
+    monkeypatch.setattr(m, "secondorder_randomwalk", recording_walk)
+    rng = np.random.default_rng(0)
+    a = rng.normal(size=200)
+    data = pd.DataFrame({
+        "time": np.arange(200), "a_latency": a, "b_cpu": a + 0.1 * rng.normal(size=200),
+        "c_mem": rng.normal(size=200), "d_cpu": rng.normal(size=200),
+    })
+    sli = ["a_latency", "b_cpu", "c_mem", "d_cpu"][sli_col]
+    out = m.cloudranger(data, dataset="re2-ob", sli=sli)
+    assert out["node_names"][starts[0] - 1] == sli
