@@ -4,7 +4,8 @@ import json
 import pandas as pd
 import pytest
 
-from RCAEval.convert import otlp, prometheus
+from RCAEval.convert import logs, otlp, prometheus
+from RCAEval.convert.common import to_unix_ns
 
 
 class FakeResponse:
@@ -150,3 +151,59 @@ def test_otlp_without_service_name_is_rejected(tmp_path):
     path.write_text(json.dumps({"resourceLogs": []}))
     with pytest.raises(ValueError, match="not an OTLP trace export"):
         otlp.read_otlp_traces(str(path))
+
+
+def test_timestamps_in_any_unit_or_as_dates_become_nanoseconds():
+    ns = 1705353846067349596
+    assert to_unix_ns([1705353846, 1705353846067, 1705353846067349, ns]).tolist() == [
+        1705353846_000_000_000, 1705353846_067_000_000, 1705353846_067_349_000, ns]
+    assert to_unix_ns(["2024-01-15T21:24:06.067349596Z", "2024-01-15 21:24:06"]).tolist() == [
+        ns, 1705353846_000_000_000]
+    with pytest.raises(ValueError, match="mix"):
+        to_unix_ns([1705353846, "2024-01-15"])
+
+
+def test_loki_export_maps_nested_fields(tmp_path):
+    path = tmp_path / "loki.jsonl"
+    path.write_text("\n".join(json.dumps(r) for r in [
+        {"labels": {"container": "cart"}, "line": "GetCart took 5ms", "timestamp": "2024-01-15T21:24:07Z"},
+        {"labels": {"container": "front-end"}, "line": "request started", "timestamp": "2024-01-15T21:24:06Z"},
+    ]))
+    frame = logs.read_logs([str(path)], {"container": "labels.container", "message": "line"})
+    assert list(frame.columns) == logs.LOG_COLUMNS
+    assert frame["container_name"].tolist() == ["front-end", "cart"]  # sorted by time
+    assert frame["time"].tolist() == [1705353846, 1705353847]
+    assert frame["level"].isna().all()
+
+
+def test_elasticsearch_keys_with_dots_are_matched_whole(tmp_path):
+    path = tmp_path / "es.json"
+    path.write_text(json.dumps([{"_source": {
+        "@timestamp": 1705353846067, "kubernetes.container.name": "cart", "log": {"level": "error", "msg": "x"},
+    }}]))
+    frame = logs.read_logs(str(path), {
+        "timestamp": "_source.@timestamp", "container": "_source.kubernetes.container.name",
+        "message": "_source.log", "level": "_source.log.level",
+    })
+    row = frame.iloc[0]
+    assert (row["container_name"], row["level"], row["timestamp"]) == ("cart", "error", 1705353846067000000)
+    assert json.loads(row["message"]) == {"level": "error", "msg": "x"}  # an object is kept as JSON
+
+
+def test_csv_with_rcaeval_columns_needs_no_mapping(tmp_path):
+    path = tmp_path / "logs.csv"
+    path.write_text("timestamp,container_name,message,level\n1705353846067349596,cart,ok,info\n")
+    frame = logs.read_logs(str(path))
+    assert frame.iloc[0][["timestamp", "container_name", "message", "level"]].tolist() == [
+        1705353846067349596, "cart", "ok", "info"]
+
+
+def test_incomplete_log_records_are_dropped_with_a_warning(tmp_path):
+    path = tmp_path / "l.jsonl"
+    path.write_text(json.dumps({"timestamp": 1, "container_name": "cart", "message": "a"}) + "\n"
+                    + json.dumps({"timestamp": 2, "message": "no container"}) + "\n")
+    with pytest.warns(UserWarning, match="dropped 1 of 2"):
+        frame = logs.read_logs(str(path))
+    assert frame["message"].tolist() == ["a"]
+    with pytest.raises(ValueError, match="unknown log fields"):
+        logs.read_logs(str(path), {"service": "x"})
