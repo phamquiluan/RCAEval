@@ -5,7 +5,10 @@ All notable changes to RCAEval are listed here, newest first. Versions follow th
 release notes live, and the [PyPI releases](https://pypi.org/project/RCAEval/#history).
 A few early versions exist on only one of the two.
 
-## [Unreleased]
+## [1.11.1] - 2026-11-05
+
+MicroCause and CloudRanger no longer start from the answer: `main.py` used to pass the
+root-cause service's latency as their SLI. This changes their scores.
 
 ### Fixed
 - `main.py` no longer reads the SLI from the case's label. For RE1–RE3 it used to pass the
