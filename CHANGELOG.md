@@ -5,7 +5,9 @@ All notable changes to RCAEval are listed here, newest first. Versions follow th
 release notes live, and the [PyPI releases](https://pypi.org/project/RCAEval/#history).
 A few early versions exist on only one of the two.
 
-## [Unreleased]
+## [1.12.0] - 2026-11-06
+
+Convert telemetry from your own system into an RCAEval case with `rcaeval-convert`.
 
 ### Added
 - `rcaeval-convert` and `RCAEval.convert` build an RCAEval case directory from your own
@@ -365,6 +367,8 @@ based on Causal Inference: How Far Are We?*, also kept in the
 Initial package: data I/O, utilities, graph heads, the PC algorithm and the benchmark
 module.
 
+[1.12.0]: https://github.com/phamquiluan/RCAEval/compare/1.11.1...1.12.0
+[1.11.1]: https://github.com/phamquiluan/RCAEval/compare/1.11.0...1.11.1
 [1.11.0]: https://github.com/phamquiluan/RCAEval/compare/1.10.0...1.11.0
 [1.10.0]: https://github.com/phamquiluan/RCAEval/compare/1.9.0...1.10.0
 [1.9.0]: https://github.com/phamquiluan/RCAEval/compare/1.8.1...1.9.0
