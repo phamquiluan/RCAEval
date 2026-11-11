@@ -5,6 +5,7 @@ on:
     branches: [ "main", "dev", "v2"]
   pull_request:
     branches: [ "main", "dev", "v2"]
+  workflow_dispatch:
 
 jobs:
   build-and-test-default:
@@ -28,8 +29,12 @@ jobs:
         python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
         python -m pip install .[default]
 
+    - name: Verify installed package outside checkout
+      working-directory: /tmp
+      run: python "$GITHUB_WORKSPACE/script/check_installed_package.py"
+
     - name: Test
-      run: python -m pytest tests/test.py tests/test_parser* tests/test_evaluator.py tests/test_agent.py tests/test_agent_toolkit.py tests/test_agent_react.py tests/test_graph_methods.py tests/test_sli.py tests/test_version_gates.py
+      run: python -m pytest tests/test_parser* tests/test_evaluator.py tests/test_agent.py tests/test_agent_toolkit.py tests/test_agent_react.py tests/test_graph_methods.py tests/test_sli.py tests/test_version_gates.py
 
     - name: Test the converters (convert extra)
       run: |
@@ -42,6 +47,9 @@ jobs:
         python -m pip install .[agent]
         python -m pytest tests/test_agent_mcp.py
 
+    - name: Optional network integration tests
+      if: github.event_name == 'workflow_dispatch'
+      run: python -m pytest tests/test.py
 
   build-and-test-rcd:
 
@@ -67,14 +75,26 @@ jobs:
         python -m pip install pytest
         python -m pip install .[rcd]
 
-        # install for ht
-        sudo apt install openjdk-11-jre-headless
-        git clone https://github.com/salesforce/PyRCA.git
-        cd PyRCA; python -m pip install "JPype1<1.5"; python -m pip install -e .; cd ..
-        
         bash script/link.sh
 
-    - name: Test
+    - name: Verify installed package outside checkout
+      working-directory: /tmp
+      run: |
+        . "$GITHUB_WORKSPACE/env-rcd/bin/activate"
+        python "$GITHUB_WORKSPACE/script/check_installed_package.py"
+
+    - name: Install PyRCA integration dependencies
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        . "$GITHUB_WORKSPACE/env-rcd/bin/activate"
+        sudo apt install -y openjdk-11-jre-headless
+        git clone https://github.com/salesforce/PyRCA.git
+        cd PyRCA
+        python -m pip install "JPype1<1.5"
+        python -m pip install -e .
+
+    - name: Optional RCD network integration tests
+      if: github.event_name == 'workflow_dispatch'
       run: |
         . env-rcd/bin/activate
         python -m pytest tests/test_rcd.py

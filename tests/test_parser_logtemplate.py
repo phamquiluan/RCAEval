@@ -2,7 +2,6 @@
 To debug regex: https://www.debuggex.com/
 """
 import pytest 
-from tempfile import TemporaryFile, NamedTemporaryFile
 from RCAEval.logparser import LogTemplate
 
 
@@ -37,15 +36,15 @@ def test_load_and_match_template(pattern, no_matches, matches):
         assert template.is_match(match)
 
 
-def test_load_multiple_templates():
-    temfile = TemporaryFile(mode='w+')
-    temfile.write(
+def test_load_multiple_templates(tmp_path):
+    template_file = tmp_path / "templates.txt"
+    template_file.write_text(
         "# This is a comment\n"
         "received ad request (context_words=[<*>])\n"
-        "SEVERE: Exception while executing runnable <*>"
+        "SEVERE: Exception while executing runnable <*>",
+        encoding="utf-8",
     )
-    temfile.seek(0)
-    templates = LogTemplate.load_templates_from_txt(template_file=temfile.name)
+    templates = LogTemplate.load_templates_from_txt(template_file=str(template_file))
     assert len(templates) == 2
     assert isinstance(templates[0], LogTemplate)
     assert isinstance(templates[1], LogTemplate)
@@ -53,27 +52,27 @@ def test_load_multiple_templates():
     assert templates[1].template == "SEVERE: Exception while executing runnable <*>"
 
 
-def test_file_matching():
-    template_file = NamedTemporaryFile(mode='w+', suffix=".txt")
-    template_file.write(
+def test_file_matching(tmp_path):
+    template_file = tmp_path / "templates.txt"
+    template_file.write_text(
         "# This is a comment\n"
         "received ad request (context_words=[<*>])\n"
-        "SEVERE: Exception while executing runnable <*>"
+        "SEVERE: Exception while executing runnable <*>",
+        encoding="utf-8",
     )
-    template_file.seek(0)
 
-    log_file = TemporaryFile(mode='w+', suffix=".log")
-    log_file.write(
+    log_file = tmp_path / "logs.log"
+    log_file.write_text(
         "received ad request (context_words=[clothing])\n"
         "SEVERE: Exception while executing runnable io.grpc.internal.ServerImpl$JumpToApplicationThreadServerStreamListener$1HalfClosed@7d71091e\n"
         "Match no thing\n"
-        "received ad request (context_words=[])\n"
+        "received ad request (context_words=[])\n",
+        encoding="utf-8",
     )
-    log_file.seek(0)
 
     df = LogTemplate.parse_logs(
-        template_file=template_file.name,
-        log_file=log_file.name,
+        template_file=str(template_file),
+        log_file=str(log_file),
     )
 
     # df should have two columns ('log', and 'event type'), each rows = each log with the correspndin template
@@ -85,67 +84,65 @@ def test_file_matching():
 
 
 
-def test_detect_multiple_template():
+def test_detect_multiple_template(tmp_path):
     """one log may match multiple templates, we need to detect this case"""
-    template_file = NamedTemporaryFile(mode='w+', suffix=".txt")
-    template_file.write(
+    template_file = tmp_path / "templates.txt"
+    template_file.write_text(
         "template 1 <*>\n"
-        "<*> template 2\n"
+        "<*> template 2\n",
+        encoding="utf-8",
     )
-    template_file.seek(0)
 
-    log_file = TemporaryFile(mode='w+')
-    log_file.write(
+    log_file = tmp_path / "logs.log"
+    log_file.write_text(
         "received ad request (context_words=[clothing])\n"
-        "template 1 template 2\n"
+        "template 1 template 2\n",
+        encoding="utf-8",
     )
-    log_file.seek(0)
-
 
     output = LogTemplate.is_duplicate(
-        template_file=template_file.name,
-        log_file=log_file.name,
+        template_file=str(template_file),
+        log_file=str(log_file),
     )
 
     assert output == True
 
 
-def test_completeness():
+def test_completeness(tmp_path):
     """ensure all logs are matched"""
-    template_file = NamedTemporaryFile(mode='w+', suffix=".txt")
-    template_file.write(
+    template_file = tmp_path / "templates.txt"
+    template_file.write_text(
         "# This is a comment\n"
         "received ad request (context_words=[<*>])\n"
-        "SEVERE: Exception while executing runnable <*>"
+        "SEVERE: Exception while executing runnable <*>",
+        encoding="utf-8",
     )
-    template_file.seek(0)
 
-    log_file1 = NamedTemporaryFile(mode='w+', suffix=".log")
-    log_file1.write(
+    log_file1 = tmp_path / "logs-incomplete.log"
+    log_file1.write_text(
         "received ad request (context_words=[clothing])\n"
         "SEVERE: Exception while executing runnable io.grpc.internal.ServerImpl$JumpToApplicationThreadServerStreamListener$1HalfClosed@7d71091e\n"
         "Match no thing\n"
-        "received ad request (context_words=[])\n"
+        "received ad request (context_words=[])\n",
+        encoding="utf-8",
     )
-    log_file1.seek(0)
-
     output = LogTemplate.is_complete(
-        template_file=template_file.name,
-        log_file=log_file1.name,
+        template_file=str(template_file),
+        log_file=str(log_file1),
     )
     assert output == False
 
-    log_file2 = NamedTemporaryFile(mode='w+')
-    log_file2.write(
+    log_file2 = tmp_path / "logs-complete.log"
+    log_file2.write_text(
         "received ad request (context_words=[clothing])\n"
         "SEVERE: Exception while executing runnable io.grpc.internal.ServerImpl$JumpToApplicationThreadServerStreamListener$1HalfClosed@7d71091e\n"
-        "received ad request (context_words=[])\n"
+        "received ad request (context_words=[])\n",
+        encoding="utf-8",
     )
-    log_file2.seek(0)
 
     output = LogTemplate.is_complete(
-        template_file=template_file.name,
-        log_file=log_file2.name,
+        template_file=str(template_file),
+        log_file=str(log_file2),
     )
     assert output == True
 

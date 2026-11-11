@@ -2,7 +2,6 @@
 To debug regex: https://www.debuggex.com/
 """
 import pytest 
-from tempfile import TemporaryFile, NamedTemporaryFile
 from RCAEval.logparser import (
     find_json_bounds,
     mask_dict_values, 
@@ -37,11 +36,8 @@ from RCAEval.logparser import (
     ),
 ])
 def test_find_json_bound(text, expected):
-    text = "This is a json: {'a': 1}"
-    expected = ["{'a': 1}"]
     bounds = find_json_bounds(text)
-    for i, (start, end) in enumerate(bounds):
-        assert text[start:end] == expected[i]
+    assert [text[start:end] for start, end in bounds] == expected
 
 
 @pytest.mark.parametrize("data, expected", [
