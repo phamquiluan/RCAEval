@@ -279,9 +279,13 @@ options:
   --dataset DATASET     Choose a dataset. Valid options:
                         [re2-ob, re2-ss, re2-tt, etc.]
   --method METHOD       Choose a method (`causalrca`, `microcause`, `e_diagnosis`, `baro`, `rcd`, `circa`, etc.)
+  --sli COLUMN          SLI handed to the method: a metric column, or `auto`
+                        for the entry service's latency
 ```
 
 MicroCause and CloudRanger start their search from the SLI, which `main.py` sets to the entry service's latency. Their paper numbers were produced by RCAEval 1.11.0 and earlier, which used the root-cause service's latency instead ([#88](https://github.com/phamquiluan/RCAEval/issues/88)), so this version's numbers for these two methods differ from the paper.
+
+The `*_randomwalk` methods (`pc_randomwalk`, `fci_randomwalk`, `granger_randomwalk`, `lingam_randomwalk`, `ntlr_randomwalk`) walk the causal graph with every node weighing the same. Numbers for these methods from RCAEval 1.12.0 and earlier, published ones included, came from a walk that ignored the graph ([#96](https://github.com/phamquiluan/RCAEval/issues/96)), so this version's numbers differ from them. With `--sli auto` (or `--sli <column>`) they instead start the walk at the SLI and prefer the neighbours that correlate with it; report such runs as a separate variant.
 
 For example, in Table 6, BARO achieves Avg@5 of 0.72, 0.99, 1, 0.83, 0.64, and 0.8 for CPU, MEM, DISK, SOCKET, DELAY, LOSS, and AVERAGE on the Train Ticket dataset. To reproduce these results, you can run the following commands:
 

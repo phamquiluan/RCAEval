@@ -5,6 +5,25 @@ All notable changes to RCAEval are listed here, newest first. Versions follow th
 release notes live, and the [PyPI releases](https://pypi.org/project/RCAEval/#history).
 A few early versions exist on only one of the two.
 
+## [Unreleased]
+
+### Fixed
+- The `*_randomwalk` methods (`pc_`, `fci_`, `granger_`, `lingam_`, `ntlr_`) ignored the
+  causal graph: every node started with a score of 0, which zeroed all transition weights,
+  so the walk was uniform over the nodes and any graph gave the same ranking
+  ([#96](https://github.com/phamquiluan/RCAEval/issues/96)). Nodes now weigh the same, so
+  the graph alone shapes the walk. This changes the scores of these five methods.
+- The same walk ran on the reversed graph, which would have sent it to effects instead of
+  causes; it now climbs from effects to causes. A node without neighbours jumps to any node
+  instead of holding the walk, the start node comes from the seeded generator instead of
+  `np.random`, and `ntlr_randomwalk` reads NOTEARS's matrix the right way round.
+
+### Added
+- `main.py --sli` hands a method its SLI: a metric column, or `auto` for the entry
+  service's latency. With it, the `*_randomwalk` methods start the walk at the SLI and
+  prefer the neighbours that correlate with it (absolute Pearson correlation); without it
+  they use no SLI. The other methods get the same SLI as before unless `--sli` is given.
+
 ## [1.12.0] - 2026-11-06
 
 Convert telemetry from your own system into an RCAEval case with `rcaeval-convert`.

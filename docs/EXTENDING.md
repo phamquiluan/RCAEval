@@ -43,7 +43,7 @@ To develop new RCA methods and integrate them into RCAEval, follow these steps:
              "ranks": ranked_root_causes,
          }
      ```
-   - `sli` is the name of the column a method may start its search from: the entry service's latency (e.g. `frontend_latency`), chosen in `RCAEval/benchmark/sli.py`. It never depends on the case's label. A case that records no entry-service latency has no SLI: methods listed in `SLI_METHODS` stop with `NoSLIError`, and the others get `sli=None`.
+   - `sli` is the name of the column a method may start its search from: the entry service's latency (e.g. `frontend_latency`), chosen in `RCAEval/benchmark/sli.py`. It never depends on the case's label. A case that records no entry-service latency has no SLI: methods listed in `SLI_METHODS` stop with `NoSLIError`, and the others get `sli=None`. A method that runs with or without an SLI goes in `SLI_OPTIONAL_METHODS`: it gets `sli=None` unless the run asks for one with `main.py --sli auto` or `--sli <column>`.
 
 3. **Preprocess the Data**:
    - Use existing utilities from `RCAEval.io.time_series` to preprocess the input telemetry data, such as `preprocess`, `drop_constant`, or `select_useful_cols`.
