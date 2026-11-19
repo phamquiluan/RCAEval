@@ -223,6 +223,69 @@ def test_ntlr_randomwalk_reads_notears_marks(monkeypatch, capsys):
     assert "failed" not in capsys.readouterr().err
 
 
+def _two_causes_of_the_sli():
+    # a -> sli <- b in causal-learn marks; c has no edge
+    adj = np.zeros((4, 4), int)
+    adj[1, 0] = adj[2, 0] = -1
+    adj[0, 1] = adj[0, 2] = 1
+    return adj
+
+
+def test_random_walk_starts_at_the_sli_and_follows_scores():
+    from RCAEval.graph_heads.random_walk import random_walk
+
+    names = ["sli", "a", "b", "c"]
+    scores = {"sli": 1.0, "a": 0.9, "b": 0.1, "c": 0.5}
+    visits = dict(random_walk(_two_causes_of_the_sli(), names, sli="sli", num_loop=400, previous_scores=scores))
+
+    # of the SLI's two causes, the walk prefers the one with the higher score
+    assert visits["a"] > visits["b"] > 0
+    # it starts at the SLI, so it never reaches the unconnected node; the sli
+    # argument used to be overwritten with a random node
+    assert visits["c"] == 0
+
+    with pytest.raises(ValueError):
+        random_walk(_two_causes_of_the_sli(), names, sli="frontend_latency", num_loop=10)
+
+
+def test_sli_correlation_scores():
+    from RCAEval.graph_heads.random_walk import sli_correlation
+
+    t = np.arange(50.0)
+    data = pd.DataFrame({"sli": t, "inverse": -t, "flat": np.ones(50), "wave": np.sin(t)})
+    scores = sli_correlation(data, "sli")
+
+    assert scores["sli"] == pytest.approx(1) and scores["inverse"] == pytest.approx(1)
+    # Pearson's r is undefined for a constant column
+    assert scores["flat"] == 0
+    assert 0 <= scores["wave"] < 0.5
+
+
+def test_randomwalk_methods_use_the_sli_when_given(monkeypatch, capsys):
+    pytest.importorskip("causallearn")
+    pytest.importorskip("statsmodels")
+    m = importlib.import_module("RCAEval.e2e.pc_randomwalk")
+
+    rng = np.random.default_rng(0)
+    sli = rng.normal(size=200)
+    data = pd.DataFrame({
+        "front_latency": sli,
+        "a_cpu": sli + 0.1 * rng.normal(size=200),
+        "b_cpu": rng.normal(size=200),
+        "c_cpu": rng.normal(size=200),
+    })
+    monkeypatch.setattr(m, "pc_default", lambda data: _two_causes_of_the_sli())
+
+    ranks = m.pc_randomwalk(data, n_iter=400, sli="front_latency")["ranks"]
+    # both are causes of the SLI in the graph; only a_cpu moves with it
+    assert ranks.index("a_cpu") < ranks.index("b_cpu")
+    assert "failed" not in capsys.readouterr().err
+
+    # an SLI the data does not have is reported, not replaced by another start
+    m.pc_randomwalk(data, n_iter=400, sli="frontend_latency")
+    assert "frontend_latency" in capsys.readouterr().err
+
+
 def test_random_walk_transition_matrix_follows_scores():
     import warnings
 
