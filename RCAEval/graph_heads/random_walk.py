@@ -317,9 +317,20 @@ def _causal_graph(adj: np.ndarray, nodes: List[Node]) -> MemoryGraph:
     return MemoryGraph(graph)
 
 
-def _rank_by_walk(scorer_cls, adj, node_names, num_loop, previous_scores, seed):
+def sli_correlation(data: pd.DataFrame, sli: str) -> Dict[str, float]:
+    """Score every metric by how closely it moves with the SLI: |Pearson r|,
+    and 0 where r is undefined (a constant column). For `previous_scores`."""
+    with np.errstate(divide="ignore", invalid="ignore"):
+        corr = data.corrwith(data[sli])
+    return corr.abs().fillna(0.0).to_dict()
+
+
+def _rank_by_walk(scorer_cls, adj, node_names, sli, num_loop, previous_scores, seed):
     if node_names is None:
         node_names = [f"X{i}" for i in range(len(adj))]
+    node_names = list(node_names)
+    if sli is not None and sli not in node_names:
+        raise ValueError(f"SLI {sli!r} is not one of the nodes")
     nodes = [Node(name, None) for name in node_names]
     graph = _causal_graph(adj, nodes)
 
@@ -333,9 +344,12 @@ def _rank_by_walk(scorer_cls, adj, node_names, num_loop, previous_scores, seed):
         scores = {node: Score(previous_scores[node.entity]) for node in nodes}
 
     rw = scorer_cls(num_loop=num_loop, seed=seed)
-    # the walk has to start somewhere; drawn from the seeded generator so
-    # that the ranking is reproducible
-    start = nodes[rw._rng.integers(len(nodes))]
+    if sli is None:
+        # the walk has to start somewhere; drawn from the seeded generator so
+        # that the ranking is reproducible
+        start = nodes[rw._rng.integers(len(nodes))]
+    else:
+        start = nodes[node_names.index(sli)]
     data = CaseData(data_loader=None, sli=start, detect_time=0)
 
     scores = rw.score(graph, data, current=0, scores=scores)
@@ -346,7 +360,7 @@ def _rank_by_walk(scorer_cls, adj, node_names, num_loop, previous_scores, seed):
 def random_walk(
     adj: np.ndarray,
     node_names: List[str] = None,
-    sli: Node = None,
+    sli: str = None,
     num_loop=None,
     previous_scores=None,
     seed: int = 0,
@@ -360,24 +374,27 @@ def random_walk(
 
     adj: the graph, in either mark convention `_causal_graph` describes
     node_names: one name per row of adj
+    sli: name of the node the walk starts from, the metric where the incident
+        shows; a node drawn at random when omitted
     num_loop: number of steps (default: 10 per node)
-    previous_scores: {name: score}, how suspicious each node is; all equal
-        when omitted, so that only the graph shapes the walk
-    seed: seeds the start node and the steps
+    previous_scores: {name: score}, how suspicious each node is, e.g.
+        `sli_correlation`; all equal when omitted, so that only the graph
+        shapes the walk
+    seed: seeds the steps, and the start node when there is no sli
 
     Returns [(name, visit frequency)], most visited first.
     """
-    return _rank_by_walk(RandomWalkScorer, adj, node_names, num_loop, previous_scores, seed)
+    return _rank_by_walk(RandomWalkScorer, adj, node_names, sli, num_loop, previous_scores, seed)
 
 
 def second_order_random_walk(
     adj: np.ndarray,
     node_names: List[str] = None,
-    sli: Node = None,
+    sli: str = None,
     num_loop=None,
     previous_scores=None,
     seed: int = 0,
 ):
     """`random_walk` with a second-order walk: each step also depends on the
     transition probability of the previous one."""
-    return _rank_by_walk(SecondOrderRandomWalkScorer, adj, node_names, num_loop, previous_scores, seed)
+    return _rank_by_walk(SecondOrderRandomWalkScorer, adj, node_names, sli, num_loop, previous_scores, seed)
