@@ -126,6 +126,103 @@ def test_random_walk_accepts_fci_circle_marks():
     assert sorted(name for name, _ in ranks) == ["a", "b", "c"]
 
 
+def _six_node_graphs():
+    names = [f"svc{i}_cpu" for i in range(6)]
+    chain = np.zeros((6, 6), int)  # svc0 -> svc1 -> ... -> svc5, causal-learn marks
+    star = np.zeros((6, 6), int)  # svc5 -> every other node
+    chain01 = np.zeros((6, 6), int)  # the chain as granger() and LiNGAM write it
+    for a in range(5):
+        chain[a, a + 1], chain[a + 1, a] = -1, 1
+        star[5, a], star[a, 5] = -1, 1
+        chain01[a + 1, a] = 1
+    return names, chain, star, chain01
+
+
+def test_random_walk_ranking_follows_the_graph():
+    from RCAEval.graph_heads.random_walk import random_walk
+
+    names, chain, star, chain01 = _six_node_graphs()
+
+    def rank(adj):
+        return [name for name, _ in random_walk(adj, names, num_loop=600)]
+
+    # every node used to start with score 0, which zeroed all transition
+    # weights: the walk was uniform and any graph gave the same ranking (#96)
+    assert rank(chain) != rank(star)
+    # the walk climbs from effects to causes, so it gathers at the root; it
+    # used to run on the reversed graph, which sends it to the last effect
+    assert rank(chain)[0] == "svc0_cpu"
+    assert rank(star)[0] == "svc5_cpu"
+    assert rank(chain01)[0] == "svc0_cpu"
+
+
+def test_random_walk_does_not_read_the_global_rng():
+    from RCAEval.graph_heads.random_walk import random_walk
+
+    names, chain, _, _ = _six_node_graphs()
+    # the start node used to come from np.random, which nothing seeds; it now
+    # matters, so the ranking would change from run to run
+    np.random.seed(1)
+    first = random_walk(chain, names, num_loop=6)
+    np.random.seed(2)
+    assert random_walk(chain, names, num_loop=6) == first
+
+
+def test_random_walk_leaves_a_node_without_neighbours():
+    from RCAEval.classes.graph import MemoryGraph, Node
+    from RCAEval.graph_heads.random_walk import RandomWalkScorer, Score
+
+    a, b, c = (Node(name, None) for name in "abc")
+    graph = nx.DiGraph([(a, b)])
+    graph.add_node(c)
+    scores = {node: Score(1.0) for node in (a, b, c)}
+
+    matrix = RandomWalkScorer().generate_transition_matrix(MemoryGraph(graph), data=None, scores=scores)
+    # c's own score was its only weight, so a walk that started there never left
+    assert np.allclose(matrix[c], 1 / 3)
+    assert np.allclose(matrix.sum(), 1)
+
+
+def test_randomwalk_methods_rank_by_the_graph(monkeypatch, capsys):
+    pytest.importorskip("causallearn")
+    pytest.importorskip("statsmodels")
+    m = importlib.import_module("RCAEval.e2e.pc_randomwalk")
+
+    names, chain, star, _ = _six_node_graphs()
+    data = pd.DataFrame(np.random.default_rng(0).normal(size=(50, 6)), columns=names)
+
+    def ranks(adj):
+        monkeypatch.setattr(m, "pc_default", lambda data: adj)
+        return m.pc_randomwalk(data, n_iter=600)["ranks"]
+
+    # the same metrics on two different graphs used to get the same ranking (#96)
+    assert ranks(chain) != ranks(star)
+    assert ranks(chain)[0] == "svc0_cpu"
+    assert "failed" not in capsys.readouterr().err
+
+
+def test_ntlr_randomwalk_reads_notears_marks(monkeypatch, capsys):
+    import sys
+    import types
+
+    pytest.importorskip("causallearn")
+    pytest.importorskip("statsmodels")
+    m = importlib.import_module("RCAEval.e2e.pc_randomwalk")
+
+    names, _, _, chain01 = _six_node_graphs()
+    # NOTEARS writes svc0 -> svc1 as adj[0, 1], the transpose of granger()'s
+    # matrix; stand in for the gcastle-backed builder, which is an optional extra
+    fake = types.ModuleType("RCAEval.graph_construction.dag_gnn")
+    fake.notears_low_rank = lambda data: chain01.T
+    monkeypatch.setitem(sys.modules, "RCAEval.graph_construction.dag_gnn", fake)
+
+    data = pd.DataFrame(np.random.default_rng(0).normal(size=(50, 6)), columns=names)
+    out = m.ntlr_randomwalk(data, n_iter=600)
+
+    assert out["ranks"][0] == "svc0_cpu"
+    assert "failed" not in capsys.readouterr().err
+
+
 def test_random_walk_transition_matrix_follows_scores():
     import warnings
 
