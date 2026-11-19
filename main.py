@@ -17,7 +17,7 @@ from tqdm import tqdm
 from RCAEval.benchmark.datasets import DATASET_MAP, download_dataset
 from RCAEval.benchmark.evaluation import Evaluator
 from RCAEval.benchmark.scoring import fault_to_indicator, indicator_ranks, service_ranks
-from RCAEval.benchmark.sli import SLI_METHODS, NoSLIError, select_sli
+from RCAEval.benchmark.sli import sli_for_method
 from RCAEval.classes.graph import Node
 
 from RCAEval.io.time_series import drop_constant, drop_time, preprocess
@@ -111,6 +111,10 @@ def parse_args():
     ])
     parser.add_argument("--length", type=int, default=20, help="Time series length (RQ4)")
     parser.add_argument("--tdelta", type=int, default=0, help="Specify $t_delta$ to simulate delay in anomaly detection")
+    parser.add_argument("--sli", type=str, default=None, metavar="COLUMN",
+                        help="SLI handed to the method: a metric column, or 'auto' for the entry service's latency. "
+                             "Default: 'auto' for the methods that start from the SLI (cloudranger, microcause); "
+                             "the *_randomwalk methods use an SLI only when this is given")
     parser.add_argument("--test", action="store_true", help="Perform smoke test on certain methods without fully run on all data")
     parser.add_argument("--report-chance", action="store_true", help="Also print the Avg@5 a random ranking would reach, and the lift over it")
     parser.add_argument("--report-decomposition", type=decomposition_depth, default=None, metavar="K",
@@ -287,13 +291,9 @@ def process(data_path):
     
     # == Get SLI ===
     # the entry service's latency; it must not depend on the case's label
-    # (issue #88). Only methods that start from the SLI need one.
-    try:
-        sli = select_sli(data_path, data.columns)
-    except NoSLIError:
-        if args.method in SLI_METHODS:
-            raise
-        sli = None
+    # (issue #88). Only methods that start from the SLI need one; the
+    # *_randomwalk methods get one only with --sli.
+    sli = sli_for_method(args.method, data_path, data.columns, args.sli)
 
     # == Multi-source data loading (multi-source methods and torai) ==
     MM_METHODS = ("mmbaro", "mmnsigma", "mmrcd", "mmcirca")
