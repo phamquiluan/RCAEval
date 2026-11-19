@@ -157,9 +157,11 @@ class RandomWalkScorer(Scorer):
         size = len(nodes)
         matrix = pd.DataFrame(np.zeros([size, size]), index=nodes, columns=nodes)
         for node in scores:
+            neighbours = 0
             for child in graph.children(node):
                 if child in scores:
                     matrix.loc[child, node] = self._rho * abs(scores[child].score)
+                    neighbours += 1
 
             parents = graph.parents(node)
             if self._remove_sli:
@@ -167,6 +169,13 @@ class RandomWalkScorer(Scorer):
             for parent in parents:
                 if parent in scores:
                     matrix.loc[parent, node] = abs(scores[parent].score)
+                    neighbours += 1
+
+            if neighbours == 0:
+                # nowhere to step: jump to any node, or a walk that starts
+                # here would stay on its own self-weight for good
+                matrix[node] = 1 / size
+                continue
 
             matrix.loc[node, node] = max(abs(scores[node].score) - matrix[node].max(), 0)
 
@@ -267,42 +276,33 @@ def _pag_marks_to_cpdag(adj):
     return adj
 
 
-def random_walk(
-    adj: np.ndarray,
-    node_names: List[str] = None,
-    sli: Node = None,
-    num_loop=None,
-    previous_scores=None,
-):
+def _causal_graph(adj: np.ndarray, nodes: List[Node]) -> MemoryGraph:
+    """Build the graph the walk runs on, with every edge pointing cause -> effect.
+
+    adj holds either causal-learn's endpoint marks, as PC and FCI return them
+    (adj[a, b] = -1 and adj[b, a] = 1 for a -> b, -1/-1 for a -- b, 1/1 for
+    a <-> b, 2 for an FCI circle), or 0/1 entries where adj[b, a] = 1 means
+    a -> b, as granger() and LiNGAM return them.
     """
-    adj: np.ndarray
-    node_names:
-    """
-    if node_names is None:
-        node_names = [f"X{i}" for i in range(len(adj))]
     adj = _pag_marks_to_cpdag(adj)
-
-    # == build the graph
-    nodes = [Node(name, None) for name in node_names]
     graph = nx.DiGraph()
+    # a node without an edge is still a candidate
+    graph.add_nodes_from(nodes)
 
-    # convert adj to edges
     node_num = len(adj)
     for a in range(node_num):
         for b in range(node_num):
             # case 1 no edge: a b
             if adj[a, b] == adj[b, a] == 0:
                 pass
-            # case 2 undirected a -- b
+            # case 2 undirected a -- b: the loop reaches (b, a) too, so the
+            # edge ends up in both directions
             elif adj[a, b] == adj[b, a] == -1:
-                # eck eck, what should we do???
-                # afaik, RW doesn't care about direction?
-                # just add an edge
                 graph.add_edge(nodes[b], nodes[a])
-            # case 3 directed a->b
+            # case 3 directed b -> a
             elif adj[a, b] == 1 and adj[b, a] == -1:
                 graph.add_edge(nodes[b], nodes[a])
-            # case 4 directed b->a
+            # case 4 directed a -> b
             elif adj[a, b] == -1 and adj[b, a] == 1:
                 graph.add_edge(nodes[a], nodes[b])
             elif adj[a, b] == 0 and adj[b, a] == 1:
@@ -314,33 +314,60 @@ def random_walk(
                 graph.add_edge(nodes[b], nodes[a])
             else:
                 raise ValueError(f"Unexpected value: {adj[a, b]}, {adj[b, a]}")
+    return MemoryGraph(graph)
 
-    graph = graph.reverse()
-    mem_graph = MemoryGraph(graph)
-    # == end build the graph
 
-    # prepare data for RandomWalk
-    sli = np.random.choice(nodes)
-    data = CaseData(data_loader=None, sli=sli, detect_time=0)
+def _rank_by_walk(scorer_cls, adj, node_names, num_loop, previous_scores, seed):
+    if node_names is None:
+        node_names = [f"X{i}" for i in range(len(adj))]
+    nodes = [Node(name, None) for name in node_names]
+    graph = _causal_graph(adj, nodes)
 
     if previous_scores is None:
-        scores = {node: Score(0) for node in nodes}
+        # no score to prefer one neighbour over another: weigh them equally,
+        # so the graph alone shapes the walk. A score of 0 would zero every
+        # transition weight and leave a walk that ignores the edges (#96)
+        scores = {node: Score(1.0) for node in nodes}
     else:
         # transfer previous_scores (maybe pearsonr)
         scores = {node: Score(previous_scores[node.entity]) for node in nodes}
 
-    # init the scorer
-    rw = RandomWalkScorer(num_loop=num_loop)
+    rw = scorer_cls(num_loop=num_loop, seed=seed)
+    # the walk has to start somewhere; drawn from the seeded generator so
+    # that the ranking is reproducible
+    start = nodes[rw._rng.integers(len(nodes))]
+    data = CaseData(data_loader=None, sli=start, detect_time=0)
 
-    # run the scorer
-    scores = rw.score(mem_graph, data, current=0, scores=scores)
-
+    scores = rw.score(graph, data, current=0, scores=scores)
     scores = sorted(scores.items(), key=lambda item: item[1].key, reverse=True)
+    return [(node.entity, score.score) for node, score in scores]
 
-    output = []
-    for item in scores:
-        output.append((item[0].entity, item[1].score))
-    return output
+
+def random_walk(
+    adj: np.ndarray,
+    node_names: List[str] = None,
+    sli: Node = None,
+    num_loop=None,
+    previous_scores=None,
+    seed: int = 0,
+):
+    """Rank the nodes of a causal graph by how often a random walk visits them.
+
+    At each step the walk moves to a cause of the current node (weight: the
+    cause's score), back to an effect (weight: rho times the effect's score) or
+    stays, so it drifts up the graph towards root causes. A node without
+    neighbours jumps to any node.
+
+    adj: the graph, in either mark convention `_causal_graph` describes
+    node_names: one name per row of adj
+    num_loop: number of steps (default: 10 per node)
+    previous_scores: {name: score}, how suspicious each node is; all equal
+        when omitted, so that only the graph shapes the walk
+    seed: seeds the start node and the steps
+
+    Returns [(name, visit frequency)], most visited first.
+    """
+    return _rank_by_walk(RandomWalkScorer, adj, node_names, num_loop, previous_scores, seed)
 
 
 def second_order_random_walk(
@@ -349,67 +376,8 @@ def second_order_random_walk(
     sli: Node = None,
     num_loop=None,
     previous_scores=None,
+    seed: int = 0,
 ):
-    if node_names is None:
-        node_names = [f"X{i}" for i in range(len(adj))]
-
-    # == build the graph
-    nodes = [Node(name, None) for name in node_names]
-    graph = nx.DiGraph()
-
-    # convert adj to edges
-    node_num = len(adj)
-    for a in range(node_num):
-        for b in range(node_num):
-            # case 1 no edge: a b
-            if adj[a, b] == adj[b, a] == 0:
-                pass
-            # case 2 undirected a -- b
-            elif adj[a, b] == adj[b, a] == -1:
-                # eck eck, what should we do???
-                # afaik, RW doesn't care about direction?
-                # just add an edge
-                graph.add_edge(nodes[b], nodes[a])
-            # case 3 directed a->b
-            elif adj[a, b] == 1 and adj[b, a] == -1:
-                graph.add_edge(nodes[b], nodes[a])
-            # case 4 directed b->a
-            elif adj[a, b] == -1 and adj[b, a] == 1:
-                graph.add_edge(nodes[a], nodes[b])
-            # elif adj[a, b] == 0 and adj[b, a] == 1:
-            #     # already ok
-            #     pr_input[a, b] = 0
-            #     pr_input[b, a] = 1
-            # elif adj[a, b] == 1 and adj[b, a] == 0:
-            #     # already ok
-            #     pr_input[a, b] = 1
-            #     pr_input[b, a] = 0
-            else:
-                raise ValueError(f"Unexpected value: {adj[a, b]}, {adj[b, a]}")
-
-    graph = graph.reverse()
-    mem_graph = MemoryGraph(graph)
-    # == end build the graph
-
-    # prepare data for RandomWalk
-    sli = np.random.choice(nodes)
-    data = CaseData(data_loader=None, sli=sli, detect_time=0)
-
-    if previous_scores is None:
-        scores = {node: Score(0) for node in nodes}
-    else:
-        # transfer previous_scores (maybe pearsonr)
-        scores = {node: Score(previous_scores[node.entity]) for node in nodes}
-
-    # init the scorer
-    rw = SecondOrderRandomWalkScorer(num_loop=num_loop)
-
-    # run the scorer
-    scores = rw.score(mem_graph, data, current=0, scores=scores)
-
-    scores = sorted(scores.items(), key=lambda item: item[1].key, reverse=True)
-
-    output = []
-    for item in scores:
-        output.append((item[0].entity, item[1].score))
-    return output
+    """`random_walk` with a second-order walk: each step also depends on the
+    transition probability of the previous one."""
+    return _rank_by_walk(SecondOrderRandomWalkScorer, adj, node_names, num_loop, previous_scores, seed)

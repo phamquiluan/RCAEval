@@ -40,7 +40,8 @@ def ntlr_randomwalk(data, inject_time=None, dataset=None, n_iter=None, **kwargs)
     node_names = data.columns.to_list()
 
     adj = notears_low_rank(data)
-    ranks = random_walk(adj, node_names, num_loop=n_iter)
+    # NOTEARS sets adj[cause, effect]; the walk reads 0/1 entries as adj[effect, cause]
+    ranks = random_walk(adj.T, node_names, num_loop=n_iter)
     ranks = sorted(ranks, key=lambda x: x[1], reverse=True)
     ranks = [x[0] for x in ranks]
     return {
