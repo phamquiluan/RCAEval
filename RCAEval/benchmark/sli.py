@@ -11,6 +11,16 @@ existed (issue #88).
 # methods that start their search from the SLI; the others ignore `sli`
 SLI_METHODS = ("cloudranger", "microcause")
 
+# methods that run with or without an SLI. They get one only when --sli asks
+# for it, so that a run without the option is the same on every dataset
+SLI_OPTIONAL_METHODS = (
+    "fci_randomwalk",
+    "granger_randomwalk",
+    "lingam_randomwalk",
+    "ntlr_randomwalk",
+    "pc_randomwalk",
+)
+
 # (path markers, entry-latency candidates). The first entry whose marker occurs
 # in the case path applies; within it, the first candidate column present in
 # the data is the SLI. Order matters: "sock-shop" also matches "my-sock-shop".
@@ -46,3 +56,29 @@ def select_sli(data_path, columns):
                 f"{data_path} has no SLI: none of {', '.join(candidates)} is recorded"
             )
     raise ValueError(f"SLI not implemented for {data_path}")
+
+
+def sli_for_method(method, data_path, columns, requested=None):
+    """Return the `sli` main.py passes to `method` for the case at `data_path`.
+
+    `requested` is main.py's --sli option: None when it is not given, "auto"
+    for the entry service's latency (see `select_sli`), or a column name.
+
+    Without --sli, a method in SLI_OPTIONAL_METHODS gets None and every other
+    method gets the entry service's latency, or None on a case that has none
+    (NoSLIError for a method in SLI_METHODS, which cannot run without it).
+    With --sli, every method gets what was asked for, and a case that cannot
+    provide it raises NoSLIError.
+    """
+    if requested is None and method in SLI_OPTIONAL_METHODS:
+        return None
+    if requested not in (None, "auto"):
+        if requested not in set(columns):
+            raise NoSLIError(f"{data_path} has no column {requested!r} to use as the SLI")
+        return requested
+    try:
+        return select_sli(data_path, columns)
+    except NoSLIError:
+        if requested == "auto" or method in SLI_METHODS:
+            raise
+        return None

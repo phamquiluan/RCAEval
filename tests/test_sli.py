@@ -1,7 +1,7 @@
 """The SLI main.py hands to methods must not depend on the case's label (issue #88)."""
 import pytest
 
-from RCAEval.benchmark.sli import NoSLIError, select_sli
+from RCAEval.benchmark.sli import SLI_OPTIONAL_METHODS, NoSLIError, select_sli, sli_for_method
 
 OB_COLS = ["time", "frontend_latency", "checkoutservice_latency", "productcatalogservice_latency"]
 SS_COLS = ["time", "front-end_latency", "carts_latency", "orders_latency"]
@@ -56,3 +56,35 @@ def test_re1_ss_entry_sli_exists():
 def test_unknown_system_raises():
     with pytest.raises(ValueError):
         select_sli("data/unknown/x_cpu/1/data.csv", ["time"])
+
+
+OB_CASE = "data/RE2/RE2-OB/checkoutservice_cpu/1/data.csv"
+SS1_CASE = "data/sock-shop-1/sock-shop/carts_cpu/1/data.csv"
+
+
+@pytest.mark.parametrize("method", SLI_OPTIONAL_METHODS)
+def test_randomwalk_methods_get_an_sli_only_on_request(method):
+    # they run with or without one; handing it over whenever the dataset has
+    # one would make the same method differ between datasets
+    assert sli_for_method(method, OB_CASE, OB_COLS) is None
+    assert sli_for_method(method, OB_CASE, OB_COLS, "auto") == "frontend_latency"
+    assert sli_for_method(method, OB_CASE, OB_COLS, "checkoutservice_latency") == "checkoutservice_latency"
+    # no SLI needed, so a case without one is not an error
+    assert sli_for_method(method, SS1_CASE, SS1_COLS) is None
+
+
+def test_default_sli_is_unchanged_for_the_other_methods():
+    assert sli_for_method("cloudranger", OB_CASE, OB_COLS) == "frontend_latency"
+    assert sli_for_method("baro", OB_CASE, OB_COLS) == "frontend_latency"
+    assert sli_for_method("baro", SS1_CASE, SS1_COLS) is None
+    with pytest.raises(NoSLIError):
+        sli_for_method("cloudranger", SS1_CASE, SS1_COLS)
+
+
+def test_requested_sli_must_exist():
+    with pytest.raises(NoSLIError):
+        sli_for_method("pc_randomwalk", OB_CASE, OB_COLS, "frontend_cpu")
+    # asked for explicitly, so a case without an entry latency is an error
+    with pytest.raises(NoSLIError):
+        sli_for_method("pc_randomwalk", SS1_CASE, SS1_COLS, "auto")
+
