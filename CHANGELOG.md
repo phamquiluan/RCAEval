@@ -25,6 +25,10 @@ scores on these two suites.
   `RCAEval.benchmark.datasets.metric_files`.
 - The SLI of RE1-SS is `front-end_latency`, the entry service's latency in
   `simple_data.csv`.
+- `main.py --dataset re3-tt` stopped with `ValueError` on the Zenodo directory
+  `ts-route-service_f3_1`, a second batch of `ts-route-service_f3` cases. Its cases are now
+  read and labelled `1-1` to `1-3`
+  ([#97](https://github.com/phamquiluan/RCAEval/issues/97)).
 
 ## [1.12.1] - 2026-11-20
 

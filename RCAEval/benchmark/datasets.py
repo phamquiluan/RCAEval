@@ -86,3 +86,18 @@ def download_dataset(name):
         download_eventadl_dataset(name=name.replace("eventadl-", ""))
     else:
         raise Exception(f"{name} is not defined!")
+
+
+def case_labels(data_path):
+    """Return (service, fault, case) for a case's metrics file.
+
+    Cases sit at `<service>_<fault>/<n>/<file>`. RE3-TT on Zenodo also has
+    `ts-route-service_f3_1/<n>/`, a second batch of the same service and fault;
+    its cases are labelled `<batch>-<n>` so that they do not overwrite the first
+    batch's results.
+    """
+    from os.path import basename, dirname
+
+    service, fault, *batch = basename(dirname(dirname(data_path))).split("_")
+    case = basename(dirname(data_path))
+    return service, fault, "-".join(batch + [case])

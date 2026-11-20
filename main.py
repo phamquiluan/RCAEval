@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from RCAEval.benchmark.datasets import DATASET_MAP, download_dataset, metric_files
+from RCAEval.benchmark.datasets import DATASET_MAP, case_labels, download_dataset, metric_files
 from RCAEval.benchmark.evaluation import Evaluator
 from RCAEval.benchmark.scoring import fault_to_indicator, indicator_ranks, service_ranks
 from RCAEval.benchmark.sli import sli_for_method
@@ -221,8 +221,7 @@ def process(data_path):
 
     data_dir = dirname(data_path)
 
-    service, metric = basename(dirname(dirname(data_path))).split("_")
-    case = basename(dirname(data_path))
+    service, metric, case = case_labels(data_path)
 
     rp = join(result_path, f"{service}_{metric}_{case}.json")
 

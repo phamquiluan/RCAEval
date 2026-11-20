@@ -221,3 +221,16 @@ def test_retrieval_over_the_whole_ranking():
     assert evaluator.accuracy(1) == pytest.approx(evaluator.retrieval() * evaluator.rerank(1))
     assert evaluator.retrieval_service() == pytest.approx(2 / 3)
     assert evaluator.rerank_service(1) == pytest.approx(1 / 2)
+
+
+def test_case_labels_keep_a_second_batch_apart():
+    from RCAEval.benchmark.datasets import case_labels
+
+    assert case_labels("data/RE2/RE2-OB/checkoutservice_cpu/1/simple_metrics.csv") == ("checkoutservice", "cpu", "1")
+    # RE3-TT on Zenodo has ts-route-service_f3_1 next to ts-route-service_f3;
+    # unpacking the name into two parts stopped main.py with a ValueError
+    first = case_labels("data/RE3/RE3-TT/ts-route-service_f3/1/simple_metrics.csv")
+    second = case_labels("data/RE3/RE3-TT/ts-route-service_f3_1/1/simple_metrics.csv")
+    assert first == ("ts-route-service", "f3", "1")
+    assert second == ("ts-route-service", "f3", "1-1")
+
