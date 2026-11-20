@@ -5,7 +5,10 @@ All notable changes to RCAEval are listed here, newest first. Versions follow th
 release notes live, and the [PyPI releases](https://pypi.org/project/RCAEval/#history).
 A few early versions exist on only one of the two.
 
-## [Unreleased]
+## [1.12.1] - 2026-11-20
+
+The `*_randomwalk` methods now follow the causal graph, which changes their scores, and
+`main.py --sli` lets them start from an SLI.
 
 ### Fixed
 - The `*_randomwalk` methods (`pc_`, `fci_`, `granger_`, `lingam_`, `ntlr_`) ignored the
@@ -386,6 +389,7 @@ based on Causal Inference: How Far Are We?*, also kept in the
 Initial package: data I/O, utilities, graph heads, the PC algorithm and the benchmark
 module.
 
+[1.12.1]: https://github.com/phamquiluan/RCAEval/compare/1.12.0...1.12.1
 [1.12.0]: https://github.com/phamquiluan/RCAEval/compare/1.11.1...1.12.0
 [1.11.1]: https://github.com/phamquiluan/RCAEval/compare/1.11.0...1.11.1
 [1.11.0]: https://github.com/phamquiluan/RCAEval/compare/1.10.0...1.11.0
