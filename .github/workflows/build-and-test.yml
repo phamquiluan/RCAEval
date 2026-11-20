@@ -23,7 +23,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update -y
-        sudo apt install -y build-essential libxml2 libxml2-dev zlib1g-dev python3-tk graphviz libjpeg-dev zlib1g-dev
+        sudo apt install -y build-essential libxml2-dev zlib1g-dev python3-tk graphviz libjpeg-dev zlib1g-dev
         # CPU-only torch: skips about 5 GB of CUDA wheels
         python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
         python -m pip install .[default]
@@ -53,15 +53,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
+    # Python 3.8 comes from uv: on Ubuntu 26.04 setup-python has no 3.8
+    # build, and neither has the deadsnakes PPA for the runner's amd64v3
+    # package variant
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v10.3.3
     - name: Install dependencies
       run: |
         sudo apt update -y
-        sudo apt install -y build-essential libxml2 libxml2-dev zlib1g-dev python3-tk graphviz libjpeg-dev zlib1g-dev
-        python -m venv env-rcd
+        sudo apt install -y build-essential libxml2-dev zlib1g-dev python3-tk graphviz libjpeg-dev zlib1g-dev
+        uv venv --python ${{ matrix.python-version }} --seed env-rcd
         . env-rcd/bin/activate
         python -m pip install --upgrade pip setuptools wheel
         python -m pip install pytest

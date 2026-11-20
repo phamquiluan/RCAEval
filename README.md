@@ -36,7 +36,7 @@ Open your terminal and run the following commands
 ```bash
 sudo apt update -y
 sudo apt install -y build-essential \
-  libxml2 libxml2-dev zlib1g-dev \
+  libxml2-dev zlib1g-dev \
   python3-tk graphviz
 ```
 
