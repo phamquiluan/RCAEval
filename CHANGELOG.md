@@ -5,7 +5,7 @@ All notable changes to RCAEval are listed here, newest first. Versions follow th
 release notes live, and the [PyPI releases](https://pypi.org/project/RCAEval/#history).
 A few early versions exist on only one of the two.
 
-## [Unreleased]
+## [1.12.2] - 2026-11-21
 
 RE1-SS and RE1-TT are read from `simple_data.csv` again, which changes every method's
 scores on these two suites.
@@ -414,6 +414,7 @@ based on Causal Inference: How Far Are We?*, also kept in the
 Initial package: data I/O, utilities, graph heads, the PC algorithm and the benchmark
 module.
 
+[1.12.2]: https://github.com/phamquiluan/RCAEval/compare/1.12.1...1.12.2
 [1.12.1]: https://github.com/phamquiluan/RCAEval/compare/1.12.0...1.12.1
 [1.12.0]: https://github.com/phamquiluan/RCAEval/compare/1.11.1...1.12.0
 [1.11.1]: https://github.com/phamquiluan/RCAEval/compare/1.11.0...1.11.1
