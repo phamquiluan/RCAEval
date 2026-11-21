@@ -18,6 +18,8 @@ SS1_COLS = ["time", "front-end_cpu", "carts_lat_90", "orders_lat_90"]
         ("online-boutique", OB_COLS, ["checkoutservice", "productcatalogservice"], "frontend_latency"),
         ("RE2/RE2-SS", SS_COLS, ["carts", "orders"], "front-end_latency"),
         ("RE3/RE3-SS", SS_COLS, ["carts", "orders"], "front-end_latency"),
+        # RE1-SS: simple_data.csv, the file main.py reads, then the raw data.csv
+        ("sock-shop-2", SS_COLS, ["carts", "orders"], "front-end_latency"),
         ("sock-shop-2", RE1_SS_COLS, ["carts", "orders"], "front-end_istio-latency-90"),
         ("RE2/RE2-TT", TT_COLS, ["ts-auth-service", "ts-order-service"], "ts-ui-dashboard_latency"),
         ("train-ticket", TT_COLS, ["ts-auth-service", "ts-order-service"], "ts-ui-dashboard_latency"),
