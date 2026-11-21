@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from RCAEval.benchmark.datasets import DATASET_MAP, download_dataset
+from RCAEval.benchmark.datasets import DATASET_MAP, download_dataset, metric_files
 from RCAEval.benchmark.evaluation import Evaluator
 from RCAEval.benchmark.scoring import fault_to_indicator, indicator_ranks, service_ranks
 from RCAEval.benchmark.sli import sli_for_method
@@ -155,18 +155,7 @@ if "eventadl" in args.dataset:
     # not the metrics.csv-per-case layout the other datasets use.
     data_paths = load_json(os.path.join(dataset, "rca.json"))["test_cases"]
 else:
-    data_paths = list(glob.glob(os.path.join(dataset, "**/data.csv"), recursive=True))
-    if not data_paths:
-        data_paths = list(glob.glob(os.path.join(dataset, "**/simple_metrics.csv"), recursive=True))
-# new_data_paths = []
-# for p in data_paths:
-#     if os.path.exists(p.replace("data.csv", "simple_data.csv")):
-#         new_data_paths.append(p.replace("data.csv", "simple_data.csv"))
-#     elif os.path.exists(p.replace("data.csv", "simple_metrics.csv")):
-#         new_data_paths.append(p.replace("data.csv", "simple_metrics.csv"))
-#     else:
-#         new_data_paths.append(p)
-# data_paths = new_data_paths
+    data_paths = metric_files(dataset)
 if args.test is True:
     data_paths = data_paths[:2]
 

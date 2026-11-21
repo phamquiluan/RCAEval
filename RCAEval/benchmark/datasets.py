@@ -2,6 +2,9 @@
 
 Shared by main.py and RCAEval.agent.
 """
+import glob
+import os
+
 from RCAEval.benchmark.scoring import RE1_DATASETS  # noqa: F401  (re-exported)
 
 DATASET_MAP = {
@@ -25,6 +28,25 @@ DATASET_MAP = {
     "eventadl-flask": "data/eventadl-flask",
     "eventadl-live": "data/eventadl-live",
 }
+
+
+def metric_files(dataset_dir):
+    """The metrics file of every case under `dataset_dir`, sorted.
+
+    A case keeps its metrics in `data.csv` (RE1) or `simple_metrics.csv` (RE2
+    onward). RE1-SS and RE1-TT cases also hold `simple_data.csv`, the derived
+    per-service metrics (cpu, mem, workload, error, latency) next to the raw
+    counters in `data.csv`; it is the benchmark's input, so it wins where it
+    exists.
+    """
+    paths = glob.glob(os.path.join(dataset_dir, "**/data.csv"), recursive=True)
+    if not paths:
+        paths = glob.glob(os.path.join(dataset_dir, "**/simple_metrics.csv"), recursive=True)
+    chosen = []
+    for path in paths:
+        simple = os.path.join(os.path.dirname(path), "simple_data.csv")
+        chosen.append(simple if os.path.exists(simple) else path)
+    return sorted(chosen)
 
 
 def download_dataset(name):

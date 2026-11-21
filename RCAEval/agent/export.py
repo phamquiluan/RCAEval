@@ -7,14 +7,13 @@ a task.json, and puts the labels in a separate answers file next to (never
 inside) the task directory.
 """
 import csv
-import glob
 import hashlib
 import json
 import os
 import shutil
 from os.path import basename, dirname, exists, join, relpath
 
-from RCAEval.benchmark.datasets import DATASET_MAP, download_dataset
+from RCAEval.benchmark.datasets import DATASET_MAP, download_dataset, metric_files
 from RCAEval.benchmark.scoring import fault_to_indicator, indicator_ranks, to_service
 from RCAEval.classes.graph import Node
 
@@ -60,14 +59,6 @@ def system_of(dataset):
     if dataset.endswith("-ss") or dataset.startswith("sock-shop"):
         return "Sock Shop"
     return "Train Ticket"
-
-
-def find_metric_files(dataset_dir):
-    """The per-case primary metrics files, chosen as main.py chooses them."""
-    paths = glob.glob(join(dataset_dir, "**/data.csv"), recursive=True)
-    if not paths:
-        paths = glob.glob(join(dataset_dir, "**/simple_metrics.csv"), recursive=True)
-    return sorted(paths)
 
 
 def candidate_indicators(metrics_path):
@@ -116,10 +107,10 @@ def export(dataset, out_dir="agent_tasks", copy=False, force=False, download=Tru
             download_dataset(dataset)
         data_root = DATASET_MAP[dataset]
 
-    metric_files = find_metric_files(data_root)
-    if not metric_files:
-        raise FileNotFoundError(f"no cases (data.csv or simple_metrics.csv) under {data_root}")
-    by_source = {relpath(dirname(p), data_root).replace(os.sep, "/"): p for p in metric_files}
+    paths = metric_files(data_root)
+    if not paths:
+        raise FileNotFoundError(f"no cases (data.csv, simple_data.csv or simple_metrics.csv) under {data_root}")
+    by_source = {relpath(dirname(p), data_root).replace(os.sep, "/"): p for p in paths}
 
     task_dir = join(out_dir, dataset)
     answers_path = join(out_dir, f"{dataset}.answers.jsonl")

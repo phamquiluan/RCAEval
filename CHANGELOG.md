@@ -5,6 +5,27 @@ All notable changes to RCAEval are listed here, newest first. Versions follow th
 release notes live, and the [PyPI releases](https://pypi.org/project/RCAEval/#history).
 A few early versions exist on only one of the two.
 
+## [Unreleased]
+
+RE1-SS and RE1-TT are read from `simple_data.csv` again, which changes every method's
+scores on these two suites.
+
+### Fixed
+- `main.py` read the raw counters in `data.csv` for RE1-SS (`sock-shop-2`) and RE1-TT
+  (`train-ticket`) instead of the derived metrics in `simple_data.csv`, the input of the
+  published RE1 results and the file the Hugging Face release ships
+  ([#97](https://github.com/phamquiluan/RCAEval/issues/97)). The preference for
+  `simple_data.csv` lived in `main-ase.py` and was lost when that script was removed in
+  1.3.0, so RE1-SS and RE1-TT scores from 1.3.0 to 1.12.1 came from the raw file. With
+  the derived metrics, BARO's Avg@5 per fault type (cpu, mem, disk, delay, loss) is
+  0.98, 0.98, 0.96, 0.98, 0.89 on RE1-SS (0.55, 0.71, 0.50, 0.58, 0.54 on the raw file)
+  and 0.87, 0.93, 0.89, 0.58, 0.63 on RE1-TT (0.17, 0.13, 0.69, 0.17, 0.15). RE1-OB,
+  `sock-shop-1`, RE2 and RE3 have no `simple_data.csv` and are unchanged.
+  `rcaeval-agent export` picks the same file through the shared
+  `RCAEval.benchmark.datasets.metric_files`.
+- The SLI of RE1-SS is `front-end_latency`, the entry service's latency in
+  `simple_data.csv`.
+
 ## [1.12.1] - 2026-11-20
 
 The `*_randomwalk` methods now follow the causal graph, which changes their scores, and

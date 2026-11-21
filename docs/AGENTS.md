@@ -34,7 +34,7 @@ agent_tasks/
     manifest.json               # dataset, number of cases, list of case ids, answer format
     cases/re2-ob-0001/
       task.json
-      metrics.csv               # the metrics main.py feeds to methods (simple_metrics.csv / data.csv)
+      metrics.csv               # the metrics main.py feeds to methods (simple_metrics.csv, simple_data.csv or data.csv)
       metrics_raw.csv           # raw metrics, when the case has them (RE2/RE3)
       logs.csv  logts.csv       # logs and log time series, RE2/RE3
       traces.csv  tracets_err.csv  tracets_lat.csv   # traces, RE2/RE3 Online Boutique and Train Ticket
