@@ -5,7 +5,7 @@ All notable changes to RCAEval are listed here, newest first. Versions follow th
 release notes live, and the [PyPI releases](https://pypi.org/project/RCAEval/#history).
 A few early versions exist on only one of the two.
 
-## [Unreleased]
+## [1.12.3] - 2026-11-23
 
 ### Fixed
 - `rcaeval-agent export --dataset re3-tt` stopped with `ValueError` on the Zenodo directory
@@ -424,6 +424,7 @@ based on Causal Inference: How Far Are We?*, also kept in the
 Initial package: data I/O, utilities, graph heads, the PC algorithm and the benchmark
 module.
 
+[1.12.3]: https://github.com/phamquiluan/RCAEval/compare/1.12.2...1.12.3
 [1.12.2]: https://github.com/phamquiluan/RCAEval/compare/1.12.1...1.12.2
 [1.12.1]: https://github.com/phamquiluan/RCAEval/compare/1.12.0...1.12.1
 [1.12.0]: https://github.com/phamquiluan/RCAEval/compare/1.11.1...1.12.0
