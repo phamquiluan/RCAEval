@@ -2,6 +2,7 @@
 import glob
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -99,6 +100,18 @@ def test_export_answers_carry_the_labels(exported):
         assert (a["service"], a["fault"]) == (service, fault)
         assert a["indicator"] == {"cpu": "cpu", "mem": "mem", "delay": "latency"}[fault]
         assert a["answer_in_candidates"] and a["indicator_in_candidates"]
+
+
+def test_export_reads_a_second_batch_of_a_case_group(tmp_path):
+    # RE3-TT on Zenodo has ts-route-service_f3_1 next to ts-route-service_f3;
+    # unpacking the name into two parts stopped the export with a ValueError (#100)
+    data_root = make_dataset(str(tmp_path / "raw"), faults=["f3"], n_cases=1)
+    shutil.copytree(join(data_root, "cartservice_f3"), join(data_root, "cartservice_f3_1"))
+    task_dir, answers_path = export("re3-tt", out_dir=str(tmp_path / "out"), data_root=data_root)
+    answers = [json.loads(line) for line in open(answers_path)]
+    assert json.load(open(join(task_dir, "manifest.json")))["n_cases"] == len(answers) == len(SERVICES) + 1
+    batches = {a["source"]: (a["service"], a["fault"]) for a in answers if a["service"] == "cartservice"}
+    assert batches == {"cartservice_f3/1": ("cartservice", "f3"), "cartservice_f3_1/1": ("cartservice", "f3")}
 
 
 def test_case_ids_are_stable_and_not_in_source_order(tmp_path):

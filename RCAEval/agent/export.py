@@ -11,9 +11,9 @@ import hashlib
 import json
 import os
 import shutil
-from os.path import basename, dirname, exists, join, relpath
+from os.path import dirname, exists, join, relpath
 
-from RCAEval.benchmark.datasets import DATASET_MAP, download_dataset, metric_files
+from RCAEval.benchmark.datasets import DATASET_MAP, case_labels, download_dataset, metric_files
 from RCAEval.benchmark.scoring import fault_to_indicator, indicator_ranks, to_service
 from RCAEval.classes.graph import Node
 
@@ -131,7 +131,7 @@ def export(dataset, out_dir="agent_tasks", copy=False, force=False, download=Tru
         case_dir = join(task_dir, "cases", case_id)
         os.makedirs(case_dir)
 
-        service, fault = basename(dirname(src_dir)).split("_")
+        service, fault, _ = case_labels(metrics_path)
         with open(join(src_dir, "inject_time.txt")) as f:
             inject_time = int(f.readlines()[0].strip())
 

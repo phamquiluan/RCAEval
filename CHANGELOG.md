@@ -5,6 +5,16 @@ All notable changes to RCAEval are listed here, newest first. Versions follow th
 release notes live, and the [PyPI releases](https://pypi.org/project/RCAEval/#history).
 A few early versions exist on only one of the two.
 
+## [Unreleased]
+
+### Fixed
+- `rcaeval-agent export --dataset re3-tt` stopped with `ValueError` on the Zenodo directory
+  `ts-route-service_f3_1` after writing some of the case folders, and left no answers file
+  or manifest. The exporter now reads the directory name through `case_labels()`, as
+  `main.py` does since 1.12.2, so all 30 cases are exported and the second batch is
+  labelled `ts-route-service`, `f3`
+  ([#100](https://github.com/phamquiluan/RCAEval/issues/100)).
+
 ## [1.12.2] - 2026-11-21
 
 RE1-SS and RE1-TT are read from `simple_data.csv` again, which changes every method's
